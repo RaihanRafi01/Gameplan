@@ -1,0 +1,104 @@
+import 'package:agcourt/app/modules/home/views/home_view.dart';
+import 'package:agcourt/app/modules/profile/views/edit_profile_view.dart';
+import 'package:agcourt/app/modules/profile/views/help_support_view.dart';
+import 'package:agcourt/app/modules/profile/views/settings_view.dart';
+import 'package:agcourt/app/modules/profile/views/terms_privacy_view.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../../common/appColors.dart';
+import '../../../../common/widgets/profileList.dart';
+import '../controllers/profile_controller.dart';
+
+class ProfileView extends GetView<ProfileController> {
+  const ProfileView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          SizedBox(height: 58),
+          Container(
+            height: 70,
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: AppColors.cardGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                'Account',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 40),
+          ProfileList(
+            svgPath: 'assets/images/profile/profile_icon.svg',
+            text: 'PROFILE',
+            onTap: () => Get.to(()=> EditProfileView()),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/settings_icon.svg',
+            text: 'SETTINGS',
+            onTap: () => Get.to(()=> SettingsView()),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/faq_icon.svg',
+            text: 'FAQ',
+            onTap: () => Get.to(()=> EditProfileView()),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/support_icon.svg',
+            text: 'HELP & SUPPORT',
+            onTap: () => Get.to(()=> HelpSupportView()),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/terms_icon.svg',
+            text: 'TERMS & CONDITION',
+            onTap: () => Get.to(()=> TermsPrivacyView(isTerms: true,)),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/privacy_icon.svg',
+            text: 'PRIVACY POLICY',
+            onTap: () => Get.to(()=> TermsPrivacyView(isTerms: false,)),
+          ),
+          ProfileList(
+            svgPath: 'assets/images/profile/logout_icon.svg',
+            text: 'LOG OUT',
+            onTap: () {
+              // Handle Logout
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Log Out'),
+                  content: Text('Are you sure you want to log out?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // Add your logout logic here
+                        Get.to(()=> HomeView());
+                      },
+                      child: Text('Log Out'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
