@@ -28,7 +28,6 @@ class HelpSupportView extends GetView {
               onPressed: () {
                 _showConfirmationDialog(context);
               },
-              backgroundGradientColor: AppColors.cardGradient,
             ),
           ],
         ),

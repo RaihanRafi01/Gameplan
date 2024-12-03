@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 import '../controllers/calender_controller.dart';
 
 class CalenderView extends GetView<CalenderController> {
@@ -24,6 +25,7 @@ class CalenderView extends GetView<CalenderController> {
       body: Column(
         children: [
           // Reactive Calendar
+          // Calendar view code with highlighted event dates
           Obx(() => TableCalendar(
             focusedDay: controller.focusedDate.value,
             firstDay: DateTime(2020),
@@ -41,10 +43,11 @@ class CalenderView extends GetView<CalenderController> {
               titleCentered: true,
             ),
             calendarStyle: CalendarStyle(
-              todayDecoration: const BoxDecoration(
+              isTodayHighlighted: false,
+              /*todayDecoration: const BoxDecoration(
                 color: Colors.blue,
                 shape: BoxShape.circle,
-              ),
+              ),*/
               selectedDecoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: AppColors.cardGradient,
@@ -53,6 +56,35 @@ class CalenderView extends GetView<CalenderController> {
                 ),
                 shape: BoxShape.circle,
               ),
+            ),
+            // Highlight event dates
+            eventLoader: (day) {
+              // Check if the date has events
+              return controller.events
+                  .where((event) => isSameDay(event.date, day))
+                  .toList();
+            },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, day, events) {
+                if (events.isNotEmpty) {
+                  return Positioned(
+                    bottom: 4,
+                    child: Container(
+                      width: 40,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: AppColors.cardGradient,
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  );
+                }
+                return null;
+              },
             ),
           )),
           // Events List for selected date
@@ -86,7 +118,7 @@ class CalenderView extends GetView<CalenderController> {
                           child: Center(
                             child: Text(
                               '${event.date.day}',
-                              style: const TextStyle(color: Colors.white, fontSize: 22,fontWeight: FontWeight.bold),
+                              style: h3.copyWith(color: Colors.white, fontSize: 22,fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -94,10 +126,10 @@ class CalenderView extends GetView<CalenderController> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(event.title),
+                            Text(event.title,style: h3,),
                             Text(
                               '${DateFormat('EEE').format(event.date)} : At ${event.time}',
-                              style: TextStyle(color: Colors.grey),
+                              style: h3,
                             ),
                           ],
                         ),

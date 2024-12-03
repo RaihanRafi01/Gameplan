@@ -1,5 +1,5 @@
+import 'package:agcourt/common/customFont.dart';
 import 'package:flutter/material.dart';
-import '../../appColors.dart';
 
 class CustomMessageInputField extends StatelessWidget {
   final TextEditingController textController;
@@ -7,11 +7,11 @@ class CustomMessageInputField extends StatelessWidget {
   final String hintText;
 
   const CustomMessageInputField({
-    Key? key,
+    super.key,
     required this.textController,
     required this.onSend,
-    this.hintText = "Type a message",
-  }) : super(key: key);
+    this.hintText = 'type your text',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +24,7 @@ class CustomMessageInputField extends StatelessWidget {
               controller: textController,
               decoration: InputDecoration(
                 hintText: hintText,
+                hintStyle: h4,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: const BorderSide(color: Colors.grey),
@@ -47,13 +48,13 @@ class CustomMessageInputField extends StatelessWidget {
                         onTap: onSend,
                         child: const Icon(Icons.send, size: 24),
                       ),
-                      const SizedBox(width: 6),
+                      /*const SizedBox(width: 6),
                       GestureDetector(
                         onTap: () {
                           // Action for second button (if needed)
                         },
                         child: const Icon(Icons.add, size: 24),
-                      ),
+                      ),*/
                     ],
                   ),
                 ),

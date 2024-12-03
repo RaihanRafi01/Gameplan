@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../customFont.dart';
 
 class ProfileList extends StatelessWidget {
   final String svgPath;
@@ -25,7 +26,7 @@ class ProfileList extends StatelessWidget {
               children: [
                 SvgPicture.asset(svgPath),
                 SizedBox(width: 10),
-                Text(text),
+                Text(text,style: h4,),
                 Spacer(),
                 Icon(Icons.navigate_next),
               ],

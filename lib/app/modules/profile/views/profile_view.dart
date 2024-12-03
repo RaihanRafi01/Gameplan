@@ -1,12 +1,16 @@
+import 'package:agcourt/app/modules/authentication/views/authentication_view.dart';
 import 'package:agcourt/app/modules/home/views/home_view.dart';
 import 'package:agcourt/app/modules/profile/views/edit_profile_view.dart';
+import 'package:agcourt/app/modules/profile/views/faq_view.dart';
 import 'package:agcourt/app/modules/profile/views/help_support_view.dart';
 import 'package:agcourt/app/modules/profile/views/settings_view.dart';
 import 'package:agcourt/app/modules/profile/views/terms_privacy_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
-import '../../../../common/widgets/profileList.dart';
+import '../../../../common/customFont.dart';
+import '../../../../common/widgets/profile/profileList.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -31,7 +35,7 @@ class ProfileView extends GetView<ProfileController> {
             child: Center(
               child: Text(
                 'Account',
-                style: TextStyle(
+                style: h3.copyWith(
                   fontSize: 24,
                   color: Colors.white,
                 ),
@@ -46,13 +50,13 @@ class ProfileView extends GetView<ProfileController> {
           ),
           ProfileList(
             svgPath: 'assets/images/profile/settings_icon.svg',
-            text: 'SETTINGS',
+            text: 'MANAGE SUBSCRIPTION',
             onTap: () => Get.to(()=> SettingsView()),
           ),
           ProfileList(
             svgPath: 'assets/images/profile/faq_icon.svg',
             text: 'FAQ',
-            onTap: () => Get.to(()=> EditProfileView()),
+            onTap: () => Get.to(()=> FaqView()),
           ),
           ProfileList(
             svgPath: 'assets/images/profile/support_icon.svg',
@@ -77,20 +81,20 @@ class ProfileView extends GetView<ProfileController> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('Log Out'),
-                  content: Text('Are you sure you want to log out?'),
+                  title: Text('Log Out',style: h2,),
+                  content: Text('Are you sure you want to log out?',style: h3),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel'),
+                      child: Text('Cancel',style: h2.copyWith(color: AppColors.appColor),),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context);
                         // Add your logout logic here
-                        Get.to(()=> HomeView());
+                        Get.offAll(()=> AuthenticationView());
                       },
-                      child: Text('Log Out'),
+                      child: Text('Log Out',style: h2.copyWith(color: Colors.red)),
                     ),
                   ],
                 ),

@@ -1,23 +1,21 @@
 import 'package:get/get.dart';
 
 class HistoryController extends GetxController {
-  //TODO: Implement HistoryController
+  // Reactive variable for selected filter
+  var selectedFilter = 'All'.obs;
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  // Reactive list for chat history
+  var chatHistory = <String>[
+    'Last Chat 1',
+    'Last Chat 2',
+    'Last Chat 3',
+    'Last Chat 4',
+    'Last Chat 5',
+  ].obs;
+
+  // Update the filter and modify the chat history if needed
+  void updateFilter(String filter) {
+    selectedFilter.value = filter;
+    // Logic to update chat history based on the selected filter
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

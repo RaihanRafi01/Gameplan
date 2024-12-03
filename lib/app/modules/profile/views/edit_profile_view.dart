@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:agcourt/common/widgets/custom_textField.dart';
 import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 import '../controllers/profile_controller.dart';
 
 class EditProfileView extends StatefulWidget {
@@ -34,7 +35,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title:  Text('Personal information',style: h2,),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -73,12 +74,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                     children: [
                       Obx(() => Text(
                         profileController.name.value,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                       )),
                       const SizedBox(height: 10),
                       CustomButton(
                         isGem: true,
-                        backgroundGradientColor: AppColors.cardGradient,
                         width: 190,
                         text: 'Standard Account',
                         onPressed: () {},
@@ -115,7 +115,6 @@ class _EditProfileViewState extends State<EditProfileView> {
             )),
             const SizedBox(height: 20),
             CustomButton(
-              backgroundGradientColor: AppColors.cardGradient,
               text:'Save',
               onPressed: () {
               },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../appColors.dart';
+import '../customFont.dart';
 
 class GradientCard extends StatelessWidget {
   final String text;
@@ -30,8 +31,8 @@ class GradientCard extends StatelessWidget {
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isSentByUser? Colors.black : Colors.black,
+            style: h4.copyWith(
+              color: isSentByUser? Colors.black : Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),

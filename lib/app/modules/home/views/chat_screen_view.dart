@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../common/widgets/home/custom_messageInputField.dart';
-import '../../../../common/widgets/messageBubble.dart';
+import '../../../../common/widgets/home/messageBubble.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String initialMessage;
-
-  const ChatScreen({super.key, required this.initialMessage});
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -14,29 +13,35 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> messages = [];
   final TextEditingController messageController = TextEditingController();
-  int? editingMessageIndex;
+  final ScrollController scrollController = ScrollController();
+  int? editingMessageIndex; // Index of the bot message being edited
 
   @override
   void initState() {
     super.initState();
+
+    // Retrieve the initial message from arguments
+    final initialMessage = Get.arguments['initialMessage'] ?? 'Hello!';
+
     // Add the initial message to the chat
     messages.add({
-      'message': widget.initialMessage,
+      'message': initialMessage,
       'isSentByUser': false,
-      'avatarUrl': 'https://via.placeholder.com/150', // Default avatar URL
+      'avatarUrl': 'https://via.placeholder.com/150', // Bot's avatar URL
     });
   }
 
+  // Function to send or update a message
   void sendMessage() {
     final text = messageController.text.trim();
     if (text.isNotEmpty) {
       setState(() {
         if (editingMessageIndex != null) {
-          // Update the existing message
+          // Update the existing bot message
           messages[editingMessageIndex!]['message'] = text;
           editingMessageIndex = null; // Reset editing index
         } else {
-          // Add a new message
+          // Add a new user message
           messages.add({
             'message': text,
             'isSentByUser': true,
@@ -44,14 +49,25 @@ class _ChatScreenState extends State<ChatScreen> {
           });
         }
       });
+
       messageController.clear();
+
+      // Scroll to the bottom
+      Future.delayed(const Duration(milliseconds: 200), () {
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
     }
   }
 
-  void startEditingMessage(int index) {
+  // Function to start editing a bot message
+  void startEditingBotMessage(int index) {
     setState(() {
       editingMessageIndex = index;
-      messageController.text = messages[index]['message']; // Pre-fill with existing message
+      messageController.text = messages[index]['message']; // Pre-fill the bot message in the input field
     });
   }
 
@@ -66,6 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: scrollController,
               itemCount: messages.length,
               reverse: true,
               itemBuilder: (context, index) {
@@ -75,9 +92,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   message: messageData['message'],
                   isSentByUser: messageData['isSentByUser'],
                   avatarUrl: messageData['avatarUrl'],
-                  editCallback: messageData['isSentByUser']
-                      ? () => startEditingMessage(actualIndex)
-                      : null, // Only enable editing for user's messages
+                  // Show the edit icon only for bot messages
+                  editCallback: !messageData['isSentByUser']
+                      ? () => startEditingBotMessage(actualIndex)
+                      : null,
                 );
               },
             ),
@@ -85,7 +103,9 @@ class _ChatScreenState extends State<ChatScreen> {
           CustomMessageInputField(
             textController: messageController,
             onSend: sendMessage,
-            hintText: editingMessageIndex != null ? 'Edit your message' : 'Type a message',
+            hintText: editingMessageIndex != null
+                ? 'Edit bot message'
+                : 'Type a message',
           ),
         ],
       ),

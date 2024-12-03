@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../appColors.dart';
+import '../customFont.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
@@ -21,7 +22,7 @@ class CustomButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.isGem = false,
-    this.backgroundGradientColor = AppColors.transparent,
+    this.backgroundGradientColor = AppColors.cardGradient,
     this.borderGradientColor = AppColors.transparent,
     this.textColor = Colors.white,
     this.borderRadius = 20.0,
@@ -99,7 +100,7 @@ class CustomButton extends StatelessWidget {
         Text(
           text,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: h4.copyWith(
             fontSize: 16,
             color: textColor,
             fontWeight: FontWeight.bold,

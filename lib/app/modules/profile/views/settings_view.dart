@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 
 class SettingsView extends GetView {
   // Dummy data to simulate API response
@@ -14,7 +15,7 @@ class SettingsView extends GetView {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Text('Manage Subscription',style: h1,),
         centerTitle: true,
       ),
       body: Padding(
@@ -22,7 +23,7 @@ class SettingsView extends GetView {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Subscription Details',style: TextStyle(fontSize: 18)),
+            Text('Subscription Details',style: h3.copyWith(fontSize: 18)),
             SizedBox(height: 20,),
             // The existing card
             Container(
@@ -51,18 +52,18 @@ class SettingsView extends GetView {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Title: $title",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        title,
+                        style: h4.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Price: $price",
-                        style: const TextStyle(fontSize: 16),
+                        price,
+                        style: h1.copyWith(fontSize: 20),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "Expiry Date: $expiryDate",
-                        style: const TextStyle(fontSize: 16),
+                        style: h4.copyWith(fontSize: 12),
                       ),
                     ],
                   ),

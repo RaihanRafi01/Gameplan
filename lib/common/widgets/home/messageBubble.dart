@@ -1,6 +1,6 @@
-import 'package:agcourt/common/widgets/gradientCard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart'; // Assuming you may use SVG icons.
+import 'package:agcourt/common/widgets/gradientCard.dart';
 
 class MessageBubble extends StatelessWidget {
   final String message;
@@ -22,7 +22,7 @@ class MessageBubble extends StatelessWidget {
       mainAxisAlignment:
       isSentByUser ? MainAxisAlignment.start : MainAxisAlignment.end,
       children: [
-        if (isSentByUser)
+        if (isSentByUser) // Avatar on the left for user's messages
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: CircleAvatar(
@@ -32,14 +32,26 @@ class MessageBubble extends StatelessWidget {
           ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: GradientCard(text: message, isSentByUser: isSentByUser),
+          child: Row(
+            children: [
+              if (!isSentByUser && editCallback != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: GestureDetector(
+                    onTap: editCallback,
+                    child: SvgPicture.asset('assets/images/home/edit_icon.svg'),
+                  ),
+                ),
+              SizedBox(width: 0),
+              GradientCard(
+                text: message,
+                isSentByUser: isSentByUser,
+              ),
+              // Show edit icon only for bot's messages
+            ],
+          )
         ),
-        if (isSentByUser && editCallback != null)
-          GestureDetector(
-            onTap: editCallback,
-            child: SvgPicture.asset('assets/images/home/edit_icon.svg'),
-          ),
-        if (!isSentByUser)
+        if (!isSentByUser) // Avatar on the right for bot's messages
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: CircleAvatar(

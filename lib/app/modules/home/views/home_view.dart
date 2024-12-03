@@ -1,34 +1,43 @@
-import 'package:agcourt/common/widgets/home/custom_messageInputField.dart';
+import 'package:agcourt/app/modules/profile/views/faq_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/customFont.dart';
+import '../../../../common/widgets/home/custom_messageInputField.dart';
 import '../../../../common/widgets/gradientCard.dart';
 import '../controllers/home_controller.dart';
-import 'chat_screen_view.dart'; // Import the ChatScreen
+import 'chat_screen_view.dart'; // Import ChatScreen
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController textController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Form'),
-        backgroundColor: Colors.blue,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const SizedBox(height: 50),
-            const Text(
+            Text(
               "What do you need help with today?",
-              style: TextStyle(fontSize: 28),
+              style: h3.copyWith(fontSize: 28),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 50), // Add some spacing at the top
-            //CustomMessageInputField(),
-            const SizedBox(height: 40),
+            CustomMessageInputField(
+              textController: textController,
+              onSend: () {
+                Get.to(
+                      () => ChatScreen(),
+                  arguments: {'initialMessage': textController.text},
+                );
+              },
+            ),
+            const SizedBox(height: 20),
             Expanded(
               child: GridView.builder(
                 itemCount: 4,
@@ -39,11 +48,10 @@ class HomeView extends GetView<HomeController> {
                   childAspectRatio: 2,
                 ),
                 itemBuilder: (BuildContext context, int index) {
-                  final gridText = "Option  dffs ::::::::::: sasf :::::::::::::::::::::::::::::::::::::::::::::::ds ds${index + 1}";
+                  final gridText =
+                      "Option ${index + 1} - Detailed description text goes here.";
                   return GestureDetector(
-                    onTap: () {
-                      Get.to(() => ChatScreen(initialMessage: gridText));
-                    },
+                    onTap: ()=> Get.to(() => FaqView()),
                     child: GradientCard(
                       text: gridText,
                     ),

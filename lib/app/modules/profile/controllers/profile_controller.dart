@@ -5,6 +5,14 @@ class ProfileController extends GetxController {
   var email = 'john.doe@example.com'.obs; // Dummy data for email
   var aboutYou = 'Flutter Developer & Designer'.obs; // Dummy data for about you
 
+  // Reactive variable to control the visibility of the text
+  var isTextVisible = false.obs;
+
+  // Method to toggle visibility
+  void toggleTextVisibility() {
+    isTextVisible.value = !isTextVisible.value;
+  }
+
   void updateName(String newName) {
     name.value = newName;
   }
