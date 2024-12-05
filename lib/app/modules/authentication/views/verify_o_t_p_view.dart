@@ -6,9 +6,12 @@ import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/auth/pinCode_InputField.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../../data/services/api_services.dart';
+import '../controllers/authentication_controller.dart';
 
 class VerifyOTPView extends StatefulWidget {
-  const VerifyOTPView({Key? key}) : super(key: key);
+  final userName;
+  const VerifyOTPView({required this.userName , Key? key}) : super(key: key);
 
   @override
   State<VerifyOTPView> createState() => _VerifyOTPViewState();
@@ -19,6 +22,8 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
   int _remainingSeconds = 30;
   bool _isResendEnabled = false;
   String? _verificationMessage; // To show "Code is Correct" or "Incorrect Code"
+  final AuthenticationController _controller = Get.put(AuthenticationController());
+  final TextEditingController _otpController = TextEditingController(); // For manual OTP input
 
   @override
   void initState() {
@@ -62,32 +67,27 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
     _startTimer();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-             Text(
+            Text(
               'OTP has been sent to your Email',
               style: h4.copyWith(fontSize: 14),
             ),
             const SizedBox(height: 20),
             PinCodeInputField(
               onCompleted: (code) {
-                // Validate the OTP
-                setState(() {
-                  if (code == "1234") {
-                    _verificationMessage = "Code is Correct";
-                  } else {
-                    _verificationMessage = "Incorrect Code";
-                  }
-                });
+                // Save the OTP entered by the user
+                _otpController.text = code;
               },
             ),
             if (_verificationMessage != null) // Only show message after `onCompleted`
@@ -108,7 +108,14 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
               borderRadius: 5,
               width: 150,
               text: "Verify OTP",
-              onPressed: () => Get.off(() => const ResetPasswordView()),
+              onPressed: () {
+                final otp = _otpController.text.trim();
+                if (otp.isEmpty) {
+                  Get.snackbar('Error', 'Please enter the OTP');
+                } else {
+                  _controller.verifyOTP(widget.userName,otp);
+                }
+              },
             ),
             const SizedBox(height: 20),
             Row(
@@ -120,11 +127,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
                 ),
                 const Text(' | ', style: TextStyle(fontSize: 16)),
                 GestureDetector(
-                  onTap: _isResendEnabled
-                      ? () {
-                    _resendOTP();
-                  }
-                      : null,
+                  onTap: _isResendEnabled ? _resendOTP : null,
                   child: Text(
                     'Resend OTP',
                     style: h4.copyWith(

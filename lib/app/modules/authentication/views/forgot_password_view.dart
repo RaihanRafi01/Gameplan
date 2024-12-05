@@ -25,7 +25,7 @@ class ForgotPasswordView extends GetView {
             SizedBox(height: 30,),
             CustomTextField(label: "Your Email", hint: "Enter Email",prefixIcon: Icons.email_outlined,),
             SizedBox(height: 20),
-            CustomButton(text: 'Send OTP', onPressed: ()=> Get.to(()=> VerifyOTPView()))
+            CustomButton(text: 'Send OTP', onPressed: ()=> Get.to(()=> VerifyOTPView(userName: 'dd',)))
           ],
         ),
       ),

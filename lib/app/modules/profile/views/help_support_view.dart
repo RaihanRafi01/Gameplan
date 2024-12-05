@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 
 class HelpSupportView extends GetView {
   const HelpSupportView({super.key});
@@ -45,15 +46,15 @@ class HelpSupportView extends GetView {
           title: Column(
             children: [
               Text(
-                'Your request has been sent!',
+                'Help!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Text(
-                'We will get back to you shortly.',
+                'Our team will contact you within 24 hours',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+                style: h4.copyWith(fontSize: 16),
               ),
               SizedBox(height: 20),
               CustomButton(

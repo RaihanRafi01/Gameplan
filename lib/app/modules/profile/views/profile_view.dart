@@ -6,6 +6,7 @@ import 'package:agcourt/app/modules/profile/views/help_support_view.dart';
 import 'package:agcourt/app/modules/profile/views/settings_view.dart';
 import 'package:agcourt/app/modules/profile/views/terms_privacy_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
@@ -14,7 +15,7 @@ import '../../../routes/app_pages.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  const ProfileView({super.key});
+  ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +93,7 @@ class ProfileView extends GetView<ProfileController> {
                       onPressed: () {
                         Navigator.pop(context);
                         // Add your logout logic here
-                        Get.offAll(()=> AuthenticationView());
+                        logout();
                       },
                       child: Text('Log Out',style: h2.copyWith(color: Colors.red)),
                     ),
@@ -104,5 +105,12 @@ class ProfileView extends GetView<ProfileController> {
         ],
       ),
     );
+  }
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
+
+  Future<void> logout() async {
+    await _storage.delete(key: 'access_token');
+    await _storage.delete(key: 'refresh_token');
+    Get.offAll(() => AuthenticationView()); // Navigate to the login screen
   }
 }

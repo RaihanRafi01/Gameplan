@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-
 import '../modules/authentication/bindings/authentication_binding.dart';
 import '../modules/authentication/views/authentication_view.dart';
 import '../modules/authentication/views/splash_view.dart';
@@ -26,7 +25,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => SplashView(),
+      page: () => DashboardView(),
       binding: HomeBinding(),
     ),
     GetPage(
@@ -36,7 +35,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.AUTHENTICATION,
-      page: () => const AuthenticationView(),
+      page: () => AuthenticationView(),
       binding: AuthenticationBinding(),
     ),
     GetPage(
@@ -46,7 +45,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PROFILE,
-      page: () => const ProfileView(),
+      page: () => ProfileView(),
       binding: ProfileBinding(),
     ),
     GetPage(
