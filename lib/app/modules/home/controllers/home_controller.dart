@@ -1,9 +1,14 @@
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import '../../../data/services/api_services.dart';
 
 class HomeController extends GetxController {
+  final ApiService _service = ApiService();
   var email = ''.obs;
   var password = ''.obs;
   var isLoading = false.obs;
+  var profilePicUrl = ''.obs; // Store the profile picture URL
 
   void submitForm() {
     if (email.isEmpty || password.isEmpty) {
@@ -21,22 +26,18 @@ class HomeController extends GetxController {
     });
   }
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
-  }
+  Future<void> fetchProfilePicUrl() async {
+    // Check if the account is verified
+    final http.Response verificationResponse = await _service.getProfileInformation();
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
+    if (verificationResponse.statusCode == 200) {
+      final verificationData = jsonDecode(verificationResponse.body);
+      String? profilePicture = verificationData['profile_picture'];
 
-  @override
-  void onClose() {
-    super.onClose();
+      // If profile_picture is null, set a default image URL
+      profilePicUrl.value = profilePicture ?? 'assets/images/home/default_profile_pic.jpg'; // Default image URL
+    } else {
+      Get.snackbar('Error', 'Verification status check failed');
+    }
   }
-
-  void increment() => count.value++;
 }
-

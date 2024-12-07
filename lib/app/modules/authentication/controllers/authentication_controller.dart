@@ -130,7 +130,7 @@ class AuthenticationController extends GetxController {
   Future<void> checkVerified() async {
 
     // Check if the account is verified
-    final http.Response verificationResponse = await _service.checkVerificationStatus();
+    final http.Response verificationResponse = await _service.getProfileInformation();
 
     if (verificationResponse.statusCode == 200) {
       final verificationData = jsonDecode(verificationResponse.body);

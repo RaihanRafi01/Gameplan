@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:agcourt/common/widgets/custom_textField.dart';
-import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../controllers/profile_controller.dart';
 
@@ -18,8 +17,31 @@ class EditProfileView extends StatefulWidget {
 
 class _EditProfileViewState extends State<EditProfileView> {
   XFile? _pickedImage;
-
   final ProfileController profileController = Get.put(ProfileController());
+
+  // TextEditingControllers for the input fields
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _aboutYouController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize TextEditingControllers with data from the ProfileController
+    _nameController = TextEditingController(text: profileController.name.value);
+    _emailController = TextEditingController(text: profileController.email.value);
+    _aboutYouController = TextEditingController(text: profileController.aboutYou.value);
+
+    // Sync the profile data to controllers after fetch
+    profileController.fetchData().then((_) {
+      setState(() {
+        _nameController.text = profileController.name.value;
+        _emailController.text = profileController.email.value;
+        _aboutYouController.text = profileController.aboutYou.value;
+      });
+    });
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -32,10 +54,19 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   @override
+  void dispose() {
+    // Dispose controllers to free up resources
+    _nameController.dispose();
+    _emailController.dispose();
+    _aboutYouController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Personal information',style: h2,),
+        title: Text('Personal information', style: h2),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -43,80 +74,96 @@ class _EditProfileViewState extends State<EditProfileView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: _pickedImage != null
-                            ? FileImage(File(_pickedImage!.path))
-                            : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: _pickImage,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: SvgPicture.asset('assets/images/profile/edit_pic.svg'),
-                          ),
+            Row(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _pickedImage != null
+                          ? FileImage(File(_pickedImage!.path))
+                          : profileController.picUrl.value.isNotEmpty
+                          ? NetworkImage(
+                          'https://apparently-intense-toad.ngrok-free.app${profileController.picUrl.value}')
+                          : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          child: SvgPicture.asset('assets/images/profile/edit_pic.svg'),
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Obx(() => Text(
-                        profileController.name.value,
-                        style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-                      )),
-                      const SizedBox(height: 10),
-                      CustomButton(
-                        isGem: true,
-                        width: 190,
-                        text: 'Standard Account',
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Obx(() => Text(
+                      profileController.name.value,
+                      style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+                    )),
+                    const SizedBox(height: 10),
+                    CustomButton(
+                      isGem: true,
+                      width: 190,
+                      text: 'Standard Account',
+                      textSize: 14,
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 40),
-            Obx(() => CustomTextField(
+            CustomTextField(
               label: 'Full Name',
-              controller: TextEditingController(text: profileController.name.value),
+              controller: _nameController,
               prefixIcon: Icons.person_outline_rounded,
               onChanged: (value) {
+                // Update ProfileController whenever the text changes
                 profileController.updateName(value);
               },
-            )),
-            Obx(() => CustomTextField(
+            ),
+            CustomTextField(
+              readOnly: true,
               label: 'Email',
-              controller: TextEditingController(text: profileController.email.value),
+              controller: _emailController,
               prefixIcon: Icons.email_outlined,
               keyboardType: TextInputType.emailAddress,
-              onChanged: (value) {
-                profileController.updateEmail(value);
-              },
-            )),
-            Obx(() => CustomTextField(
+            ),
+            CustomTextField(
               label: 'About You',
-              controller: TextEditingController(text: profileController.aboutYou.value),
+              controller: _aboutYouController,
               onChanged: (value) {
+                // Update ProfileController whenever the text changes
                 profileController.updateAboutYou(value);
               },
-            )),
+            ),
             const SizedBox(height: 20),
             CustomButton(
-              text:'Save',
-              onPressed: () {
+              text: 'Save',
+              onPressed: () async {
+                print('::::::::edit:::::::::::::NAME:::::::::::${profileController.name.value}');
+                print('::::::::::edit:::::::::::aboutYou:::::::::::${profileController.aboutYou.value}');
+
+                // Handle the profile picture
+                File? profilePic;
+                if (_pickedImage != null) {
+                  profilePic = File(_pickedImage!.path);
+                }
+
+                // Call the updateData method
+                await profileController.updateData(
+                  profileController.name.value,
+                  profileController.aboutYou.value,
+                  profilePic,
+                );
               },
             )
           ],

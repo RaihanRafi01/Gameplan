@@ -17,7 +17,7 @@ class DashboardView extends StatelessWidget {
     final controller = Get.put(DashboardController());
 
     // Check subscription status (Assume controller has a `subscriptionStatus` variable)
-    bool isSubscribed = false;
+    bool isSubscribed = true;
 
     // List of pages for navigation
     final List<Widget> pages = [

@@ -30,7 +30,7 @@ class GradientCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             text,
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.start,
             style: h4.copyWith(
               color: isSentByUser? Colors.black : Colors.white,
               fontWeight: FontWeight.bold,

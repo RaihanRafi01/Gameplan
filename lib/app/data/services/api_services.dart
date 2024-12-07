@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ApiService {
 
@@ -84,7 +86,7 @@ class ApiService {
 
 
   // Method to check verification status with Bearer token
-  Future<http.Response> checkVerificationStatus() async {
+  Future<http.Response> getProfileInformation() async {
     final Uri url = Uri.parse('${baseUrl}authentication_app/user_profile/');
 
     // Retrieve the stored access token
@@ -100,6 +102,79 @@ class ApiService {
     return await http.get(url, headers: headers);
   }
 
+
+  Future<http.Response> updateProfile(String? name, String? aboutYou, File? profilePic) async {
+    print(':::::::::::::::::::::NAME:::::::::::$name');
+    print(':::::::::::::::::::::aboutYou:::::::::::$aboutYou');
+    String? accessToken = await _storage.read(key: 'access_token');
+    final Uri url = Uri.parse('${baseUrl}authentication_app/user_profile/');
+
+    try {
+      // Prepare the multipart request
+      var request = http.MultipartRequest('POST', url);
+
+      // Add text fields to the request only if they are not null or empty
+      if (name != null && name.isNotEmpty) {
+        request.fields['name'] = name;
+      }
+      if (aboutYou != null && aboutYou.isNotEmpty) {
+        request.fields['about_you'] = aboutYou;
+      }
+
+      // Add the profile picture file if it exists and is provided
+      if (profilePic != null && profilePic.existsSync()) {
+        var picStream = http.ByteStream(profilePic.openRead());
+        var picLength = await profilePic.length();
+
+        // Determine the file extension and set the content type accordingly
+        String extension = profilePic.uri.pathSegments.last.split('.').last.toLowerCase();
+        String contentType;
+
+        switch (extension) {
+          case 'png':
+            contentType = 'image/png';
+            break;
+          case 'jpg':
+          case 'jpeg':
+            contentType = 'image/jpeg';
+            break;
+          default:
+            contentType = 'application/octet-stream'; // Default if type is unknown
+            break;
+        }
+
+        var picMultipart = http.MultipartFile(
+          'profile_picture',
+          picStream,
+          picLength,
+          filename: profilePic.uri.pathSegments.last,
+          contentType: MediaType.parse(contentType),
+        );
+        request.files.add(picMultipart);
+      }
+
+      // Set the headers with the Bearer token
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // Send the request and await the response
+      final response = await request.send();
+
+      // Check the status code and handle the response
+      if (response.statusCode == 200) {
+        // Convert the stream response to a normal response
+        final responseString = await response.stream.bytesToString();
+        print('Profile updated successfully: $responseString');
+        return http.Response(responseString, 200);
+      } else {
+        final responseString = await response.stream.bytesToString();
+        print('Failed to update profile: $responseString');
+        return http.Response(responseString, response.statusCode);
+      }
+    } catch (e) {
+      print('Error updating profile: $e');
+      return http.Response('Error: $e', 500); // Return error with 500 status
+    }
+  }
 
 
 
@@ -118,6 +193,58 @@ class ApiService {
 
     // Make the GET request
     return await http.post(url, headers: headers);
+  }
+
+
+
+  Future<http.Response> createChat(String text_content) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/create_chat/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "text_content": text_content
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> chat(String text_content,int id) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/add_message_to_chat/$id/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "text_content": text_content
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
   }
 
 

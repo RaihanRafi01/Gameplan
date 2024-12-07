@@ -5,6 +5,7 @@ import '../customFont.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
+  final double textSize;
   final bool isGem;
   final VoidCallback onPressed;
   final List<Color> backgroundGradientColor;
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
 
   const CustomButton({
     super.key,
+    this.textSize = 16,
     required this.text,
     required this.onPressed,
     this.isGem = false,
@@ -101,7 +103,7 @@ class CustomButton extends StatelessWidget {
           text,
           textAlign: TextAlign.center,
           style: h4.copyWith(
-            fontSize: 16,
+            fontSize: textSize,
             color: textColor,
             fontWeight: FontWeight.bold,
           ),
