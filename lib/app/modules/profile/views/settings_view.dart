@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../../../common/widgets/home/subscriptionCard.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
 
 class SettingsView extends GetView {
   // Dummy data to simulate API response
@@ -71,10 +73,18 @@ class SettingsView extends GetView {
               ),
             ),
             // Two buttons at the bottom
-            SizedBox(height: 20), // Space between the card and the buttons
-            CustomButton(text: 'Update', onPressed: (){},backgroundGradientColor: AppColors.colorGreen,),
-            SizedBox(height: 20),
-            CustomButton(text: 'Cancel', onPressed: (){},backgroundGradientColor: AppColors.colorRed,),
+            SizedBox(height: 30), // Space between the card and the buttons
+            CustomButton(text: 'Update', onPressed: (){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,  // Prevent closing the dialog by tapping outside
+                  builder: (BuildContext context) {
+                    return const SubscriptionPopup(isManage: true,);  // Use the SubscriptionPopup widget
+                  },
+                );
+              });
+            },backgroundGradientColor: AppColors.colorGreen,),
           ],
         ),
       ),

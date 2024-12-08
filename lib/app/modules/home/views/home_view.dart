@@ -18,8 +18,7 @@ class HomeView extends GetView<HomeController> {
     final TextEditingController textController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-      ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -34,9 +33,20 @@ class HomeView extends GetView<HomeController> {
             CustomMessageInputField(
               textController: textController,
               onSend: () {
-                Get.to(
-                      () => ChatScreen(initialMessage: textController.text),
-                );
+                // Store the current text in a variable
+                final message = textController.text.trim();
+                FocusScope.of(context).unfocus();
+
+                if (message.isNotEmpty) {
+                  // Dismiss the keyboard before navigation
+
+
+                  // Navigate to ChatScreen with the message
+                  Get.to(() => ChatScreen(initialMessage: message));
+
+                  // Clear the text field
+                  textController.clear();
+                }
               },
             ),
             const SizedBox(height: 20),
@@ -53,7 +63,7 @@ class HomeView extends GetView<HomeController> {
                   final gridText =
                       "Option ${index + 1} - Detailed description text goes here.";
                   return GestureDetector(
-                    onTap: ()=> Get.to(() => FaqView()),
+                    onTap: () => Get.to(() => FaqView()),
                     child: GradientCard(
                       text: gridText,
                       isSentByUser: true,

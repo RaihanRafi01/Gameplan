@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:agcourt/common/widgets/home/subscriptionCard.dart';
 import 'package:get/get.dart';
+import '../../../../../common/widgets/home/subscriptionCard.dart';
 import '../../../authentication/controllers/authentication_controller.dart';
 
 class SubscriptionPopup extends StatelessWidget {
-  const SubscriptionPopup({super.key});
+  final bool isManage;
+  const SubscriptionPopup({super.key, this.isManage = false});
 
   @override
   Widget build(BuildContext context) {
     final AuthenticationController _controller = Get.put(AuthenticationController());
 
-    return WillPopScope(
-      onWillPop: () async {
-        // Return false to prevent closing the dialog when the back button is pressed
-        return false;
-      },
-      child: Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: WillPopScope(
+        onWillPop: () async {
+          // Allow back press only if isManage is true
+          return isManage;
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
           child: Column(
@@ -75,19 +76,21 @@ class SubscriptionPopup extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  // Close the dialog when the "Accept Free Trial" button is clicked
-                  Navigator.pop(context);
-                },
-                child: Text('Accept Free Trial'),
-              ),
+              const SizedBox(height: 30),
+              if (!isManage)
+                ElevatedButton(
+                  onPressed: () {
+                    // Close the dialog when the "Accept Free Trial" button is clicked
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Accept Free Trial'),
+                ),
               const SizedBox(height: 10),
-              Text(
-                "Free Trial For 7 Days",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
+              if (!isManage)
+                const Text(
+                  "Free Trial For 7 Days",
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
               const SizedBox(height: 20),
             ],
           ),
