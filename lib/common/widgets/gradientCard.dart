@@ -7,8 +7,9 @@ import '../customFont.dart';
 class GradientCard extends StatelessWidget {
   final String text;
   final bool isSentByUser;
+  final Color textColor;
 
-  const GradientCard({super.key, required this.text , this.isSentByUser = false});
+  const GradientCard({super.key, required this.text , this.isSentByUser = false , this.textColor = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class GradientCard extends StatelessWidget {
             text,
             textAlign: TextAlign.start,
             style: h4.copyWith(
-              color: isSentByUser? Colors.black : Colors.white,
+              color: isSentByUser? textColor : Colors.white,
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -1,9 +1,12 @@
+import 'package:agcourt/app/modules/home/controllers/chat_controller.dart';
 import 'package:agcourt/app/modules/profile/views/faq_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/home/custom_messageInputField.dart';
 import '../../../../common/widgets/gradientCard.dart';
+import '../../history/controllers/history_controller.dart';
 import '../controllers/home_controller.dart';
 import 'chat_screen_view.dart'; // Import ChatScreen
 
@@ -32,8 +35,7 @@ class HomeView extends GetView<HomeController> {
               textController: textController,
               onSend: () {
                 Get.to(
-                      () => ChatScreen(),
-                  arguments: {'initialMessage': textController.text},
+                      () => ChatScreen(initialMessage: textController.text),
                 );
               },
             ),
@@ -54,6 +56,8 @@ class HomeView extends GetView<HomeController> {
                     onTap: ()=> Get.to(() => FaqView()),
                     child: GradientCard(
                       text: gridText,
+                      isSentByUser: true,
+                      textColor: AppColors.textColor,
                     ),
                   );
                 },

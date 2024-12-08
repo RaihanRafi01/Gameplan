@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../data/services/api_services.dart';
+import '../../history/controllers/history_controller.dart';
 
 class ChatController extends GetxController {
   final ApiService _service = ApiService();
@@ -25,10 +25,31 @@ class ChatController extends GetxController {
   void onInit() {
     super.onInit();
     // Add initial bot message
-    final initialMessage = Get.arguments['initialMessage'] ?? 'Hello!';
-    addUserMessage(initialMessage);
-    createChat(initialMessage);
+
   }
+
+  /// Method to initialize the message list with chatContents
+  void initializeMessages(List<ChatContent> chatContents) {
+    messages.clear(); // Clear previous messages if any
+    for (var content in chatContents) {
+      addMessage(content); // Add each message to the list
+    }
+  }
+
+  /// Add a new message (either from user or bot)
+  void addMessage(ChatContent content) {
+    final isSentByUser = content.sentBy.toLowerCase() == 'user';
+    messages.add({
+      'message': content.textContent,
+      'isSentByUser': isSentByUser,
+    });
+  }
+
+ /* /// Method to initialize the message list with the initial message
+  void initializeMessages(String initialMessage) {
+    messages.clear(); // Clear previous messages if any
+    addUserMessage(initialMessage); // Add initial message as a user message
+  }*/
 
   /// Add a new bot message
   void addBotMessage(String message) {
@@ -75,6 +96,7 @@ class ChatController extends GetxController {
     }
   }
 
+  /// Create a new chat and fetch the bot's first message
   Future<void> createChat(String textContent) async {
     try {
       final http.Response response = await _service.createChat(textContent);
@@ -113,6 +135,7 @@ class ChatController extends GetxController {
     }
   }
 
+  /// Send a message to the bot and fetch the response
   Future<void> chat(String textContent, int id) async {
     try {
       final http.Response response = await _service.chat(textContent, id);
@@ -151,5 +174,3 @@ class ChatController extends GetxController {
     messageController.text = messages[index]['message'];
   }
 }
-
-

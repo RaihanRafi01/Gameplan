@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../home/views/chat_screen_view.dart';
 import '../controllers/history_controller.dart';
 
 class HistoryView extends GetView<HistoryController> {
@@ -11,6 +12,9 @@ class HistoryView extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     Get.put(HistoryController());
+    Get.find<HistoryController>().fetchChatList();
+
+
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -56,11 +60,25 @@ class HistoryView extends GetView<HistoryController> {
                 itemCount: controller.chatHistory.length,
                 itemBuilder: (context, index) {
                   final chat = controller.chatHistory[index];
+                  final chatId = chat.id;
+                  print('::::::::::::::::::chatId::::::::::$chatId::::');
                   return ListTile(
-                    title: Text(
-                      chat,
-                      style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
+                    title: GestureDetector(
+                      onTap: (){
+                        // Pass the chatContents to the ChatScreen
+                        Get.to(
+                              () => ChatScreen(chat: chat.chatContents,chatId : chat.id),
+                        );
+                      },
+                      child: Text(
+                        chat.chatName,
+                        style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
+                      ),
                     ),
+                    /*subtitle: Text(
+                      latestMessage,
+                      style: h3.copyWith(fontSize: 16, color: AppColors.textHistory),
+                    ),*/
                     trailing: PopupMenuButton<int>(
                       icon: const Icon(Icons.more_horiz_rounded),
                       onSelected: (value) {
@@ -69,7 +87,7 @@ class HistoryView extends GetView<HistoryController> {
                           // Handle 'Pin' action
                             break;
                           case 1:
-                          // Handle 'Save' action
+                          controller.updateChatTitle(chat.id,'New title');
                             break;
                           case 2:
                           // Handle 'Delete' action
@@ -82,7 +100,7 @@ class HistoryView extends GetView<HistoryController> {
                           child: Row(
                             children: [
                               SvgPicture.asset('assets/images/history/pin_icon.svg'),
-                              SizedBox(width: 10,),
+                              SizedBox(width: 10),
                               Text('Pin', style: h3.copyWith(fontSize: 16)),
                             ],
                           ),
@@ -91,8 +109,8 @@ class HistoryView extends GetView<HistoryController> {
                           value: 1,
                           child: Row(
                             children: [
-                              SvgPicture.asset('assets/images/history/edit _icon.svg'),
-                              SizedBox(width: 10,),
+                              SvgPicture.asset('assets/images/history/edit_icon.svg'),
+                              SizedBox(width: 10),
                               Text('Edit', style: h3.copyWith(fontSize: 16)),
                             ],
                           ),
@@ -102,7 +120,7 @@ class HistoryView extends GetView<HistoryController> {
                           child: Row(
                             children: [
                               SvgPicture.asset('assets/images/history/delete_icon.svg'),
-                              SizedBox(width: 10,),
+                              SizedBox(width: 10),
                               Text('Delete', style: h3.copyWith(fontSize: 16)),
                             ],
                           ),

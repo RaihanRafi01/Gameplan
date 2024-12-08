@@ -248,5 +248,46 @@ class ApiService {
   }
 
 
+  Future<http.Response> getChatList() async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/get_all_chat_list_of_user/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Make the GET request
+    return await http.get(url, headers: headers);
+  }
+
+
+  Future<http.Response> updateChatTitle(int ChatId, String title) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/update_chat_title/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "chat_title": title
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
 
 }
