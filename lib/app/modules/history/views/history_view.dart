@@ -64,10 +64,13 @@ class HistoryView extends GetView<HistoryController> {
                   return ListTile(
                     title: GestureDetector(
                       onTap: () {
-                        // Pass the chatContents to the ChatScreen
+                        // Navigate to ChatScreen and call a function when coming back
                         Get.to(
                               () => ChatScreen(chat: chat.chatContents, chatId: chat.id),
-                        );
+                        )?.then((value) {
+                          // Call the desired function after returning to this screen
+                          controller.fetchChatList();
+                        });
                       },
                       child: Text(
                         chat.chatName,
@@ -79,7 +82,7 @@ class HistoryView extends GetView<HistoryController> {
                       onSelected: (value) {
                         switch (value) {
                           case 0:
-                          // Handle 'Pin' action
+                            _showDatePicker(context, chatId); // Show date picker for pin action
                             break;
                           case 1:
                             _showEditDialog(context, chat.id, chat.chatName);
@@ -134,6 +137,20 @@ class HistoryView extends GetView<HistoryController> {
       ),
     );
   }
+
+  void _showDatePicker(BuildContext context, int chatId) async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      controller.pinChat(chatId, selectedDate);
+    }
+  }
+
 
   void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
     final TextEditingController textController = TextEditingController(text: currentTitle);

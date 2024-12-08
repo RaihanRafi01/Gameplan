@@ -41,7 +41,28 @@ class HistoryController extends GetxController {
 
       if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
+        fetchChatList(); // Refresh the reactive list
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
 
+  Future<void> pinChat(int chatId, DateTime pinDate) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.pinChat(chatId,pinDate);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        //fetchChatList(); // Refresh the reactive list
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to load chat list');
