@@ -331,6 +331,26 @@ class ApiService {
     );
   }
 
+  Future<http.Response> unpinChat(int ChatId) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/unpin_a_chat/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers
+    );
+  }
+
   Future<http.Response> deleteChat(int ChatId) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/delete_a_chat/$ChatId/');
 

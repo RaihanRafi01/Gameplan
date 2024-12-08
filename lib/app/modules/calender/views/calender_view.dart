@@ -8,6 +8,7 @@ import '../../../../common/customFont.dart';
 import '../controllers/calender_controller.dart';
 
 class CalenderView extends GetView<CalenderController> {
+
   const CalenderView({super.key});
 
   @override
@@ -17,10 +18,6 @@ class CalenderView extends GetView<CalenderController> {
       appBar: AppBar(
         title: const Text('Calendar'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
-        ),
       ),
       body: Column(
         children: [
@@ -128,7 +125,7 @@ class CalenderView extends GetView<CalenderController> {
                           children: [
                             Text(event.title,style: h3,),
                             Text(
-                              '${DateFormat('EEE').format(event.date)} : At ${event.time}',
+                              '${DateFormat('EEE').format(event.date)}',
                               style: h3,
                             ),
                           ],

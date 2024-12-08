@@ -20,89 +20,91 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 58),
-          Container(
-            height: 70,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.cardGradient,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 58),
+            Container(
+              height: 70,
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: AppColors.cardGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
-            ),
-            child: Center(
-              child: Text(
-                'Account',
-                style: h3.copyWith(
-                  fontSize: 24,
-                  color: Colors.white,
+              child: Center(
+                child: Text(
+                  'Account',
+                  style: h3.copyWith(
+                    fontSize: 24,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 40),
-          ProfileList(
-            svgPath: 'assets/images/profile/profile_icon.svg',
-            text: 'PROFILE',
-            onTap: () => Get.to(()=> EditProfileView()),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/settings_icon.svg',
-            text: 'MANAGE SUBSCRIPTION',
-            onTap: () => Get.to(()=> SettingsView()),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/faq_icon.svg',
-            text: 'FAQ',
-            onTap: () => Get.to(()=> FaqView()),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/support_icon.svg',
-            text: 'HELP & SUPPORT',
-            onTap: () => Get.to(()=> HelpSupportView()),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/terms_icon.svg',
-            text: 'TERMS & CONDITION',
-            onTap: () => Get.to(()=> TermsPrivacyView(isTerms: true,)),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/privacy_icon.svg',
-            text: 'PRIVACY POLICY',
-            onTap: () => Get.to(()=> TermsPrivacyView(isTerms: false,)),
-          ),
-          ProfileList(
-            svgPath: 'assets/images/profile/logout_icon.svg',
-            text: 'LOG OUT',
-            onTap: () {
-              // Handle Logout
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Log Out',style: h2,),
-                  content: Text('Are you sure you want to log out?',style: h3),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel',style: h2.copyWith(color: AppColors.appColor),),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Add your logout logic here
-                        logout();
-                      },
-                      child: Text('Log Out',style: h2.copyWith(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
+            SizedBox(height: 40),
+            ProfileList(
+              svgPath: 'assets/images/profile/profile_icon.svg',
+              text: 'PROFILE',
+              onTap: () => Get.to(()=> EditProfileView()),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/settings_icon.svg',
+              text: 'MANAGE SUBSCRIPTION',
+              onTap: () => Get.to(()=> SettingsView()),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/faq_icon.svg',
+              text: 'FAQ',
+              onTap: () => Get.to(()=> FaqView()),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/support_icon.svg',
+              text: 'HELP & SUPPORT',
+              onTap: () => Get.to(()=> HelpSupportView()),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/terms_icon.svg',
+              text: 'TERMS & CONDITION',
+              onTap: () => Get.to(()=> TermsPrivacyView(isTerms: true,)),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/privacy_icon.svg',
+              text: 'PRIVACY POLICY',
+              onTap: () => Get.to(()=> TermsPrivacyView(isTerms: false,)),
+            ),
+            ProfileList(
+              svgPath: 'assets/images/profile/logout_icon.svg',
+              text: 'LOG OUT',
+              onTap: () {
+                // Handle Logout
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Log Out',style: h2,),
+                    content: Text('Are you sure you want to log out?',style: h3),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel',style: h2.copyWith(color: AppColors.appColor),),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          // Add your logout logic here
+                          logout();
+                        },
+                        child: Text('Log Out',style: h2.copyWith(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

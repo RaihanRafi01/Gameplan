@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../data/services/api_services.dart';
+import '../../calender/controllers/calender_controller.dart';
 
 class HistoryController extends GetxController {
+  final calendarController = Get.put(CalenderController());
+
   final ApiService _service = ApiService();
 
   // Reactive variable for selected filter
@@ -114,10 +117,40 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<void> pinChat(int chatId, DateTime pinDate) async {
+  Future<void> pinChat(int chatId, DateTime pinDate, String chatName) async {
     try {
       // Make the API call to get chat list
       final http.Response response = await _service.pinChat(chatId,pinDate);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        fetchData();
+
+        // Add an event to the calendar controller
+
+        calendarController.events.add(
+          Event(
+            date: pinDate,
+            title: chatName,
+          ),
+        );
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> unpinChat(int chatId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.unpinChat(chatId);
 
       print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
       print('::::::::::::::::::::::::CODE::::::${response.toString()}');

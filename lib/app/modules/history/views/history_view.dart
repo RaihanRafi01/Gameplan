@@ -82,7 +82,11 @@ class HistoryView extends GetView<HistoryController> {
                       onSelected: (value) {
                         switch (value) {
                           case 0:
-                            _showDatePicker(context, chatId); // Show date picker for pin action
+                            if (chat.isPinned) {
+                              controller.unpinChat(chatId); // Call unpin API
+                            } else {
+                              _showDatePicker(context, chatId, chat.chatName); // Show date picker for pin action
+                            }
                             break;
                           case 1:
                             _showEditDialog(context, chat.id, chat.chatName);
@@ -97,9 +101,16 @@ class HistoryView extends GetView<HistoryController> {
                           value: 0,
                           child: Row(
                             children: [
-                              SvgPicture.asset('assets/images/history/pin_icon.svg'),
-                              SizedBox(width: 10),
-                              Text('Pin', style: h3.copyWith(fontSize: 16)),
+                              SvgPicture.asset(
+                                chat.isPinned
+                                    ? 'assets/images/history/pin_icon.svg'
+                                    : 'assets/images/history/pin_icon.svg',
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                chat.isPinned ? 'Unpin' : 'Pin',
+                                style: h3.copyWith(fontSize: 16),
+                              ),
                             ],
                           ),
                         ),
@@ -108,7 +119,7 @@ class HistoryView extends GetView<HistoryController> {
                           child: Row(
                             children: [
                               SvgPicture.asset('assets/images/history/edit_icon.svg'),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text('Edit', style: h3.copyWith(fontSize: 16)),
                             ],
                           ),
@@ -118,7 +129,7 @@ class HistoryView extends GetView<HistoryController> {
                           child: Row(
                             children: [
                               SvgPicture.asset('assets/images/history/delete_icon.svg'),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text('Delete', style: h3.copyWith(fontSize: 16)),
                             ],
                           ),
@@ -138,7 +149,9 @@ class HistoryView extends GetView<HistoryController> {
     );
   }
 
-  void _showDatePicker(BuildContext context, int chatId) async {
+
+
+  void _showDatePicker(BuildContext context, int chatId, String chatName) async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -147,7 +160,7 @@ class HistoryView extends GetView<HistoryController> {
     );
 
     if (selectedDate != null) {
-      controller.pinChat(chatId, selectedDate);
+      controller.pinChat(chatId, selectedDate, chatName);
     }
   }
 
