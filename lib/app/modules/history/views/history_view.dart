@@ -14,7 +14,6 @@ class HistoryView extends GetView<HistoryController> {
     Get.put(HistoryController());
     Get.find<HistoryController>().fetchChatList();
 
-
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -64,10 +63,10 @@ class HistoryView extends GetView<HistoryController> {
                   print('::::::::::::::::::chatId::::::::::$chatId::::');
                   return ListTile(
                     title: GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         // Pass the chatContents to the ChatScreen
                         Get.to(
-                              () => ChatScreen(chat: chat.chatContents,chatId : chat.id),
+                              () => ChatScreen(chat: chat.chatContents, chatId: chat.id),
                         );
                       },
                       child: Text(
@@ -75,10 +74,6 @@ class HistoryView extends GetView<HistoryController> {
                         style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
                       ),
                     ),
-                    /*subtitle: Text(
-                      latestMessage,
-                      style: h3.copyWith(fontSize: 16, color: AppColors.textHistory),
-                    ),*/
                     trailing: PopupMenuButton<int>(
                       icon: const Icon(Icons.more_horiz_rounded),
                       onSelected: (value) {
@@ -87,7 +82,7 @@ class HistoryView extends GetView<HistoryController> {
                           // Handle 'Pin' action
                             break;
                           case 1:
-                          controller.updateChatTitle(chat.id,'New title');
+                            _showEditDialog(context, chat.id, chat.chatName);
                             break;
                           case 2:
                           // Handle 'Delete' action
@@ -137,6 +132,42 @@ class HistoryView extends GetView<HistoryController> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
+    final TextEditingController textController = TextEditingController(text: currentTitle);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit Chat Title', style: h3),
+          content: TextField(
+            controller: textController,
+            decoration: InputDecoration(
+              labelText: 'Chat Title',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: h3.copyWith(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTitle = textController.text.trim();
+                if (newTitle.isNotEmpty) {
+                  controller.updateChatTitle(chatId, newTitle);
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Save', style: h3.copyWith(color: Colors.green)),
+            ),
+          ],
+        );
+      },
     );
   }
 }
