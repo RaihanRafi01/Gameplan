@@ -12,7 +12,7 @@ class HistoryView extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     Get.put(HistoryController());
-    Get.find<HistoryController>().fetchChatList();
+    Get.find<HistoryController>().fetchAllChatList();
 
     return Scaffold(
       appBar: AppBar(),
@@ -69,7 +69,7 @@ class HistoryView extends GetView<HistoryController> {
                               () => ChatScreen(chat: chat.chatContents, chatId: chat.id),
                         )?.then((value) {
                           // Call the desired function after returning to this screen
-                          controller.fetchChatList();
+                          controller.fetchData();
                         });
                       },
                       child: Text(
@@ -88,7 +88,7 @@ class HistoryView extends GetView<HistoryController> {
                             _showEditDialog(context, chat.id, chat.chatName);
                             break;
                           case 2:
-                          // Handle 'Delete' action
+                            _showDeleteDialog(context, chat.id);
                             break;
                         }
                       },
@@ -181,6 +181,31 @@ class HistoryView extends GetView<HistoryController> {
                 Navigator.pop(context);
               },
               child: Text('Save', style: h3.copyWith(color: Colors.green)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, int chatId) {
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Do you want to Delete this chat?', style: h3),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: h3.copyWith(color: AppColors.textColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                controller.deleteChat(chatId);
+                Navigator.pop(context);
+              },
+              child: Text('Delete', style: h3.copyWith(color: Colors.red)),
             ),
           ],
         );

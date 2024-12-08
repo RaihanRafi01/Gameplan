@@ -12,11 +12,73 @@ class HistoryController extends GetxController {
   // Reactive list for chat history
   var chatHistory = <Chat>[].obs;
 
+
+  // Update the filter and fetch data accordingly
+  void updateFilter(String filter) {
+    selectedFilter.value = filter;
+
+    switch (filter) {
+      case 'All':
+        fetchAllChatList(); // Fetch all chats
+        break;
+      case 'Pin':
+        fetchPinChatList(); // Fetch pinned chats
+        break;
+      case 'Save':
+        //fetchSaveChatList(); // Fetch saved chats
+        break;
+      default:
+        Get.snackbar('Error', 'Unknown filter selected');
+    }
+  }
+
   // Fetch chat list from API
-  Future<void> fetchChatList() async {
+  Future<void> fetchAllChatList() async {
     try {
       // Make the API call to get chat list
       final http.Response verificationResponse = await _service.getChatList();
+
+      if (verificationResponse.statusCode == 200) {
+        // Decode the API response into a list of maps
+        List<dynamic> apiResponse = jsonDecode(verificationResponse.body);
+
+        // Pass the decoded response to setChatHistory to update the chat list
+        setChatHistory(apiResponse);
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+
+  void fetchData(){
+
+    switch (selectedFilter.value) {
+      case 'All':
+        fetchAllChatList(); // Fetch all chats
+        break;
+      case 'Pin':
+        fetchPinChatList(); // Fetch pinned chats
+        break;
+      case 'Save':
+      //fetchSaveChatList(); // Fetch saved chats
+        break;
+      default:
+        Get.snackbar('Error', 'Unknown filter selected');
+    }
+
+  }
+
+
+
+  Future<void> fetchPinChatList() async {
+    try {
+      // Make the API call to get chat list
+      final http.Response verificationResponse = await _service.getPinChatList();
 
       if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
@@ -41,7 +103,7 @@ class HistoryController extends GetxController {
 
       if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
-        fetchChatList(); // Refresh the reactive list
+        fetchData();
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to load chat list');
@@ -62,7 +124,7 @@ class HistoryController extends GetxController {
 
       if (response.statusCode == 200) {
         // Decode the API response into a list of maps
-        //fetchChatList(); // Refresh the reactive list
+        fetchData();
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to load chat list');
@@ -73,6 +135,28 @@ class HistoryController extends GetxController {
     }
   }
 
+  Future<void> deleteChat(int chatId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.deleteChat(chatId);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        fetchData();
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+
   // Function to parse API response and update chat history
   void setChatHistory(List<dynamic> apiResponse) {
     chatHistory.value = apiResponse.map((chatData) {
@@ -80,11 +164,6 @@ class HistoryController extends GetxController {
     }).toList();
   }
 
-  // Update the filter and modify the chat history if needed
-  void updateFilter(String filter) {
-    selectedFilter.value = filter;
-    // Logic to update chat history based on the selected filter
-  }
 }
 
 // Chat model class to parse the chat data
