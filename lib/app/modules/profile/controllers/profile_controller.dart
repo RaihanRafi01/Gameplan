@@ -16,6 +16,14 @@ class ProfileController extends GetxController {
   //var aboutYou = ''.obs;
   //var picUrl = ''.obs;
 
+  var selectedFAQIndex = (-1).obs; // Initialize with no item selected
+
+   // Initialize with no item selected
+
+  void setSelectedFAQIndex(int index) {
+    selectedFAQIndex.value = index;
+  }
+
   /// Toggle visibility for a text field (e.g., password or sensitive info)
   void toggleTextVisibility() {
     isTextVisible.value = !isTextVisible.value;

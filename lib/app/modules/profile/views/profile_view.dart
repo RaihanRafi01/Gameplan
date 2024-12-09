@@ -75,7 +75,7 @@ class ProfileView extends GetView<ProfileController> {
             ProfileList(
               svgPath: 'assets/images/profile/faq_icon.svg',
               text: 'FAQ',
-              onTap: () => Get.to(()=> FaqView()),
+              onTap: () => Get.to(()=> FaqView(selectedIndex: 0,)),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/support_icon.svg',

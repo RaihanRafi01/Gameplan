@@ -72,7 +72,7 @@ class HomeView extends GetView<HomeController> {
                   final gridText =
                       "Option ${index + 1} - Detailed description text goes here.";
                   return GestureDetector(
-                    onTap: () => Get.to(() => FaqView()),
+                    onTap: () => Get.to(() => FaqView(selectedIndex: index,)),
                     child: GradientCard(
                       text: gridText,
                       isSentByUser: true,
