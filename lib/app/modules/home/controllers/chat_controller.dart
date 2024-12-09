@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../data/services/api_services.dart';
 import '../../history/controllers/history_controller.dart';
 
@@ -60,7 +61,7 @@ class ChatController extends GetxController {
     if (text.isNotEmpty) {
       if (editingMessageIndex.value != null) {
         // Edit an existing bot message
-        saveEditedMessage(text);
+        //saveEditedMessage(text);
       } else {
         // Add user message
         addUserMessage(text);
@@ -78,19 +79,6 @@ class ChatController extends GetxController {
           addBotMessage('Failed to fetch bot response. Please try again.');
         }
       }
-    }
-  }
-
-  /// Save an edited bot message
-  void saveEditedMessage(String newMessage) {
-    if (editingMessageIndex.value != null) {
-      final index = editingMessageIndex.value!;
-      messages[index] = {
-        ...messages[index], // Retain other properties
-        'message': newMessage,
-      };
-      editingMessageIndex.value = null;
-      messageController.clear();
     }
   }
 

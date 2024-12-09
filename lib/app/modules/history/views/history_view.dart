@@ -36,9 +36,9 @@ class HistoryView extends GetView<HistoryController> {
                             () => DropdownButton<String>(
                           value: controller.selectedFilter.value,
                           items: [
-                            DropdownMenuItem(value: 'All', child: Text('All Chat', style: h3)),
-                            DropdownMenuItem(value: 'Pin', child: Text('Pin Chat', style: h3)),
-                            DropdownMenuItem(value: 'Save', child: Text('Save Chat', style: h3)),
+                            DropdownMenuItem(value: 'All', child: Text('All Plans', style: h3)),
+                            DropdownMenuItem(value: 'Pin', child: Text('Pin Plans', style: h3)),
+                            DropdownMenuItem(value: 'Save', child: Text('Save Plans', style: h3)),
                           ],
                           onChanged: (value) {
                             if (value != null) {
@@ -55,99 +55,119 @@ class HistoryView extends GetView<HistoryController> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
+            /*Text(
               'Today',
               style: h3.copyWith(fontSize: 22, color: AppColors.textHistory),
-            ),
+            ),*/
             const SizedBox(height: 16),
             Expanded(
-              child: Obx(() => ListView.builder(
-                itemCount: controller.chatHistory.length,
-                itemBuilder: (context, index) {
-                  final chat = controller.chatHistory[index];
-                  final chatId = chat.id;
-                  print('::::::::::::::::::chatId::::::::::$chatId::::');
-                  return ListTile(
-                    title: GestureDetector(
-                      onTap: () {
-                        // Navigate to ChatScreen and call a function when coming back
-                        Get.to(
-                              () => ChatScreen(chat: chat.chatContents, chatId: chat.id,chatName: chat.chatName,),
-                        )?.then((value) {
-                          // Call the desired function after returning to this screen
-                          controller.fetchData();
-                        });
-                      },
-                      child: Text(
-                        chat.chatName,
-                        style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
-                      ),
-                    ),
-                    trailing: PopupMenuButton<int>(
-                      icon: const Icon(Icons.more_horiz_rounded),
-                      onSelected: (value) {
-                        switch (value) {
-                          case 0:
-                            if (chat.isPinned) {
-                              controller.unpinChat(chatId); // Call unpin API
-                            } else {
-                              _showDatePicker(context, chatId, chat.chatName); // Show date picker for pin action
-                            }
-                            break;
-                          case 1:
-                            _showEditDialog(context, chat.id, chat.chatName);
-                            break;
-                          case 2:
-                            _showDeleteDialog(context, chat.id);
-                            break;
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 0,
-                          child: Row(
-                            children: [
-                              SvgPicture.asset(
-                                chat.isPinned
-                                    ? 'assets/images/history/pin_icon.svg'
-                                    : 'assets/images/history/pin_icon.svg',
+              child: Obx(() {
+                final groupedChats = controller.groupedChatHistory;
+
+                if (groupedChats.isEmpty) {
+                  return Center(child: Text('No chats available', style: h3));
+                }
+
+                return ListView.builder(
+                  itemCount: groupedChats.keys.length,
+                  itemBuilder: (context, groupIndex) {
+                    // Get the date group key and its chats
+                    final groupKey = groupedChats.keys.elementAt(groupIndex);
+                    final chats = groupedChats[groupKey]!;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Date group header
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            groupKey,
+                            style: h3.copyWith(fontSize: 22, color: AppColors.textHistory),
+                          ),
+                        ),
+                        // Chat list for the date group
+                        ...chats.map((chat) {
+                          return ListTile(
+                            title: GestureDetector(
+                              onTap: () {
+                                Get.to(() => ChatScreen(
+                                  chat: chat.chatContents,
+                                  chatId: chat.id,
+                                  chatName: chat.chatName,
+                                ))?.then((value) => controller.fetchData());
+                              },
+                              child: Text(
+                                chat.chatName,
+                                style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
                               ),
-                              const SizedBox(width: 10),
-                              Text(
-                                chat.isPinned ? 'Unpin' : 'Pin',
-                                style: h3.copyWith(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 1,
-                          child: Row(
-                            children: [
-                              SvgPicture.asset('assets/images/history/edit_icon.svg'),
-                              const SizedBox(width: 10),
-                              Text('Edit', style: h3.copyWith(fontSize: 16)),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 2,
-                          child: Row(
-                            children: [
-                              SvgPicture.asset('assets/images/history/delete_icon.svg'),
-                              const SizedBox(width: 10),
-                              Text('Delete', style: h3.copyWith(fontSize: 16)),
-                            ],
-                          ),
-                        ),
+                            ),
+                            trailing: PopupMenuButton<int>(
+                              icon: const Icon(Icons.more_horiz_rounded),
+                              onSelected: (value) {
+                                switch (value) {
+                                  case 0:
+                                    if (chat.isPinned) {
+                                      controller.unpinChat(chat.id);
+                                    } else {
+                                      _showDatePicker(context, chat.id, chat.chatName);
+                                    }
+                                    break;
+                                  case 1:
+                                    _showEditDialog(context, chat.id, chat.chatName);
+                                    break;
+                                  case 2:
+                                    _showDeleteDialog(context, chat.id);
+                                    break;
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 0,
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        chat.isPinned
+                                            ? 'assets/images/history/pin_icon.svg'
+                                            : 'assets/images/history/pin_icon.svg',
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        chat.isPinned ? 'Unpin' : 'Pin',
+                                        style: h3.copyWith(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 1,
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset('assets/images/history/edit_icon.svg'),
+                                      const SizedBox(width: 10),
+                                      Text('Edit', style: h3.copyWith(fontSize: 16)),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem(
+                                  value: 2,
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset('assets/images/history/delete_icon.svg'),
+                                      const SizedBox(width: 10),
+                                      Text('Delete', style: h3.copyWith(fontSize: 16)),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
                       ],
-                    ),
-                    onTap: () {
-                      // Handle chat item click
-                    },
-                  );
-                },
-              )),
+                    );
+                  },
+                );
+              }),
             ),
           ],
         ),

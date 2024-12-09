@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import '../../../data/services/api_services.dart';
 import '../../calender/controllers/calender_controller.dart';
 
@@ -14,6 +15,10 @@ class HistoryController extends GetxController {
 
   // Reactive list for chat history
   var chatHistory = <Chat>[].obs;
+
+  var groupedChatHistory = <String, List<Chat>>{}.obs;
+
+
 
 
   // Update the filter and fetch data accordingly
@@ -235,11 +240,66 @@ class HistoryController extends GetxController {
   }
 
 
+
+  Map<String, List<Chat>> groupChatsByDate(List<Chat> chats) {
+    final Map<String, List<Chat>> groupedChats = {};
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    for (var chat in chats) {
+      final chatDate = DateTime(chat.timestamp.year, chat.timestamp.month, chat.timestamp.day);
+
+      String groupKey;
+      if (chatDate == today) {
+        groupKey = 'Today';
+      } else if (chatDate == today.subtract(const Duration(days: 1))) {
+        groupKey = 'Yesterday';
+      } else {
+        groupKey = DateFormat('dd MMM yyyy').format(chatDate); // Example: "12 Dec 2024"
+      }
+
+      if (!groupedChats.containsKey(groupKey)) {
+        groupedChats[groupKey] = [];
+      }
+      groupedChats[groupKey]!.add(chat);
+    }
+
+    // Sort the keys to ensure "Today" comes first, then "Yesterday", and others in descending order
+    final sortedKeys = groupedChats.keys.toList()
+      ..sort((a, b) {
+        if (a == 'Today') return -1; // Ensure "Today" is first
+        if (b == 'Today') return 1;
+        if (a == 'Yesterday') return -1; // Ensure "Yesterday" is second
+        if (b == 'Yesterday') return 1;
+
+        // Parse other keys as dates and sort in descending order
+        final dateA = DateFormat('dd MMM yyyy').parse(a);
+        final dateB = DateFormat('dd MMM yyyy').parse(b);
+        return dateB.compareTo(dateA); // Descending order
+      });
+
+    // Create a new map with sorted keys
+    final sortedGroupedChats = {for (var key in sortedKeys) key: groupedChats[key]!};
+
+    return sortedGroupedChats;
+  }
+
+
   // Function to parse API response and update chat history
-  void setChatHistory(List<dynamic> apiResponse) {
+ /* void setChatHistory(List<dynamic> apiResponse) {
+
     chatHistory.value = apiResponse.map((chatData) {
       return Chat.fromJson(chatData);
     }).toList();
+  }*/
+
+// Function to parse API response and update grouped chat history
+  void setChatHistory(List<dynamic> apiResponse) {
+    final parsedChats = apiResponse.map((chatData) => Chat.fromJson(chatData)).toList();
+
+    // Group chats by date and update the reactive variable
+    groupedChatHistory.value = groupChatsByDate(parsedChats);
   }
 
 }

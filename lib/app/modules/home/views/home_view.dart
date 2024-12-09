@@ -51,7 +51,7 @@ class HomeView extends GetView<HomeController> {
 
 
                   // Navigate to ChatScreen with the message
-                  Get.to(() => ChatScreen(initialMessage: message,chatName: 'new chat',));
+                  Get.to(() => ChatScreen(initialMessage: message));
 
                   // Clear the text field
                   textController.clear();
@@ -60,26 +60,29 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 20),
             Expanded(
-              child: GridView.builder(
-                itemCount: 4,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  itemCount: 3,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 10,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    final gridText =
+                        "Option ${index + 1} - Detailed description text goes here.";
+                    return GestureDetector(
+                      onTap: () => Get.to(() => FaqView(selectedIndex: index,)),
+                      child: GradientCard(
+                        text: gridText,
+                        isSentByUser: true,
+                        textColor: AppColors.textColor,
+                      ),
+                    );
+                  },
                 ),
-                itemBuilder: (BuildContext context, int index) {
-                  final gridText =
-                      "Option ${index + 1} - Detailed description text goes here.";
-                  return GestureDetector(
-                    onTap: () => Get.to(() => FaqView(selectedIndex: index,)),
-                    child: GradientCard(
-                      text: gridText,
-                      isSentByUser: true,
-                      textColor: AppColors.textColor,
-                    ),
-                  );
-                },
               ),
             ),
           ],
