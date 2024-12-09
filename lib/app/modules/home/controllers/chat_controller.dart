@@ -21,13 +21,6 @@ class ChatController extends GetxController {
   // Reactive variable to store the chat ID
   Rxn<int> chatId = Rxn<int>();
 
-  @override
-  void onInit() {
-    super.onInit();
-    // Add initial bot message
-
-  }
-
   /// Method to initialize the message list with chatContents
   void initializeMessages(List<ChatContent> chatContents) {
     messages.clear(); // Clear previous messages if any
@@ -44,12 +37,6 @@ class ChatController extends GetxController {
       'isSentByUser': isSentByUser,
     });
   }
-
- /* /// Method to initialize the message list with the initial message
-  void initializeMessages(String initialMessage) {
-    messages.clear(); // Clear previous messages if any
-    addUserMessage(initialMessage); // Add initial message as a user message
-  }*/
 
   /// Add a new bot message
   void addBotMessage(String message) {
@@ -73,9 +60,7 @@ class ChatController extends GetxController {
     if (text.isNotEmpty) {
       if (editingMessageIndex.value != null) {
         // Edit an existing bot message
-        messages[editingMessageIndex.value!]['message'] = text;
-        editingMessageIndex.value = null;
-        messageController.clear();
+        saveEditedMessage(text);
       } else {
         // Add user message
         addUserMessage(text);
@@ -96,6 +81,19 @@ class ChatController extends GetxController {
     }
   }
 
+  /// Save an edited bot message
+  void saveEditedMessage(String newMessage) {
+    if (editingMessageIndex.value != null) {
+      final index = editingMessageIndex.value!;
+      messages[index] = {
+        ...messages[index], // Retain other properties
+        'message': newMessage,
+      };
+      editingMessageIndex.value = null;
+      messageController.clear();
+    }
+  }
+
   /// Create a new chat and fetch the bot's first message
   Future<void> createChat(String textContent) async {
     try {
@@ -108,8 +106,6 @@ class ChatController extends GetxController {
         // Extract the top-level `id`
         final int id = responseBody['id'];
         chatId.value = id; // Store the chat ID in reactive variable
-
-        print('::::::::::CHAT ID::::::::::$id');
 
         // Find the bot's message in `chat_contents`
         final List<dynamic> chatContents = responseBody['chat_contents'];

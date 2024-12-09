@@ -5,18 +5,20 @@ class CustomMessageInputField extends StatelessWidget {
   final TextEditingController textController;
   final VoidCallback onSend;
   final String hintText;
+  final double padding;
 
   const CustomMessageInputField({
     super.key,
     required this.textController,
     required this.onSend,
+    this.padding = 10.0,
     this.hintText = 'type your text',
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: EdgeInsets.all(padding),
       child: Row(
         children: [
           Expanded(

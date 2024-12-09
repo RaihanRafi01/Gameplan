@@ -8,7 +8,7 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'https://apparently-intense-toad.ngrok-free.app/';
+  final String baseUrl = 'https://apparently-intense-toad.ngrok-free.app/'; // https://apparently-intense-toad.ngrok-free.app/
 
   // Sign-up method
   Future<http.Response> signUp(String email, String password, String username) async {
@@ -280,6 +280,22 @@ class ApiService {
     return await http.get(url, headers: headers);
   }
 
+  Future<http.Response> getSaveChatList() async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/get_saved_chats/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Make the GET request
+    return await http.get(url, headers: headers);
+  }
+
 
   Future<http.Response> updateChatTitle(int ChatId, String title) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/update_chat_title/$ChatId/');
@@ -348,6 +364,26 @@ class ApiService {
     return await http.post(
       url,
       headers: headers
+    );
+  }
+
+  Future<http.Response> saveChat(int ChatId) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/save_a_chat/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+
+    // Make the POST request
+    return await http.post(
+        url,
+        headers: headers
     );
   }
 

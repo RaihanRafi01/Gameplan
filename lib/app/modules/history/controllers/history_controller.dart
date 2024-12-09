@@ -28,7 +28,7 @@ class HistoryController extends GetxController {
         fetchPinChatList(); // Fetch pinned chats
         break;
       case 'Save':
-        //fetchSaveChatList(); // Fetch saved chats
+        fetchSaveChatList(); // Fetch saved chats
         break;
       default:
         Get.snackbar('Error', 'Unknown filter selected');
@@ -68,7 +68,7 @@ class HistoryController extends GetxController {
         fetchPinChatList(); // Fetch pinned chats
         break;
       case 'Save':
-      //fetchSaveChatList(); // Fetch saved chats
+        fetchSaveChatList(); // Fetch saved chats
         break;
       default:
         Get.snackbar('Error', 'Unknown filter selected');
@@ -82,6 +82,27 @@ class HistoryController extends GetxController {
     try {
       // Make the API call to get chat list
       final http.Response verificationResponse = await _service.getPinChatList();
+
+      if (verificationResponse.statusCode == 200) {
+        // Decode the API response into a list of maps
+        List<dynamic> apiResponse = jsonDecode(verificationResponse.body);
+
+        // Pass the decoded response to setChatHistory to update the chat list
+        setChatHistory(apiResponse);
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> fetchSaveChatList() async {
+    try {
+      // Make the API call to get chat list
+      final http.Response verificationResponse = await _service.getSaveChatList();
 
       if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
@@ -137,9 +158,10 @@ class HistoryController extends GetxController {
             title: chatName,
           ),
         );
+        Get.snackbar('Pinned', 'Plan pinned successfully');
       } else {
         // Handle unsuccessful response
-        Get.snackbar('Error', 'Failed to load chat list');
+        Get.snackbar('Error', 'Failed to pin');
       }
     } catch (e) {
       // Handle any exceptions during the API call
@@ -157,10 +179,33 @@ class HistoryController extends GetxController {
 
       if (response.statusCode == 200) {
         // Decode the API response into a list of maps
+        Get.snackbar('Unpinned', 'Plan Unpinned successfully');
         fetchData();
       } else {
         // Handle unsuccessful response
-        Get.snackbar('Error', 'Failed to load chat list');
+        Get.snackbar('Error', 'Failed to unpin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> saveChat(int chatId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.saveChat(chatId);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        Get.snackbar('Saved', 'Plan Saved successfully');
+        fetchData();
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to save');
       }
     } catch (e) {
       // Handle any exceptions during the API call

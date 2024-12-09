@@ -17,36 +17,42 @@ class HistoryView extends GetView<HistoryController> {
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: DropdownButtonHideUnderline(
-                    child: Obx(() => DropdownButton<String>(
-                      value: controller.selectedFilter.value,
-                      items: [
-                        DropdownMenuItem(value: 'All', child: Text('All Chat', style: h3)),
-                        DropdownMenuItem(value: 'Pin', child: Text('Pin Chat', style: h3)),
-                        DropdownMenuItem(value: 'Save', child: Text('Save Chat', style: h3)),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          controller.updateFilter(value);
-                        }
-                      },
-                    )),
+            Row(
+              children: [
+                Text(
+                  'History',
+                  style: h2.copyWith(fontSize: 28, color: AppColors.textHistory),
+                ),
+                Spacer(),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: DropdownButtonHideUnderline(
+                      child: Obx(
+                            () => DropdownButton<String>(
+                          value: controller.selectedFilter.value,
+                          items: [
+                            DropdownMenuItem(value: 'All', child: Text('All Chat', style: h3)),
+                            DropdownMenuItem(value: 'Pin', child: Text('Pin Chat', style: h3)),
+                            DropdownMenuItem(value: 'Save', child: Text('Save Chat', style: h3)),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) {
+                              controller.updateFilter(value);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          alignment: AlignmentDirectional.bottomStart,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            Text(
-              'History',
-              style: h2.copyWith(fontSize: 28, color: AppColors.textHistory),
+              ],
             ),
             const SizedBox(height: 8),
             Text(
@@ -66,7 +72,7 @@ class HistoryView extends GetView<HistoryController> {
                       onTap: () {
                         // Navigate to ChatScreen and call a function when coming back
                         Get.to(
-                              () => ChatScreen(chat: chat.chatContents, chatId: chat.id),
+                              () => ChatScreen(chat: chat.chatContents, chatId: chat.id,chatName: chat.chatName,),
                         )?.then((value) {
                           // Call the desired function after returning to this screen
                           controller.fetchData();

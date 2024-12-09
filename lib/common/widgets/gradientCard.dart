@@ -16,7 +16,7 @@ class GradientCard extends StatelessWidget {
     return ConstrainedBox(
       constraints: BoxConstraints(
         minWidth: 50, // Minimum width for short texts
-        maxWidth: MediaQuery.of(context).size.width * 0.7, // Max width for long texts
+        maxWidth: MediaQuery.of(context).size.width * 0.65, // Max width for long texts
       ),
       child: Container(
         decoration: isSentByUser? BoxDecoration(border: Border.all(),borderRadius: BorderRadius.circular(5)) : BoxDecoration(

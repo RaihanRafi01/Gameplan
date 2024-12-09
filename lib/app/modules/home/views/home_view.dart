@@ -51,7 +51,7 @@ class HomeView extends GetView<HomeController> {
 
 
                   // Navigate to ChatScreen with the message
-                  Get.to(() => ChatScreen(initialMessage: message));
+                  Get.to(() => ChatScreen(initialMessage: message,chatName: 'new chat',));
 
                   // Clear the text field
                   textController.clear();

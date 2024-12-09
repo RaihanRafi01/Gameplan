@@ -9,8 +9,13 @@ import '../../../../common/customFont.dart';
 
 class HelpSupportView extends GetView {
   const HelpSupportView({super.key});
+
   @override
   Widget build(BuildContext context) {
+    // Controllers for the text fields
+    final emailController = TextEditingController();
+    final problemController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
@@ -20,14 +25,21 @@ class HelpSupportView extends GetView {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            CustomTextField(label: 'Email', prefixIcon: Icons.email_outlined),
-            SizedBox(height: 20),
-            CustomTextField(label: 'Write Your Problem'),
-            Spacer(),
+            CustomTextField(
+              label: 'Email',
+              prefixIcon: Icons.email_outlined,
+              controller: emailController, // Attach controller
+            ),
+            const SizedBox(height: 20),
+            CustomTextField(
+              label: 'Write Your Problem',
+              controller: problemController, // Attach controller
+            ),
+            const Spacer(),
             CustomButton(
               text: 'SEND',
               onPressed: () {
-                _showConfirmationDialog(context);
+                _validateAndSend(context, emailController, problemController);
               },
             ),
           ],
@@ -36,12 +48,45 @@ class HelpSupportView extends GetView {
     );
   }
 
+  void _validateAndSend(BuildContext context, TextEditingController emailController, TextEditingController problemController) {
+    final email = emailController.text.trim();
+    final problem = problemController.text.trim();
+
+    if (email.isEmpty || problem.isEmpty) {
+      // Show a snackbar or dialog if fields are empty
+      Get.snackbar(
+        'Error',
+        'Please fill out all fields',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } else if (!_isValidEmail(email)) {
+      // Show an error if email is invalid
+      Get.snackbar(
+        'Error',
+        'Please enter a valid email address',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } else {
+      // If validation passes, show the confirmation dialog
+      _showConfirmationDialog(context);
+    }
+  }
+
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return emailRegex.hasMatch(email);
+  }
+
   void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          contentPadding: EdgeInsets.all(20),
+          contentPadding: const EdgeInsets.all(20),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           title: Column(
             children: [
@@ -50,17 +95,17 @@ class HelpSupportView extends GetView {
                 textAlign: TextAlign.center,
                 style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Our team will contact you within 24 hours',
                 textAlign: TextAlign.center,
                 style: h4.copyWith(fontSize: 16),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               CustomButton(
                 text: 'OK',
                 onPressed: () {
-                  Navigator.pop(context);  // Close the dialog
+                  Navigator.pop(context); // Close the dialog
                 },
                 backgroundGradientColor: AppColors.transparent,
                 borderGradientColor: AppColors.cardGradient,
