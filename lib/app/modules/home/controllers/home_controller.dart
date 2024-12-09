@@ -67,14 +67,9 @@ class HomeController extends GetxController {
 
     if (verificationResponse.statusCode == 200) {
       final responseData = jsonDecode(verificationResponse.body);
-      //String? profilePicture = responseData['profile_picture'];
-      bool isVerified = responseData['is_verified'];
-      //name.value = responseData['name'];
-      //email.value = responseData['email'];
-      //aboutYou.value = responseData['about_you'];
-      subscriptionStatus.value = responseData['subscription_status'];
-      subscriptionExpireDate.value = responseData['subscription_expires_on'];
-      isExpired.value = responseData['is_expired'];
+      String? _subscriptionStatus = responseData['subscription_status'];
+      String? _subscriptionExpireDate = responseData['subscription_expires_on'];
+      bool? _isExpired = responseData['is_expired'];
 
       String? _profilePicture = responseData['profile_picture'];
       String? _name = responseData['name'];
@@ -85,6 +80,9 @@ class HomeController extends GetxController {
       name.value = _name ?? '';
       email.value = _email ?? '';
       profilePicUrl.value = _profilePicture ?? '';
+      subscriptionStatus.value = _subscriptionStatus ?? '';
+      subscriptionExpireDate.value = _subscriptionExpireDate ?? '';
+      isExpired.value = _isExpired ?? false;
 
 
 

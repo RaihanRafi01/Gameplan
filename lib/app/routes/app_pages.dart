@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../modules/authentication/bindings/authentication_binding.dart';
 import '../modules/authentication/views/authentication_view.dart';
 import '../modules/authentication/views/splash_view.dart';
@@ -20,7 +21,13 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME;
+  //static const INITIAL = Routes.AUTHENTICATION;
+
+  static Future<String> getInitialRoute() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    return isLoggedIn ? _Paths.HOME : _Paths.AUTHENTICATION;
+  }
 
   static final routes = [
     GetPage(

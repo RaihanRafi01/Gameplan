@@ -3,6 +3,7 @@ import 'package:agcourt/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:agcourt/app/modules/home/views/webViewScreen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/services/api_services.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../home/views/home_view.dart';
@@ -54,6 +55,11 @@ class AuthenticationController extends GetxController {
         homeController.checkVerified();
         homeController.fetchProfileData();
 
+        // SharedPreferences
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // User is logged in
+
 
       } else {
         final responseBody = jsonDecode(response.body);
@@ -90,6 +96,12 @@ class AuthenticationController extends GetxController {
 
         homeController.checkVerified();
         homeController.fetchProfileData();
+
+        // SharedPreferences
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // User is logged in
+
 
       } else {
         final responseBody = jsonDecode(response.body);

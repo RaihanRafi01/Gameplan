@@ -38,8 +38,6 @@ class CustomNavigationBar extends StatelessWidget {
       currentIndex: controller.currentIndex.value,
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
-      selectedItemColor: Colors.green.shade800,
-      unselectedItemColor: Colors.grey,
       showSelectedLabels: false,
       showUnselectedLabels: false,
       onTap: controller.updateIndex,

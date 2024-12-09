@@ -8,13 +8,17 @@ import 'package:agcourt/app/modules/profile/views/terms_privacy_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/profile/profileList.dart';
 import '../../../routes/app_pages.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
+  final HomeController homeController = Get.put(HomeController());
   ProfileView({super.key});
 
   @override
@@ -53,7 +57,20 @@ class ProfileView extends GetView<ProfileController> {
             ProfileList(
               svgPath: 'assets/images/profile/settings_icon.svg',
               text: 'MANAGE SUBSCRIPTION',
-              onTap: () => Get.to(()=> SettingsView()),
+              onTap: () {
+                print(':::::::::::::::::::VALUE::::::::::::::::${homeController.subscriptionStatus.value}');
+                if (homeController.subscriptionStatus.value == 'not_subscribed') {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true, // Prevent closing the dialog by tapping outside
+                    builder: (BuildContext context) {
+                      return const SubscriptionPopup(isManage: true); // Use the SubscriptionPopup widget
+                    },
+                  );
+                } else {
+                  Get.to(() => SettingsView());
+                }
+              },
             ),
             ProfileList(
               svgPath: 'assets/images/profile/faq_icon.svg',
@@ -113,6 +130,12 @@ class ProfileView extends GetView<ProfileController> {
   Future<void> logout() async {
     await _storage.delete(key: 'access_token');
     await _storage.delete(key: 'refresh_token');
+
+    // SharedPreferences
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false); // User is logged out
+
     Get.offAll(() => AuthenticationView()); // Navigate to the login screen
   }
 }
