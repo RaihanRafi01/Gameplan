@@ -5,15 +5,16 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 import '../../../data/services/api_services.dart';
+import '../../home/controllers/home_controller.dart';
 
 class ProfileController extends GetxController {
+  final HomeController homeController = Get.put(HomeController());
   final ApiService _service = ApiService();
-
-  var name = ''.obs;
-  var email = ''.obs;
-  var aboutYou = ''.obs;
-  var picUrl = ''.obs;
   var isTextVisible = false.obs;
+  //var name = ''.obs;
+  //var email = ''.obs;
+  //var aboutYou = ''.obs;
+  //var picUrl = ''.obs;
 
   /// Toggle visibility for a text field (e.g., password or sensitive info)
   void toggleTextVisibility() {
@@ -22,17 +23,17 @@ class ProfileController extends GetxController {
 
   /// Update the name
   void updateName(String newName) {
-    name.value = newName;
+    homeController.name.value = newName;
     print('::::::::::::::::::::::::::::::::::::::::::::update hit');
   }
 
   /// Update "about you" field
   void updateAboutYou(String newAboutYou) {
-    aboutYou.value = newAboutYou;
+    homeController.aboutYou.value = newAboutYou;
     print('::::::::::::::::::::::::::::::::::::::::::::update hit');
   }
 
-  /// Fetch profile data from the server
+  /*/// Fetch profile data from the server
   Future<void> fetchData() async {
     try {
       final http.Response response = await _service.getProfileInformation();
@@ -45,17 +46,17 @@ class ProfileController extends GetxController {
         String? _email = data['email'];
 
         // Update observable variables
-        aboutYou.value = about_you ?? '';
-        name.value = _name ?? '';
-        email.value = _email ?? '';
-        picUrl.value = _profilePicture ?? ''; // Leave empty if no URL is provided
+        homeController.aboutYou.value = about_you ?? '';
+        homeController.name.value = _name ?? '';
+        homeController.email.value = _email ?? '';
+        homeController.profilePicUrl.value = _profilePicture ?? ''; // Leave empty if no URL is provided
       } else {
         Get.snackbar('Error', 'Failed to fetch profile information');
       }
     } catch (e) {
       Get.snackbar('Error', 'An error occurred: $e');
     }
-  }
+  }*/
 
   /// Update profile data (name, aboutYou, and profile picture)
   Future<void> updateData(String? newName, String? newAboutYou, File? profilePic) async {
@@ -65,12 +66,13 @@ class ProfileController extends GetxController {
 
       if (response.statusCode == 200) {
         // Update local values with the new data
-        if (newName != null) name.value = newName;
-        if (newAboutYou != null) aboutYou.value = newAboutYou;
+        if (newName != null) homeController.name.value = newName;
+        if (newAboutYou != null) homeController.aboutYou.value = newAboutYou;
 
         // If the profile picture was updated, fetch the updated profile
         if (profilePic != null) {
-          await fetchData();
+          //await fetchData();
+          await homeController.fetchProfileData();
         }
 
         Get.snackbar('Success', 'Profile updated successfully');

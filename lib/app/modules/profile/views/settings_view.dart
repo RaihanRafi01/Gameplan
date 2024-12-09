@@ -6,15 +6,19 @@ import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/home/subscriptionCard.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
+import '../../home/controllers/home_controller.dart';
 
 class SettingsView extends GetView {
+  final HomeController homeController = Get.put(HomeController());
   // Dummy data to simulate API response
   final String title = "Standard";
   final String price = "80\$";
-  final String expiryDate = "11/09/24";
+  String expiryDate = '';
+
 
   @override
   Widget build(BuildContext context) {
+    expiryDate = homeController.subscriptionExpireDate.value;
     return Scaffold(
       appBar: AppBar(
         title: Text('Manage Subscription',style: h1,),

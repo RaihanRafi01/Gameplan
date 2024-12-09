@@ -6,6 +6,7 @@ import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
 import '../../../../common/widgets/auth/signupWithOther.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/authentication_controller.dart';
 import 'forgot_password_view.dart';
 
@@ -13,6 +14,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
   AuthenticationView({Key? key}) : super(key: key);
 
   final AuthenticationController _controller = Get.put(AuthenticationController());
+  final HomeController homeController = Get.put(HomeController());
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -25,9 +27,9 @@ class AuthenticationView extends GetView<AuthenticationController> {
       );
       return;
     }
-    _controller.usernameOBS.value = _usernameController.text.trim();
+    homeController.usernameOBS.value = _usernameController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${_controller.usernameOBS.value}');
+    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
 
     // Proceed with login logic if validations pass
     _controller.login(

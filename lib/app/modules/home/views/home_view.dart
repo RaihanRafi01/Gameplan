@@ -13,8 +13,17 @@ import 'chat_screen_view.dart'; // Import ChatScreen
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
+  /*@override
+  void initState() {
+    super.initState();
+    final HomeController homeController = Get.put(HomeController());
+    homeController.fetchProfileData();
+  }*/
+
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.put(HomeController());
+    homeController.fetchProfileData();
     final TextEditingController textController = TextEditingController();
 
     return Scaffold(

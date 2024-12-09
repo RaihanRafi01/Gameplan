@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:agcourt/common/widgets/custom_textField.dart';
 import '../../../../common/customFont.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/profile_controller.dart';
 
 class EditProfileView extends StatefulWidget {
@@ -18,6 +19,7 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   XFile? _pickedImage;
   final ProfileController profileController = Get.put(ProfileController());
+  final HomeController homeController = Get.put(HomeController());
 
   // TextEditingControllers for the input fields
   late final TextEditingController _nameController;
@@ -29,16 +31,16 @@ class _EditProfileViewState extends State<EditProfileView> {
     super.initState();
 
     // Initialize TextEditingControllers with data from the ProfileController
-    _nameController = TextEditingController(text: profileController.name.value);
-    _emailController = TextEditingController(text: profileController.email.value);
-    _aboutYouController = TextEditingController(text: profileController.aboutYou.value);
+    _nameController = TextEditingController(text: homeController.name.value);
+    _emailController = TextEditingController(text: homeController.email.value);
+    _aboutYouController = TextEditingController(text: homeController.aboutYou.value);
 
     // Sync the profile data to controllers after fetch
-    profileController.fetchData().then((_) {
+    homeController.fetchProfileData().then((_) {
       setState(() {
-        _nameController.text = profileController.name.value;
-        _emailController.text = profileController.email.value;
-        _aboutYouController.text = profileController.aboutYou.value;
+        _nameController.text = homeController.name.value;
+        _emailController.text = homeController.email.value;
+        _aboutYouController.text = homeController.aboutYou.value;
       });
     });
   }
@@ -82,9 +84,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                       radius: 50,
                       backgroundImage: _pickedImage != null
                           ? FileImage(File(_pickedImage!.path))
-                          : profileController.picUrl.value.isNotEmpty
+                          : homeController.profilePicUrl.value.isNotEmpty
                           ? NetworkImage(
-                          'https://apparently-intense-toad.ngrok-free.app${profileController.picUrl.value}')
+                          'https://apparently-intense-toad.ngrok-free.app${homeController.profilePicUrl.value}')
                           : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
                     ),
                     Positioned(
@@ -105,7 +107,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Obx(() => Text(
-                      profileController.name.value,
+                      homeController.name.value,
                       style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
                     )),
                     const SizedBox(height: 10),
@@ -149,8 +151,8 @@ class _EditProfileViewState extends State<EditProfileView> {
             CustomButton(
               text: 'Save',
               onPressed: () async {
-                print('::::::::edit:::::::::::::NAME:::::::::::${profileController.name.value}');
-                print('::::::::::edit:::::::::::aboutYou:::::::::::${profileController.aboutYou.value}');
+                print('::::::::edit:::::::::::::NAME:::::::::::${homeController.name.value}');
+                print('::::::::::edit:::::::::::aboutYou:::::::::::${homeController.aboutYou.value}');
 
                 // Handle the profile picture
                 File? profilePic;
@@ -160,8 +162,8 @@ class _EditProfileViewState extends State<EditProfileView> {
 
                 // Call the updateData method
                 await profileController.updateData(
-                  profileController.name.value,
-                  profileController.aboutYou.value,
+                  homeController.name.value,
+                  homeController.aboutYou.value,
                   profilePic,
                 );
               },

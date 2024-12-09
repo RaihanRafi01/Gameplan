@@ -4,15 +4,18 @@ import 'package:agcourt/app/modules/home/views/webViewScreen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import '../../../data/services/api_services.dart';
+import '../../home/controllers/home_controller.dart';
 import '../../home/views/home_view.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthenticationController extends GetxController {
+  final HomeController homeController = Get.put(HomeController());
   final ApiService _service = ApiService();
 
+
   // Observable variable to store username
-  final RxString usernameOBS = ''.obs;
+  //final RxString usernameOBS = ''.obs;
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
 
@@ -48,7 +51,8 @@ class AuthenticationController extends GetxController {
         Get.snackbar('Success', 'Account created successfully!');
         //Get.off(() => VerifyOTPView());
 
-        checkVerified();
+        homeController.checkVerified();
+        homeController.fetchProfileData();
 
 
       } else {
@@ -84,7 +88,8 @@ class AuthenticationController extends GetxController {
         // Store the tokens securely
         await storeTokens(accessToken, refreshToken);
 
-        checkVerified();
+        homeController.checkVerified();
+        homeController.fetchProfileData();
 
       } else {
         final responseBody = jsonDecode(response.body);
@@ -114,7 +119,8 @@ class AuthenticationController extends GetxController {
 
         print(':::::::::::::::responseBody:::::::::::::::::::::${responseBody}');
 
-        checkVerified();
+        homeController.checkVerified();
+        homeController.fetchProfileData();
 
       } else {
         final responseBody = jsonDecode(response.body);
@@ -127,7 +133,7 @@ class AuthenticationController extends GetxController {
   }
 
 
-  Future<void> checkVerified() async {
+  /*Future<void> checkVerified() async {
 
     // Check if the account is verified
     final http.Response verificationResponse = await _service.getProfileInformation();
@@ -148,7 +154,7 @@ class AuthenticationController extends GetxController {
     } else {
       Get.snackbar('Error', 'Verification status check failed');
     }
-  }
+  }*/
 
 
   Future<void> checkPayment() async {

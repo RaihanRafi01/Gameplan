@@ -20,7 +20,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
-    controller.fetchProfilePicUrl();
+    //controller.fetchProfilePicUrl();
     return Row(
       mainAxisAlignment:
       isSentByUser ? MainAxisAlignment.end : MainAxisAlignment.start,

@@ -6,6 +6,7 @@ import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
 import '../../../../common/widgets/auth/terms_and_conditions_checkbox.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/authentication_controller.dart';
 import 'authentication_view.dart';
 
@@ -18,6 +19,7 @@ class SignUpView extends StatefulWidget {
 
 class _SignUpViewState extends State<SignUpView> {
   final AuthenticationController _controller = Get.put(AuthenticationController());
+  final HomeController homeController = Get.put(HomeController());
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -45,9 +47,9 @@ class _SignUpViewState extends State<SignUpView> {
       return;
     }
 
-    _controller.usernameOBS.value = _usernameController.text.trim();
+    homeController.usernameOBS.value = _usernameController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${_controller.usernameOBS.value}');
+    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
 
     // Proceed with sign-up logic if validations pass
     _controller.signUp(
