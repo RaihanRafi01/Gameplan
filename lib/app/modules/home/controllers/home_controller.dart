@@ -84,6 +84,8 @@ class HomeController extends GetxController {
       subscriptionExpireDate.value = _subscriptionExpireDate ?? '';
       isExpired.value = _isExpired ?? false;
 
+      print('::::::::::::::::::::subscriptionStatus:::::::::::::::::::::::::::$subscriptionStatus');
+
 
 
       /*if (isVerified) {

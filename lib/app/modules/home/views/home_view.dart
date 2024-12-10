@@ -6,6 +6,7 @@ import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/home/custom_messageInputField.dart';
 import '../../../../common/widgets/gradientCard.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/home_controller.dart';
 import 'chat_screen_view.dart'; // Import ChatScreen
@@ -23,7 +24,6 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final HomeController homeController = Get.put(HomeController());
-    homeController.fetchProfileData();
     final HistoryController historyController = Get.put(HistoryController());
     historyController.fetchPinChatList();
     final TextEditingController textController = TextEditingController();
@@ -41,25 +41,27 @@ class HomeView extends GetView<HomeController> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 50), // Add some spacing at the top
-            CustomMessageInputField(
-              textController: textController,
-              onSend: () {
-                // Store the current text in a variable
-                final message = textController.text.trim();
-                FocusScope.of(context).unfocus();
+            Obx(() {
+              final bool isFree = homeController.subscriptionStatus.value == 'not_subscribed';
+              return CustomMessageInputField(
+                textController: textController,
+                onSend: () {
+                  // Store the current text in a variable
+                  final message = textController.text.trim();
+                  FocusScope.of(context).unfocus();
 
-                if (message.isNotEmpty) {
-                  // Dismiss the keyboard before navigation
+                  if (message.isNotEmpty) {
+                    // Dismiss the keyboard before navigation
+                    print('::::::::::is free before sending :::::::::$isFree');
+                    // Navigate to ChatScreen with the message
+                    Get.to(() => ChatScreen(initialMessage: message, isfree: isFree));
 
-
-                  // Navigate to ChatScreen with the message
-                  Get.to(() => ChatScreen(initialMessage: message));
-
-                  // Clear the text field
-                  textController.clear();
-                }
-              },
-            ),
+                    // Clear the text field
+                    textController.clear();
+                  }
+                },
+              );
+            }),
             const SizedBox(height: 20),
             Expanded(
               child: Padding(
@@ -76,7 +78,7 @@ class HomeView extends GetView<HomeController> {
                     final gridText =
                         "Option ${index + 1} - Detailed description text goes here.";
                     return GestureDetector(
-                      onTap: () => Get.to(() => FaqView(selectedIndex: index,)),
+                      onTap: () => Get.to(() => FaqView(selectedIndex: index)),
                       child: GradientCard(
                         text: gridText,
                         isSentByUser: true,

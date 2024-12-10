@@ -1,5 +1,6 @@
 import 'package:agcourt/app/modules/calender/views/calender_view.dart';
 import 'package:agcourt/app/modules/history/views/history_view.dart';
+import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:agcourt/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,9 +16,8 @@ class DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Initialize the DashboardController
     final controller = Get.put(DashboardController());
-
-    // Check subscription status (Assume controller has a `subscriptionStatus` variable)
-    bool isSubscribed = true;
+    final HomeController homeController = Get.put(HomeController());
+    homeController.fetchProfileData();
 
     // List of pages for navigation
     final List<Widget> pages = [
@@ -27,18 +27,20 @@ class DashboardView extends StatelessWidget {
       ProfileView(),
     ];
 
-    // If not subscribed, show the subscription popup
-    if (!isSubscribed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,  // Prevent closing the dialog by tapping outside
-          builder: (BuildContext context) {
-            return const SubscriptionPopup();  // Use the SubscriptionPopup widget
-          },
-        );
+    // Show the subscription popup reactively
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ever(homeController.subscriptionStatus, (status) {
+        if (status == 'not_subscribed') {
+          showDialog(
+            context: context,
+            barrierDismissible: false, // Prevent closing the dialog by tapping outside
+            builder: (BuildContext context) {
+              return const SubscriptionPopup(); // Use the SubscriptionPopup widget
+            },
+          );
+        }
       });
-    }
+    });
 
     return Scaffold(
       // Observe the current index and display the appropriate page

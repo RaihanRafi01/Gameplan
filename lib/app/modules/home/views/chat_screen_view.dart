@@ -16,24 +16,38 @@ class ChatScreen extends StatelessWidget {
   final String? initialMessage;
   final int? chatId;
   final String? chatName;
-  ChatScreen({super.key, this.isCreateChat = false ,this.chat,this.initialMessage, this.chatId,this.chatName});
+  final bool? isfree;
+
+  ChatScreen(
+      {super.key,
+      this.isCreateChat = false,
+      this.chat,
+      this.initialMessage,
+      this.chatId,
+      this.chatName,
+      this.isfree});
 
   // Initialize the controller
   final ChatController chatController = Get.put(ChatController());
 
   final HistoryController historyController = Get.put(HistoryController());
 
-
   @override
   Widget build(BuildContext context) {
 
+    if(initialMessage != null && isfree == true){
+      print('hit free');
+      chatController.addUserMessage(initialMessage!);
+      chatController.createFreeChat(initialMessage!);
+    }
 
-    if(initialMessage != null){
+    if (initialMessage != null && isfree == false) {
+      print('hit subscribed');
       chatController.addUserMessage(initialMessage!);
       chatController.createChat(initialMessage!);
     }
 
-    if(chat != null){
+    if (chat != null) {
       chatController.initializeMessages(chat!);
       chatController.chatId.value = chatId;
     }
@@ -43,20 +57,25 @@ class ChatScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: /*Icon(Icons.check_box_outlined)*/
-        GestureDetector(
-          onTap: (){
-            historyController.saveChat(chatId!);
-          },
-            child: Image.asset('assets/images/history/save_icon.png',scale: 3,)),
+            GestureDetector(
+                onTap: () {
+                  historyController.saveChat(chatId!);
+                },
+                child: Image.asset(
+                  'assets/images/history/save_icon.png',
+                  scale: 3,
+                )),
         centerTitle: true,
         title: CustomButton(
           text: 'Upgrade To Pro',
           onPressed: () {
             showDialog(
               context: context,
-              barrierDismissible: true, // Prevent closing the dialog by tapping outside
+              barrierDismissible: true,
+              // Prevent closing the dialog by tapping outside
               builder: (BuildContext context) {
-                return const SubscriptionPopup(isManage: true); // Use the SubscriptionPopup widget
+                return const SubscriptionPopup(
+                    isManage: true); // Use the SubscriptionPopup widget
               },
             );
           },
@@ -70,31 +89,34 @@ class ChatScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
-                onTap: (){
-                  _showDatePicker(context,chatId!,chatName!);
+                onTap: () {
+                  _showDatePicker(context, chatId!, chatName!);
                 },
                 child: SvgPicture.asset('assets/images/history/pin_icon.svg')),
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         child: Column(
           children: [
             Expanded(
               child: Obx(
-                    () => ListView.builder(
+                () => ListView.builder(
                   controller: ScrollController(),
                   itemCount: chatController.messages.length,
                   reverse: true,
                   itemBuilder: (context, index) {
-                    final messageData = chatController.messages.reversed.toList()[index];
-                    final actualIndex = chatController.messages.length - 1 - index;
+                    final messageData =
+                        chatController.messages.reversed.toList()[index];
+                    final actualIndex =
+                        chatController.messages.length - 1 - index;
                     return MessageBubble(
                       message: messageData['message'],
                       isSentByUser: messageData['isSentByUser'],
                       editCallback: !messageData['isSentByUser']
-                          ? () => chatController.startEditingBotMessage(actualIndex)
+                          ? () =>
+                              chatController.startEditingBotMessage(actualIndex)
                           : null,
                     );
                   },
@@ -102,9 +124,18 @@ class ChatScreen extends StatelessWidget {
               ),
             ),
             Obx(
-                  () => CustomMessageInputField(padding: 0,
+              () => CustomMessageInputField(
+                padding: 0,
                 textController: chatController.messageController,
-                onSend: chatController.sendMessage,
+                onSend: (){
+                  if(isfree == true){
+                    print('free send');
+                    chatController.sendFreeMessage() ;
+                  }else{
+                    print('paid send');
+                    chatController.sendMessage() ;
+                  }
+                }  ,
                 hintText: chatController.editingMessageIndex.value != null
                     ? 'Edit bot message'
                     : 'Type a message',
@@ -116,7 +147,8 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  void _showDatePicker(BuildContext context, int chatId, String chatName) async {
+  void _showDatePicker(
+      BuildContext context, int chatId, String chatName) async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),

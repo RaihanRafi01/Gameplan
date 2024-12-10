@@ -195,6 +195,31 @@ class ApiService {
     return await http.post(url, headers: headers);
   }
 
+  Future<http.Response> createFreeChat(String text_content) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/send_temporary_chat/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "text_content": text_content
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
 
 
   Future<http.Response> createChat(String text_content) async {

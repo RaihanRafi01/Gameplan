@@ -82,6 +82,49 @@ class ChatController extends GetxController {
     }
   }
 
+  Future<void> sendFreeMessage() async {
+    final text = messageController.text.trim();
+    if (text.isNotEmpty) {
+        // Add user message
+        addUserMessage(text);
+        messageController.clear();
+        // Fetch bot response
+        try {
+
+            await createFreeChat(text);
+
+        } catch (e) {
+          addBotMessage('Failed to fetch bot response. Please try again.');
+        }
+      }
+  }
+
+  Future<void> createFreeChat(String textContent) async {
+    try {
+      final http.Response response = await _service.createFreeChat(textContent);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Parse the response body
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+        // Extract the bot's response
+        final String botResponse = responseBody['Response'];
+
+        // Add the bot's message to the chat
+        addBotMessage('${botResponse}freee');
+      } else {
+        addBotMessage('You already reached your limit!');
+        // Handle non-200/201 responses
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
+      }
+    } catch (e) {
+      // Handle unexpected errors
+      print('Error: $e');
+    }
+  }
+
+
   /// Create a new chat and fetch the bot's first message
   Future<void> createChat(String textContent) async {
     try {
