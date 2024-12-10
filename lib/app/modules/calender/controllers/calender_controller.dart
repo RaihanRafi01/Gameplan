@@ -1,3 +1,4 @@
+import 'package:agcourt/app/modules/history/controllers/history_controller.dart';
 import 'package:get/get.dart';
 
 class CalenderController extends GetxController {
@@ -22,8 +23,9 @@ class CalenderController extends GetxController {
 }
 
 class Event {
+  final int ChatId;
   final DateTime date;
   final String title;
-  Event({required this.date, required this.title,});
+  Event({required this.date, required this.title,required this.ChatId});
 }
 

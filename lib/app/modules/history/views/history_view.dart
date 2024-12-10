@@ -65,7 +65,7 @@ class HistoryView extends GetView<HistoryController> {
                 final groupedChats = controller.groupedChatHistory;
 
                 if (groupedChats.isEmpty) {
-                  return Center(child: Text('No chats available', style: h3));
+                  return Center(child: Text('No plans available', style: h3));
                 }
 
                 return ListView.builder(

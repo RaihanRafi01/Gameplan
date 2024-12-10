@@ -105,8 +105,7 @@ class HistoryController extends GetxController {
 
             // Check if an event with the same title, date, and time already exists
             bool isDuplicate = calendarController.events.any((event) =>
-            event.title == chat.chatName &&
-                event.date == DateTime(pinDate.year, pinDate.month, pinDate.day));
+            event.ChatId == chat.id);
 
             if (!isDuplicate) {
               print(
@@ -116,8 +115,10 @@ class HistoryController extends GetxController {
                 Event(
                   date: DateTime(pinDate.year, pinDate.month, pinDate.day, pinDate.hour, pinDate.minute),
                   title: chat.chatName,
+                  ChatId: chat.id,
                 ),
               );
+              //calendarController.events.refresh();
             }
           }
         }
@@ -129,6 +130,7 @@ class HistoryController extends GetxController {
       // Handle any exceptions during the API call
       Get.snackbar('Error', 'Something went wrong: $e');
     }
+
   }
 
 
@@ -222,6 +224,18 @@ class HistoryController extends GetxController {
       if (response.statusCode == 200) {
         // Decode the API response into a list of maps
         Get.snackbar('Unpinned', 'Plan Unpinned successfully');
+        // Find and remove the event corresponding to the chatId
+        final eventToRemove = calendarController.events.firstWhere(
+              (event) => event.ChatId == chatId // Return null if no matching event is found
+        );
+
+        if (eventToRemove != null) {
+          // Remove the event from the calendarController events list
+          calendarController.events.remove(eventToRemove);
+
+          // Optionally refresh the calendar view if needed
+          // calendarController.events.refresh();
+        }
         fetchData();
       } else {
         // Handle unsuccessful response

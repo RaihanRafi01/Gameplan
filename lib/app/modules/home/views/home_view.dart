@@ -24,6 +24,8 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final HomeController homeController = Get.put(HomeController());
     homeController.fetchProfileData();
+    final HistoryController historyController = Get.put(HistoryController());
+    historyController.fetchPinChatList();
     final TextEditingController textController = TextEditingController();
 
     return Scaffold(
