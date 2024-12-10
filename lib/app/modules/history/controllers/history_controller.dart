@@ -85,24 +85,52 @@ class HistoryController extends GetxController {
 
   Future<void> fetchPinChatList() async {
     try {
-      // Make the API call to get chat list
-      final http.Response verificationResponse = await _service.getPinChatList();
+      // Make the API call to get pinned chat list
+      final http.Response response = await _service.getPinChatList();
 
-      if (verificationResponse.statusCode == 200) {
+      if (response.statusCode == 200) {
         // Decode the API response into a list of maps
-        List<dynamic> apiResponse = jsonDecode(verificationResponse.body);
+        List<dynamic> apiResponse = jsonDecode(response.body);
 
-        // Pass the decoded response to setChatHistory to update the chat list
+        // Parse the API response and update the chat history
         setChatHistory(apiResponse);
+
+        // Add events for pinned chats to the CalendarController
+        for (var chatData in apiResponse) {
+          final Chat chat = Chat.fromJson(chatData);
+
+          // Only process pinned chats
+          if (chat.isPinned && chat.pinDate != null) {
+            final pinDate = chat.pinDate!;
+
+            // Check if an event with the same title, date, and time already exists
+            bool isDuplicate = calendarController.events.any((event) =>
+            event.title == chat.chatName &&
+                event.date == DateTime(pinDate.year, pinDate.month, pinDate.day));
+
+            if (!isDuplicate) {
+              print(
+                  'Adding Event: Title=${chat.chatName}, Date=${DateTime(pinDate.year, pinDate.month, pinDate.day)}, Time=${DateFormat('hh:mm a').format(pinDate)}');
+
+              calendarController.events.add(
+                Event(
+                  date: DateTime(pinDate.year, pinDate.month, pinDate.day, pinDate.hour, pinDate.minute),
+                  title: chat.chatName,
+                ),
+              );
+            }
+          }
+        }
       } else {
         // Handle unsuccessful response
-        Get.snackbar('Error', 'Failed to load chat list');
+        Get.snackbar('Error', 'Failed to load pinned chats');
       }
     } catch (e) {
       // Handle any exceptions during the API call
       Get.snackbar('Error', 'Something went wrong: $e');
     }
   }
+
 
   Future<void> fetchSaveChatList() async {
     try {
@@ -157,12 +185,21 @@ class HistoryController extends GetxController {
 
         // Add an event to the calendar controller
 
+        // Add an event to the CalendarController
+        /*calendarController.events.add(
+          Event(
+            date: pinDate,
+            title: chatName,
+            time: DateFormat('hh:mm a').format(pinDate), // Format time as a string
+          ),
+        );
+
         calendarController.events.add(
           Event(
             date: pinDate,
             title: chatName,
           ),
-        );
+        );*/
         Get.snackbar('Pinned', 'Plan pinned successfully');
       } else {
         // Handle unsuccessful response
@@ -311,6 +348,7 @@ class Chat {
   final List<ChatContent> chatContents;
   final bool isPinned;
   final DateTime timestamp;
+  final DateTime? pinDate; // Nullable, as not all chats might have a pin_date
 
   Chat({
     required this.id,
@@ -318,6 +356,7 @@ class Chat {
     required this.chatContents,
     required this.isPinned,
     required this.timestamp,
+    this.pinDate,
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
@@ -329,6 +368,7 @@ class Chat {
           .toList(),
       isPinned: json['is_pinned'],
       timestamp: DateTime.parse(json['timestamp']),
+      pinDate: json['pin_date'] != null ? DateTime.parse(json['pin_date']) : null,
     );
   }
 }

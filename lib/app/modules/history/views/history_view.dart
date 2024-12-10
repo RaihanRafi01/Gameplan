@@ -177,7 +177,7 @@ class HistoryView extends GetView<HistoryController> {
 
 
 
-  void _showDatePicker(BuildContext context, int chatId, String chatName) async {
+  /*void _showDatePicker(BuildContext context, int chatId, String chatName) async {
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -188,7 +188,40 @@ class HistoryView extends GetView<HistoryController> {
     if (selectedDate != null) {
       controller.pinChat(chatId, selectedDate, chatName);
     }
+  }*/
+
+  void _showDatePicker(BuildContext context, int chatId, String chatName) async {
+    // Step 1: Show Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      // Step 2: Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (selectedTime != null) {
+        // Combine the selected date and time into a single DateTime object
+        final DateTime finalDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+
+        // Call the controller to save the chat with the date and time
+        controller.pinChat(chatId, finalDateTime, chatName);
+      }
+    }
   }
+
 
 
   void _showEditDialog(BuildContext context, int chatId, String currentTitle) {

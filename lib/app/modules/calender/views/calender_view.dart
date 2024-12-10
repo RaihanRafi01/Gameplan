@@ -1,3 +1,4 @@
+import 'package:agcourt/app/modules/history/controllers/history_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,8 @@ class CalenderView extends GetView<CalenderController> {
 
   @override
   Widget build(BuildContext context) {
+    final HistoryController historyController = Get.put(HistoryController());
+    historyController.fetchPinChatList();
     Get.put(CalenderController());
     return Scaffold(
       appBar: AppBar(
@@ -125,7 +128,7 @@ class CalenderView extends GetView<CalenderController> {
                           children: [
                             Text(event.title,style: h3,),
                             Text(
-                              '${DateFormat('EEE').format(event.date)}',
+                              DateFormat('EEE, hh:mm a').format(event.date), // Display day and time
                               style: h3,
                             ),
                           ],
