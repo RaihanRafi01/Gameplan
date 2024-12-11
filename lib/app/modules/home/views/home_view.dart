@@ -14,7 +14,7 @@ import 'chat_screen_view.dart'; // Import ChatScreen
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  /*@override
+  /*@overrideF
   void initState() {
     super.initState();
     final HomeController homeController = Get.put(HomeController());
@@ -23,6 +23,7 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final ChatController chatController = Get.put(ChatController());
     final HomeController homeController = Get.put(HomeController());
     final HistoryController historyController = Get.put(HistoryController());
     historyController.fetchPinChatList();
@@ -41,7 +42,7 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 50), // Add some spacing at the top
             Obx(() {
-              final bool isFree = homeController.subscriptionStatus.value != 'not_subscribed';
+              final bool isFree = homeController.isFree.value;
               return CustomMessageInputField(
                 textController: textController,
                 onSend: () {
@@ -54,7 +55,10 @@ class HomeView extends GetView<HomeController> {
                     print('::::::::::is free before sending :::::::::$isFree');
                     // Navigate to ChatScreen with the message
 
-                    Get.to(() => ChatScreen(initialMessage: message, isfree: isFree));
+                    //chatController.createChat(initialMessage!);
+
+                    Get.to(() =>
+                        //ChatScreen(initialMessage: message, isfree: isFree,chatId: ,chatName: ,));
 
                     // Clear the text field
                     textController.clear();
@@ -70,9 +74,11 @@ class HomeView extends GetView<HomeController> {
                   onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
                   child: Container(
                     constraints: BoxConstraints(
-                      maxWidth: double.maxFinite, // Set maximum width for the container
+                      maxWidth: double
+                          .maxFinite, // Set maximum width for the container
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Add inner padding
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    // Add inner padding
                     decoration: BoxDecoration(
                       color: Colors.transparent, // Transparent background
                       borderRadius: BorderRadius.circular(25), // Rounded border

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../home/controllers/home_controller.dart';
 import '../../home/views/chat_screen_view.dart';
 import '../controllers/history_controller.dart';
 
@@ -13,6 +14,8 @@ class HistoryView extends GetView<HistoryController> {
   Widget build(BuildContext context) {
     Get.put(HistoryController());
     Get.find<HistoryController>().fetchAllChatList();
+    final HomeController homeController = Get.put(HomeController());
+    final bool isFree = homeController.isFree.value;
 
     return Scaffold(
       appBar: AppBar(),
@@ -92,6 +95,7 @@ class HistoryView extends GetView<HistoryController> {
                             title: GestureDetector(
                               onTap: () {
                                 Get.to(() => ChatScreen(
+                                  isfree: isFree,
                                   chat: chat.chatContents,
                                   chatId: chat.id,
                                   chatName: chat.chatName,

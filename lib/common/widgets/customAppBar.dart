@@ -1,8 +1,10 @@
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 import '../../app/modules/dashboard/views/widgets/subscriptionPopup.dart';
+import '../../app/modules/home/controllers/home_controller.dart';
 import '../appColors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,14 +12,26 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.put(HomeController());
+    homeController.fetchProfileData();
+    final bool isFree = homeController.isFree.value;
+    print('=====================================================:::::::::::::::STATUS::::$isFree');
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      leading: /*Icon(Icons.check_box_outlined)*/
-      Image.asset('assets/images/history/save_icon.png',scale: 3,),
+      leading: GestureDetector(
+        onTap: (){
+          if(isFree){
+            print(':::::::::::::::FREE::::');
+          }
+          else if(!isFree){
+            print(':::::::::::::NOT::FREE::::');
+          }
+
+        },
+          child: Image.asset('assets/images/history/save_icon.png',scale: 3,)),
       centerTitle: true,
       title: CustomButton(
         text: 'Upgrade To Pro',

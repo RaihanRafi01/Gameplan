@@ -4,7 +4,7 @@ import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:agcourt/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../common/widgets/home/aboutYouPopUp.dart';
+import 'widgets/aboutYouPopUp.dart';
 import '../../home/views/home_view.dart';
 import '../controllers/dashboard_controller.dart';
 import 'widgets/customNavigationBar.dart';

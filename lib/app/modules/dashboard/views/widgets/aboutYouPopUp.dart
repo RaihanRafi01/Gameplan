@@ -6,7 +6,7 @@ import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../appColors.dart';
+import '../../../../../common/appColors.dart';
 
 class AboutPopup extends StatefulWidget {
   const AboutPopup({super.key});

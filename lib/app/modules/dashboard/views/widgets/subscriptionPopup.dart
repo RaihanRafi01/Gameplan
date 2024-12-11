@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../common/widgets/home/subscriptionCard.dart';
 import '../../../authentication/controllers/authentication_controller.dart';
+import 'subscriptionCard.dart';
 
 class SubscriptionPopup extends StatelessWidget {
   final bool isManage;

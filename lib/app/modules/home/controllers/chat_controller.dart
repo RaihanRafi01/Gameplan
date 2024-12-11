@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/services/api_services.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 
 class ChatController extends GetxController {
@@ -188,6 +189,11 @@ class ChatController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: Colors.white
+        );
+
+        // Show the subscription popup
+        Get.dialog(
+          SubscriptionPopup(isManage: true),
         );
 
         //await saveFreeChatMessage(textContent, true); // Save user message

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../appColors.dart';
-import '../../customFont.dart';
+import '../../../../../common/appColors.dart';
+import '../../../../../common/customFont.dart';
 
 class SubscriptionOptionCard extends StatelessWidget {
   final String title;

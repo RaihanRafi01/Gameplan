@@ -17,6 +17,10 @@ class HomeController extends GetxController {
   var subscriptionExpireDate = ''.obs;
   var subscriptionStatus = ''.obs;
   RxBool isExpired = false.obs;
+  RxBool isFree = false.obs;
+
+
+
 
   // New flag to track if the user is editing the profile
   var isEditingProfile = false.obs;
@@ -89,6 +93,8 @@ class HomeController extends GetxController {
 
       print('::::::::::::::::::::subscriptionStatus:::::::::::::::::::::::::::$subscriptionStatus');
 
+
+      isFree.value = subscriptionStatus.value == 'not_subscribed';
 
 
       /*if (isVerified) {

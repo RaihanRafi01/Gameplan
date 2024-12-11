@@ -1,10 +1,8 @@
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
-import '../../../../common/widgets/home/subscriptionCard.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 

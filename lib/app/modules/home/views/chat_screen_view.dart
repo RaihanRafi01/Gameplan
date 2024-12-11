@@ -1,3 +1,4 @@
+import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -31,6 +32,7 @@ class ChatScreen extends StatelessWidget {
   final ChatController chatController = Get.put(ChatController());
 
   final HistoryController historyController = Get.put(HistoryController());
+  final HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,9 @@ class ChatScreen extends StatelessWidget {
       chatController.chatId.value = chatId;
     }
 
+    final bool isFree = homeController.isFree.value;
+    print('=====================================================:::::::::::::::STATUS::::$isFree');
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -69,7 +74,25 @@ class ChatScreen extends StatelessWidget {
         leading: /*Icon(Icons.check_box_outlined)*/
             GestureDetector(
                 onTap: () {
-                  historyController.saveChat(chatId!);
+                  if(isFree){
+                    print(':::::::::::::::FREE::::');
+                    Get.snackbar(
+                        'Subscribe!',
+                        'Please Subscribe to enable this feature',
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white
+                    );
+
+                    // Show the subscription popup
+                    Get.dialog(
+                      SubscriptionPopup(isManage: true),
+                    );
+                  }
+                  else if(!isFree){
+                    print(':::::::::::::NOT::FREE::::');
+                    historyController.saveChat(chatId!);
+                  }
                 },
                 child: Image.asset(
                   'assets/images/history/save_icon.png',
@@ -100,7 +123,25 @@ class ChatScreen extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
                 onTap: () {
-                  _showDatePicker(context, chatId!, chatName!);
+                  if(isFree){
+                    print(':::::::::::::::FREE::::');
+                    Get.snackbar(
+                        'Subscribe!',
+                        'Please Subscribe to enable this feature',
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white
+                    );
+
+                    // Show the subscription popup
+                    Get.dialog(
+                      SubscriptionPopup(isManage: true),
+                    );
+                  }
+                  else if(!isFree){
+                    print(':::::::::::::NOT::FREE::::');
+                    _showDatePicker(context, chatId!, chatName!);
+                  }
                 },
                 child: SvgPicture.asset('assets/images/history/pin_icon.svg')),
           ),
