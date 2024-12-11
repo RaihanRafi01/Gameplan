@@ -173,7 +173,7 @@ class HistoryController extends GetxController {
     }
   }
 
-  Future<void> pinChat(int chatId, DateTime pinDate, String chatName) async {
+  Future<void> pinChat(int chatId, DateTime pinDate) async {
     try {
       // Make the API call to get chat list
       final http.Response response = await _service.pinChat(chatId,pinDate);
@@ -183,7 +183,7 @@ class HistoryController extends GetxController {
 
       if (response.statusCode == 200) {
         // Decode the API response into a list of maps
-        fetchData();
+        //fetchData();
 
         // Add an event to the calendar controller
 
@@ -293,6 +293,7 @@ class HistoryController extends GetxController {
 
 
 
+  // Update the groupChatsByDate function if necessary
   Map<String, List<Chat>> groupChatsByDate(List<Chat> chats) {
     final Map<String, List<Chat>> groupedChats = {};
 
@@ -349,6 +350,9 @@ class HistoryController extends GetxController {
 // Function to parse API response and update grouped chat history
   void setChatHistory(List<dynamic> apiResponse) {
     final parsedChats = apiResponse.map((chatData) => Chat.fromJson(chatData)).toList();
+
+    // Sort chats in descending order based on timestamp (most recent first)
+    parsedChats.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     // Group chats by date and update the reactive variable
     groupedChatHistory.value = groupChatsByDate(parsedChats);

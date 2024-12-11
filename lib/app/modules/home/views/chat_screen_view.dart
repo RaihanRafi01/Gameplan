@@ -12,18 +12,16 @@ import '../../history/controllers/history_controller.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatScreen extends StatelessWidget {
-  final bool isCreateChat;
   final List<ChatContent>? chat;
-  final String? initialMessage;
+  //final String? initialMessage;
   final int? chatId;
   final String? chatName;
   final bool? isfree;
 
   ChatScreen(
       {super.key,
-      this.isCreateChat = false,
       this.chat,
-      this.initialMessage,
+      //this.initialMessage,
       this.chatId,
       this.chatName,
       this.isfree});
@@ -38,7 +36,7 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
 
 
-    if (initialMessage != null && isfree == true) {
+    /*if (initialMessage != null && isfree == true) {
       print('hit free');
 
       // Load previous free messages first
@@ -57,7 +55,7 @@ class ChatScreen extends StatelessWidget {
       print('hit subscribed');
       chatController.addUserMessage(initialMessage!);
       chatController.createChat(initialMessage!);
-    }
+    }*/
 
     if (chat != null) {
       chatController.initializeMessages(chat!);
@@ -140,7 +138,7 @@ class ChatScreen extends StatelessWidget {
                   }
                   else if(!isFree){
                     print(':::::::::::::NOT::FREE::::');
-                    _showDatePicker(context, chatId!, chatName!);
+                    _showDatePicker(context, chatId!);
                   }
                 },
                 child: SvgPicture.asset('assets/images/history/pin_icon.svg')),
@@ -198,8 +196,8 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  void _showDatePicker(
-      BuildContext context, int chatId, String chatName) async {
+  void _showDatePicker(BuildContext context, int chatId) async {
+    // Step 1: Show Date Picker
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -208,7 +206,25 @@ class ChatScreen extends StatelessWidget {
     );
 
     if (selectedDate != null) {
-      historyController.pinChat(chatId, selectedDate, chatName);
+      // Step 2: Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (selectedTime != null) {
+        // Combine the selected date and time into a single DateTime object
+        final DateTime finalDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+
+        // Call the controller to save the chat with the date and time
+        historyController.pinChat(chatId, finalDateTime);
+      }
     }
   }
 }

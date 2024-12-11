@@ -225,6 +225,8 @@ class ChatController extends GetxController {
         final int id = responseBody['id'];
         chatId.value = id; // Store the chat ID in reactive variable
 
+        print(':-----------------:create chat id::::${chatId.value}');
+
         // Find the bot's message in `chat_contents`
         final List<dynamic> chatContents = responseBody['chat_contents'];
         final botMessage = chatContents.firstWhere(

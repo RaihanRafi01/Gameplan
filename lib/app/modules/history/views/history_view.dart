@@ -114,7 +114,7 @@ class HistoryView extends GetView<HistoryController> {
                                     if (chat.isPinned) {
                                       controller.unpinChat(chat.id);
                                     } else {
-                                      _showDatePicker(context, chat.id, chat.chatName);
+                                      _showDatePicker(context, chat.id);
                                     }
                                     break;
                                   case 1:
@@ -180,21 +180,7 @@ class HistoryView extends GetView<HistoryController> {
   }
 
 
-
-  /*void _showDatePicker(BuildContext context, int chatId, String chatName) async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      controller.pinChat(chatId, selectedDate, chatName);
-    }
-  }*/
-
-  void _showDatePicker(BuildContext context, int chatId, String chatName) async {
+  void _showDatePicker(BuildContext context, int chatId) async {
     // Step 1: Show Date Picker
     DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -221,7 +207,7 @@ class HistoryView extends GetView<HistoryController> {
         );
 
         // Call the controller to save the chat with the date and time
-        controller.pinChat(chatId, finalDateTime, chatName);
+        controller.pinChat(chatId, finalDateTime);
       }
     }
   }

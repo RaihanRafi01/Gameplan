@@ -14,13 +14,6 @@ import 'chat_screen_view.dart'; // Import ChatScreen
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  /*@overrideF
-  void initState() {
-    super.initState();
-    final HomeController homeController = Get.put(HomeController());
-    homeController.fetchProfileData();
-  }*/
-
   @override
   Widget build(BuildContext context) {
     final ChatController chatController = Get.put(ChatController());
@@ -45,20 +38,55 @@ class HomeView extends GetView<HomeController> {
               final bool isFree = homeController.isFree.value;
               return CustomMessageInputField(
                 textController: textController,
-                onSend: () {
+                onSend: () async {
                   // Store the current text in a variable
                   final message = textController.text.trim();
                   FocusScope.of(context).unfocus();
 
                   if (message.isNotEmpty) {
                     // Dismiss the keyboard before navigation
-                    print('::::::::::is free before sending :::::::::$isFree');
+                    print('::::::::::is free before sending :::::::::${homeController.isFree.value}');
                     // Navigate to ChatScreen with the message
 
-                    //chatController.createChat(initialMessage!);
+                    final bool isFree = homeController.isFree.value;
 
-                    Get.to(() =>
-                        //ChatScreen(initialMessage: message, isfree: isFree,chatId: ,chatName: ,));
+
+                    if (isFree) {
+                      print('hit free');
+
+                      // Load previous free messages first
+                      chatController.loadFreeMessages();
+
+                      // Delay the adding of the initial user message
+                      Future.delayed(Duration(milliseconds: 500), () {
+                        // Now add the initial user message after the previous messages are loaded
+                        chatController.addUserMessage(message);
+                        chatController.createFreeChat(message); // Proceed with chat creation
+                      });
+                    }
+
+
+                    else {
+                      print('hit subscribed');
+                      chatController.addUserMessage(message);
+                      await chatController.createChat(message);
+                    }
+
+                    /*Future.delayed(Duration(milliseconds: 500), () {
+                      // Now add the initial user message after the previous messages are loaded
+                      final int? chatId = chatController.chatId.value;
+
+                      print('::::---------ID----------::::::::::::::::::::$chatId.');
+
+                      Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
+                    });*/
+
+                    final int? chatId = chatController.chatId.value;
+
+                    print('::::---------ID----------::::::::::::::::::::$chatId.');
+
+                    Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
+
 
                     // Clear the text field
                     textController.clear();
