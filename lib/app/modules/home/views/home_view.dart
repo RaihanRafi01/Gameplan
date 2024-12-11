@@ -42,7 +42,7 @@ class HomeView extends GetView<HomeController> {
             ),
             const SizedBox(height: 50), // Add some spacing at the top
             Obx(() {
-              final bool isFree = homeController.subscriptionStatus.value == 'not_subscribed';
+              final bool isFree = homeController.subscriptionStatus.value != 'not_subscribed';
               return CustomMessageInputField(
                 textController: textController,
                 onSend: () {

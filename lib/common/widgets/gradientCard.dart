@@ -27,7 +27,7 @@ class GradientCard extends StatelessWidget {
         decoration: isSentByUser
             ? BoxDecoration(
                 border: Border.all(),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(5),
               )
             : BoxDecoration(
                 gradient: LinearGradient(

@@ -203,6 +203,7 @@ class HistoryController extends GetxController {
           ),
         );*/
         Get.snackbar('Pinned', 'Plan pinned successfully');
+        fetchPinChatList();
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to pin');

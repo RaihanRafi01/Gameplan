@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:agcourt/app/modules/authentication/views/reset_password_view.dart';
+import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
@@ -10,8 +11,7 @@ import '../../../data/services/api_services.dart';
 import '../controllers/authentication_controller.dart';
 
 class VerifyOTPView extends StatefulWidget {
-  final userName;
-  const VerifyOTPView({required this.userName , Key? key}) : super(key: key);
+  const VerifyOTPView({super.key});
 
   @override
   State<VerifyOTPView> createState() => _VerifyOTPViewState();
@@ -19,6 +19,7 @@ class VerifyOTPView extends StatefulWidget {
 
 class _VerifyOTPViewState extends State<VerifyOTPView> {
   late Timer _timer;
+  late final String username;
   int _remainingSeconds = 30;
   bool _isResendEnabled = false;
   String? _verificationMessage; // To show "Code is Correct" or "Incorrect Code"
@@ -27,6 +28,8 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
 
   @override
   void initState() {
+    final HomeController homeController = Get.put(HomeController());
+    username = homeController.usernameOBS.value;
     super.initState();
     _startTimer();
   }
@@ -113,7 +116,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
                 if (otp.isEmpty) {
                   Get.snackbar('Error', 'Please enter the OTP');
                 } else {
-                  _controller.verifyOTP(widget.userName,otp);
+                  _controller.verifyOTP(username,otp);
                 }
               },
             ),

@@ -4,6 +4,7 @@ import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:agcourt/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/widgets/home/aboutYouPopUp.dart';
 import '../../home/views/home_view.dart';
 import '../controllers/dashboard_controller.dart';
 import 'widgets/customNavigationBar.dart';
@@ -27,20 +28,48 @@ class DashboardView extends StatelessWidget {
       ProfileView(),
     ];
 
-    // Show the subscription popup reactively
+
+    Future<void> showAboutPopup(BuildContext context) async {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AboutPopup();
+        },
+      );
+    }
+
+    Future<void> showSubscriptionPopup(BuildContext context) async {
+      await showDialog(
+        context: context,
+        barrierDismissible: false, // Prevent closing the dialog by tapping outside
+        builder: (BuildContext context) {
+          return const SubscriptionPopup();
+        },
+      );
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ever(homeController.subscriptionStatus, (status) {
-        if (status == 'not_subscribed') {
-          showDialog(
-            context: context,
-            barrierDismissible: false, // Prevent closing the dialog by tapping outside
-            builder: (BuildContext context) {
-              return const SubscriptionPopup(); // Use the SubscriptionPopup widget
-            },
-          );
+      ever(homeController.aboutYou, (status) async {
+        if (!homeController.isEditingProfile.value) {
+          if (status == '') {
+            // Show AboutPopup first
+            await showAboutPopup(context);
+            if (homeController.subscriptionStatus.value == 'not_subscribed') {
+              await showSubscriptionPopup(context);
+            }
+          } else if (homeController.subscriptionStatus.value == 'not_subscribed') {
+            await showSubscriptionPopup(context);
+          }
+        }
+      });
+
+      ever(homeController.subscriptionStatus, (status) async {
+        if (!homeController.isEditingProfile.value && status == 'not_subscribed') {
+          await showSubscriptionPopup(context);
         }
       });
     });
+
 
     return Scaffold(
       // Observe the current index and display the appropriate page

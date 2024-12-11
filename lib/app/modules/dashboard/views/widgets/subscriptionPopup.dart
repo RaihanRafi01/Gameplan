@@ -85,12 +85,6 @@ class SubscriptionPopup extends StatelessWidget {
                   },
                   child: const Text('Accept Free Trial'),
                 ),
-              const SizedBox(height: 10),
-              if (!isManage)
-                const Text(
-                  "Free Trial For 7 Days",
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
-                ),
               const SizedBox(height: 20),
             ],
           ),

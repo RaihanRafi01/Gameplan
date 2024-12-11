@@ -29,6 +29,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     super.initState();
+    homeController.isEditingProfile.value = true;
 
     // Initialize TextEditingControllers with data from the ProfileController
     _nameController = TextEditingController(text: homeController.name.value);
@@ -153,6 +154,9 @@ class _EditProfileViewState extends State<EditProfileView> {
               onPressed: () async {
                 print('::::::::edit:::::::::::::NAME:::::::::::${homeController.name.value}');
                 print('::::::::::edit:::::::::::aboutYou:::::::::::${homeController.aboutYou.value}');
+
+                // Set editing flag to true when saving
+                //homeController.isEditingProfile.value = true;
 
                 // Handle the profile picture
                 File? profilePic;

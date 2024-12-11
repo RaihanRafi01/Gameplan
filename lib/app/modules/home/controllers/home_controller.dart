@@ -18,6 +18,9 @@ class HomeController extends GetxController {
   var subscriptionStatus = ''.obs;
   RxBool isExpired = false.obs;
 
+  // New flag to track if the user is editing the profile
+  var isEditingProfile = false.obs;
+
   void submitForm() {
     if (email.isEmpty || password.isEmpty) {
       // Handle error
@@ -52,7 +55,7 @@ class HomeController extends GetxController {
       } else {
         // Show a page to request further action if not verified
         Get.snackbar('Error', 'Account not verified. Please check your email.');
-        Get.off(() => VerifyOTPView(userName: usernameOBS.value,));
+        Get.off(() => VerifyOTPView());
       }
 
     } else {
