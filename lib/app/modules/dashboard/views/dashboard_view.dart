@@ -10,15 +10,31 @@ import '../controllers/dashboard_controller.dart';
 import 'widgets/customNavigationBar.dart';
 import 'widgets/subscriptionPopup.dart'; // Import the new class
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
+
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+
+
+class _DashboardViewState extends State<DashboardView> {
+  bool hasShownAboutPopup = false;
+  bool hasShownSubscriptionPopup = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final HomeController homeController = Get.put(HomeController());
+    homeController.fetchProfileData();
+  }
 
   @override
   Widget build(BuildContext context) {
     // Initialize the DashboardController
     final controller = Get.put(DashboardController());
     final HomeController homeController = Get.put(HomeController());
-    homeController.fetchProfileData();
 
     // List of pages for navigation
     final List<Widget> pages = [
@@ -28,24 +44,33 @@ class DashboardView extends StatelessWidget {
       ProfileView(),
     ];
 
-
     Future<void> showAboutPopup(BuildContext context) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AboutPopup();
-        },
-      );
+      if (!hasShownAboutPopup) {
+        setState(() {
+          hasShownAboutPopup = true;
+        });
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AboutPopup();
+          },
+        );
+      }
     }
 
     Future<void> showSubscriptionPopup(BuildContext context) async {
-      await showDialog(
-        context: context,
-        barrierDismissible: false, // Prevent closing the dialog by tapping outside
-        builder: (BuildContext context) {
-          return const SubscriptionPopup();
-        },
-      );
+      if (!hasShownSubscriptionPopup) {
+        setState(() {
+          hasShownSubscriptionPopup = true;
+        });
+        await showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent closing the dialog by tapping outside
+          builder: (BuildContext context) {
+            return const SubscriptionPopup();
+          },
+        );
+      }
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -70,7 +95,6 @@ class DashboardView extends StatelessWidget {
       });
     });
 
-
     return Scaffold(
       // Observe the current index and display the appropriate page
       body: Obx(() => pages[controller.currentIndex.value]),
@@ -79,3 +103,4 @@ class DashboardView extends StatelessWidget {
     );
   }
 }
+

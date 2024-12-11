@@ -182,9 +182,17 @@ class ChatController extends GetxController {
 
         print(':::::::::::::::::Bot message saved: $botResponse');  // Debug log
       } else {
-        await saveFreeChatMessage(textContent, true); // Save user message
-        addBotMessage('You already reached your limit!');
-        await saveFreeChatMessage('You already reached your limit!', false);
+        Get.snackbar(
+          'Limit Crossed',
+          'You already reached your limit!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white
+        );
+
+        //await saveFreeChatMessage(textContent, true); // Save user message
+        //addBotMessage('You already reached your limit!');
+        //await saveFreeChatMessage('You already reached your limit!', false);
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
         print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
       }

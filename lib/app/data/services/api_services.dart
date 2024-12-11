@@ -8,7 +8,7 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'https://agcourt.pythonanywhere.com/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/
+  final String baseUrl = 'https://apparently-intense-toad.ngrok-free.app/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/
 
   // Sign-up method
   Future<http.Response> signUp(String email, String password, String username) async {
@@ -80,6 +80,27 @@ class ApiService {
       url,
       headers: headers,
       body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> resendOTP() async {
+    // Construct the endpoint URL
+    final Uri url = Uri.parse('${baseUrl}authentication_app/resend_otp/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers
     );
   }
 

@@ -29,7 +29,6 @@ class HomeView extends GetView<HomeController> {
     final TextEditingController textController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -63,30 +62,34 @@ class HomeView extends GetView<HomeController> {
                 },
               );
             }),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GridView.builder(
-                  itemCount: 3,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 10,
-                  ),
-                  itemBuilder: (BuildContext context, int index) {
-                    final gridText =
-                        "Option ${index + 1} - Detailed description text goes here.";
-                    return GestureDetector(
-                      onTap: () => Get.to(() => FaqView(selectedIndex: index)),
-                      child: GradientCard(
-                        text: gridText,
-                        isSentByUser: true,
-                        textColor: AppColors.textColor,
+            const SizedBox(height: 40),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: double.maxFinite, // Set maximum width for the container
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16), // Add inner padding
+                    decoration: BoxDecoration(
+                      color: Colors.transparent, // Transparent background
+                      borderRadius: BorderRadius.circular(25), // Rounded border
+                      border: Border.all(
+                        color: Colors.black, // Border color
+                        width: 1, // Border width
                       ),
-                    );
-                  },
+                    ),
+                    child: Text(
+                      "What should I type in text box?",
+                      style: TextStyle(
+                        fontSize: 16, // Font size
+                        color: Colors.black, // Text color
+                      ),
+                      textAlign: TextAlign.center, // Center-align the text
+                    ),
+                  ),
                 ),
               ),
             ),

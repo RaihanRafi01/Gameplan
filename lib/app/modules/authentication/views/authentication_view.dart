@@ -103,8 +103,9 @@ class AuthenticationView extends GetView<AuthenticationController> {
                           //Get.off(() => DashboardView());
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                       const SignupWithOther(),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

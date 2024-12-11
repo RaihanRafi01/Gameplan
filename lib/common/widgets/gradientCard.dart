@@ -8,10 +8,12 @@ class GradientCard extends StatelessWidget {
   final String text;
   final bool isSentByUser;
   final Color textColor;
+  final double radius;
 
   const GradientCard(
       {super.key,
       required this.text,
+        this.radius = 5,
       this.isSentByUser = false,
       this.textColor = Colors.black});
 
@@ -27,7 +29,7 @@ class GradientCard extends StatelessWidget {
         decoration: isSentByUser
             ? BoxDecoration(
                 border: Border.all(),
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(radius),
               )
             : BoxDecoration(
                 gradient: LinearGradient(

@@ -52,8 +52,8 @@ class AuthenticationController extends GetxController {
         Get.snackbar('Success', 'Account created successfully!');
         //Get.off(() => VerifyOTPView());
 
-        homeController.checkVerified();
         homeController.fetchProfileData();
+        homeController.checkVerified();
 
         // SharedPreferences
 
@@ -61,9 +61,10 @@ class AuthenticationController extends GetxController {
         await prefs.setBool('isLoggedIn', true); // User is logged in
 
 
+
       } else {
         final responseBody = jsonDecode(response.body);
-        Get.snackbar('Error', responseBody['message'] ?? 'Sign-up failed');
+        Get.snackbar('Error', responseBody['message'] ?? 'Sign-up failed\nPlease Use Different Username');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
@@ -94,8 +95,8 @@ class AuthenticationController extends GetxController {
         // Store the tokens securely
         await storeTokens(accessToken, refreshToken);
 
-        homeController.checkVerified();
         homeController.fetchProfileData();
+        homeController.checkVerified();
 
         // SharedPreferences
 
@@ -137,6 +138,32 @@ class AuthenticationController extends GetxController {
       } else {
         final responseBody = jsonDecode(response.body);
         Get.snackbar('Error', responseBody['message'] ?? 'Verification failed');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred');
+      print('Error: $e');
+    }
+  }
+
+  Future<void> resendOTP() async {
+    try {
+      print(':::::resendOTP:::::::::::::::::');
+      final http.Response response = await _service.resendOTP();
+
+      print(':::::::::::::::RESPONSE:::::::::::::::::::::${response.body
+          .toString()}');
+      print(':::::::::::::::CODE:::::::::::::::::::::${response.statusCode}');
+      print(':::::::::::::::REQUEST:::::::::::::::::::::${response.request}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Assuming the server responds with success on code 200 or 201
+        final responseBody = jsonDecode(response.body);
+
+        print(':::::::::::::::responseBody:::::::::::::::::::::${responseBody}');
+        Get.snackbar('OTP Send','Please Check Your Email');
+
+      } else {
+        Get.snackbar('Error', 'Please try again later');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');

@@ -51,7 +51,7 @@ class HomeController extends GetxController {
       if (isVerified) {
         // Navigate to the Dashboard if verified
         //Get.snackbar('Success', 'Account verified!');
-        Get.off(() => DashboardView()); // Navigate to DashboardView
+        Get.offAll(() => DashboardView()); // Navigate to DashboardView
       } else {
         // Show a page to request further action if not verified
         Get.snackbar('Error', 'Account not verified. Please check your email.');
