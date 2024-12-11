@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/services/api_services.dart';
 import '../../history/controllers/history_controller.dart';
@@ -85,44 +86,116 @@ class ChatController extends GetxController {
   Future<void> sendFreeMessage() async {
     final text = messageController.text.trim();
     if (text.isNotEmpty) {
-        // Add user message
-        addUserMessage(text);
-        messageController.clear();
-        // Fetch bot response
-        try {
+      // Add user message
+      addUserMessage(text);
+      //await saveFreeChatMessage(text, true); // Save user message
+      messageController.clear();
 
-            await createFreeChat(text);
+      // Fetch bot response
+      print('Free message sent: $text'); // Debug log
 
-        } catch (e) {
-          addBotMessage('Failed to fetch bot response. Please try again.');
-        }
-      }
+      // Handle bot response
+      // Ensure you call createFreeChat or other logic to fetch bot response
+      await createFreeChat(text);
+    }
   }
+
+
+
+
+
+  /// Save a chat message (user or bot) in free mode
+  Future<void> saveFreeChatMessage(String message, bool isSentByUser) async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // Retrieve the existing messages list
+      List<String> savedMessages = prefs.getStringList('freeMessages') ?? [];
+
+      // Add the new message as a JSON-encoded string
+      Map<String, dynamic> newMessage = {
+        'message': message,
+        'isSentByUser': isSentByUser,
+      };
+
+      savedMessages.add(jsonEncode(newMessage));
+
+      // Save the updated list back to SharedPreferences
+      await prefs.setStringList('freeMessages', savedMessages);
+
+      print('Free message saved: ${newMessage}');
+    } catch (e) {
+      print('Error saving free chat message: $e');
+    }
+  }
+
+  /// Retrieve free-mode messages from SharedPreferences
+  Future<List<Map<String, dynamic>>> getFreeMessages() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> savedMessages = prefs.getStringList('freeMessages') ?? [];
+
+      // Decode each JSON-encoded string into a Map
+      return savedMessages
+          .map((message) => jsonDecode(message) as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      print('Error retrieving free messages: $e');
+      return [];
+    }
+  }
+
+  /// Load free-mode messages into the chat controller
+  void loadFreeMessages() async {
+    final List<Map<String, dynamic>> freeMessages = await getFreeMessages();
+    print('Free messages loaded: $freeMessages'); // Debug log
+
+    for (var messageData in freeMessages) {
+      messages.add({
+        'message': messageData['message'],
+        'isSentByUser': messageData['isSentByUser'],
+      });
+    }
+  }
+
+
+
 
   Future<void> createFreeChat(String textContent) async {
     try {
       final http.Response response = await _service.createFreeChat(textContent);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Parse the response body
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
         // Extract the bot's response
         final String botResponse = responseBody['Response'];
+        print('Bot response received: $botResponse');  // Debug log
+
 
         // Add the bot's message to the chat
-        addBotMessage('${botResponse}freee');
+        addBotMessage(botResponse);
+
+        // Save the bot's response to SharedPreferences
+        await saveFreeChatMessage(textContent, true); // Save user message
+        await saveFreeChatMessage(botResponse, false); // Save bot message
+
+        print(':::::::::::::::::Bot message saved: $botResponse');  // Debug log
       } else {
+        await saveFreeChatMessage(textContent, true); // Save user message
         addBotMessage('You already reached your limit!');
-        // Handle non-200/201 responses
+        await saveFreeChatMessage('You already reached your limit!', false);
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
         print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
       }
     } catch (e) {
-      // Handle unexpected errors
       print('Error: $e');
     }
   }
+
+
+
+
 
 
   /// Create a new chat and fetch the bot's first message

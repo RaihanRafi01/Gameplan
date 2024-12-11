@@ -54,6 +54,7 @@ class HomeView extends GetView<HomeController> {
                     // Dismiss the keyboard before navigation
                     print('::::::::::is free before sending :::::::::$isFree');
                     // Navigate to ChatScreen with the message
+
                     Get.to(() => ChatScreen(initialMessage: message, isfree: isFree));
 
                     // Clear the text field

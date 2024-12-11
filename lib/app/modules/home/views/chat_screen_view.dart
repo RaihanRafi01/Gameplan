@@ -35,11 +35,21 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    if(initialMessage != null && isfree == true){
+
+    if (initialMessage != null && isfree == true) {
       print('hit free');
-      chatController.addUserMessage(initialMessage!);
-      chatController.createFreeChat(initialMessage!);
+
+      // Load previous free messages first
+      chatController.loadFreeMessages();
+
+      // Delay the adding of the initial user message
+      Future.delayed(Duration(milliseconds: 500), () {
+        // Now add the initial user message after the previous messages are loaded
+        chatController.addUserMessage(initialMessage!);
+        chatController.createFreeChat(initialMessage!); // Proceed with chat creation
+      });
     }
+
 
     if (initialMessage != null && isfree == false) {
       print('hit subscribed');
