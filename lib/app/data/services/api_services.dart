@@ -361,7 +361,7 @@ class ApiService {
     };
 
     // Make the POST request
-    return await http.post(
+    return await http.patch(
       url,
       headers: headers,
       body: jsonEncode(body),
