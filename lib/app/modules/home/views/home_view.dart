@@ -49,6 +49,7 @@ class HomeView extends GetView<HomeController> {
                     // Navigate to ChatScreen with the message
 
                     final bool isFree = homeController.isFree.value;
+                    final int? chatId = chatController.chatId.value;
 
 
                     if (isFree) {
@@ -63,13 +64,21 @@ class HomeView extends GetView<HomeController> {
                         chatController.addUserMessage(message);
                         chatController.createFreeChat(message); // Proceed with chat creation
                       });
+
+                      Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
                     }
 
 
                     else {
                       print('hit subscribed');
-                      chatController.addUserMessage(message);
-                      await chatController.createChat(message);
+
+                      //await chatController.createChat(message);
+                      await chatController.createChat(message).then((_) {
+                        //final int? chatId = chatController.chatId.value;
+                        Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
+                      });
+
+                      //final int? chatId = chatController.chatId.value;
                     }
 
                     /*Future.delayed(Duration(milliseconds: 500), () {
@@ -81,11 +90,11 @@ class HomeView extends GetView<HomeController> {
                       Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
                     });*/
 
-                    final int? chatId = chatController.chatId.value;
+                    //final int? chatId = chatController.chatId.value;
 
-                    print('::::---------ID----------::::::::::::::::::::$chatId.');
+                    //print('::::---------ID----------::::::::::::::::::::$chatId.');
 
-                    Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
+                   // Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
 
 
                     // Clear the text field

@@ -13,7 +13,7 @@ import '../controllers/chat_controller.dart';
 
 class ChatScreen extends StatelessWidget {
   final List<ChatContent>? chat;
-  //final String? initialMessage;
+  final String? initialMessage;
   final int? chatId;
   final String? chatName;
   final bool? isfree;
@@ -21,7 +21,7 @@ class ChatScreen extends StatelessWidget {
   ChatScreen(
       {super.key,
       this.chat,
-      //this.initialMessage,
+      this.initialMessage,
       this.chatId,
       this.chatName,
       this.isfree});
@@ -55,6 +55,10 @@ class ChatScreen extends StatelessWidget {
       print('hit subscribed');
       chatController.addUserMessage(initialMessage!);
       chatController.createChat(initialMessage!);
+    }*/
+
+    /*if (initialMessage != null) {
+      chatController.addUserMessage(initialMessage!);
     }*/
 
     if (chat != null) {

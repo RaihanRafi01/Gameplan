@@ -215,6 +215,11 @@ class ChatController extends GetxController {
   /// Create a new chat and fetch the bot's first message
   Future<void> createChat(String textContent) async {
     try {
+      // Clear previous messages and reset chatId for new chat
+      messages.clear();
+      chatId.value = null;
+
+      // Call the API to create a new chat
       final http.Response response = await _service.createChat(textContent);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -225,18 +230,21 @@ class ChatController extends GetxController {
         final int id = responseBody['id'];
         chatId.value = id; // Store the chat ID in reactive variable
 
-        print(':-----------------:create chat id::::${chatId.value}');
+        print('Chat ID created: $chatId');
+
+        addUserMessage(textContent);
 
         // Find the bot's message in `chat_contents`
         final List<dynamic> chatContents = responseBody['chat_contents'];
         final botMessage = chatContents.firstWhere(
               (message) => message['sent_by'] == 'Bot',
-          orElse: () => null, // Handle the case where no Bot message exists
+          orElse: () => null,
         );
 
         if (botMessage != null) {
           final String botTextContent = botMessage['text_content'];
           addBotMessage(botTextContent);
+          print('Added bot message: $botTextContent');
         } else {
           print('No Bot message found in the response.');
         }
@@ -246,10 +254,10 @@ class ChatController extends GetxController {
         print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
       }
     } catch (e) {
-      // Handle unexpected errors
       print('Error: $e');
     }
   }
+
 
   /// Send a message to the bot and fetch the response
   Future<void> chat(String textContent, int id) async {

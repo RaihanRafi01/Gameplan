@@ -80,17 +80,17 @@ class _DashboardViewState extends State<DashboardView> {
             // Show AboutPopup first
             await showAboutPopup(context);
             if (homeController.subscriptionStatus.value == 'not_subscribed') {
-              await showSubscriptionPopup(context);
+              //await showSubscriptionPopup(context);
             }
           } else if (homeController.subscriptionStatus.value == 'not_subscribed') {
-            await showSubscriptionPopup(context);
+            //await showSubscriptionPopup(context);
           }
         }
       });
 
       ever(homeController.subscriptionStatus, (status) async {
         if (!homeController.isEditingProfile.value && status == 'not_subscribed') {
-          await showSubscriptionPopup(context);
+          //await showSubscriptionPopup(context);
         }
       });
     });
