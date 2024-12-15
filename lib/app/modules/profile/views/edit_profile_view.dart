@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:agcourt/common/widgets/custom_textField.dart';
 import '../../../../common/customFont.dart';
+import '../../../data/services/api_services.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/profile_controller.dart';
 
@@ -86,8 +87,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                       backgroundImage: _pickedImage != null
                           ? FileImage(File(_pickedImage!.path))
                           : homeController.profilePicUrl.value.isNotEmpty
+
                           ? NetworkImage(
-                          'https://apparently-intense-toad.ngrok-free.app${homeController.profilePicUrl.value}')
+                        // https://agcourt.pythonanywhere.com         //  https://apparently-intense-toad.ngrok-free.app
+
+                          '${ApiService().baseUrl}${homeController.profilePicUrl.value}')
                           : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
                     ),
                     Positioned(

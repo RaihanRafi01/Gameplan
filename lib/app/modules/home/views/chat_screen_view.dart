@@ -73,41 +73,22 @@ class ChatScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: /*Icon(Icons.check_box_outlined)*/
-            GestureDetector(
-                onTap: () {
-                  if(isFree){
-                    print(':::::::::::::::FREE::::');
-                    Get.snackbar(
-                        'Subscribe!',
-                        'Please Subscribe to enable this feature',
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white
-                    );
-
-                    // Show the subscription popup
-                    Get.dialog(
-                      SubscriptionPopup(isManage: true),
-                    );
-                  }
-                  else if(!isFree){
-                    print(':::::::::::::NOT::FREE::::');
-                    historyController.saveChat(chatId!);
-                  }
-                },
-                child: Image.asset(
-                  'assets/images/history/save_icon.png',
-                  scale: 3,
-                )),
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context); // Default back action
+          },
+          child: Icon(
+            Icons.arrow_back, // Back button icon
+            color: Colors.black, // Adjust the color
+          ),
+        ),
         centerTitle: true,
-        title: CustomButton(
+        title: isFree? CustomButton(
           text: 'Upgrade To Pro',
           onPressed: () {
             showDialog(
               context: context,
-              barrierDismissible: true,
-              // Prevent closing the dialog by tapping outside
+              barrierDismissible: true, // Prevent closing the dialog by tapping outside
               builder: (BuildContext context) {
                 return const SubscriptionPopup(
                     isManage: true); // Use the SubscriptionPopup widget
@@ -119,37 +100,70 @@ class ChatScreen extends StatelessWidget {
           borderGradientColor: AppColors.cardGradient,
           isEditPage: true,
           textColor: AppColors.textColor,
-        ),
+        ): Text('AppLogo'),
         actions: [
+          // Add the custom back button
           Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 20),
             child: GestureDetector(
-                onTap: () {
-                  if(isFree){
-                    print(':::::::::::::::FREE::::');
-                    Get.snackbar(
-                        'Subscribe!',
-                        'Please Subscribe to enable this feature',
-                        snackPosition: SnackPosition.TOP,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white
-                    );
+              onTap: () {
+                if (isFree) {
+                  print(':::::::::::::::FREE::::');
+                  Get.snackbar(
+                    'Subscribe!',
+                    'Please Subscribe to enable this feature',
+                    snackPosition: SnackPosition.TOP,
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
 
-                    // Show the subscription popup
-                    Get.dialog(
-                      SubscriptionPopup(isManage: true),
-                    );
-                  }
-                  else if(!isFree){
-                    print(':::::::::::::NOT::FREE::::');
-                    _showDatePicker(context, chatId!);
-                  }
-                },
-                child: SvgPicture.asset('assets/images/history/pin_icon.svg')),
+                  // Show the subscription popup
+                  Get.dialog(
+                    SubscriptionPopup(isManage: true),
+                  );
+                } else if (!isFree) {
+                  print(':::::::::::::NOT::FREE::::');
+                  historyController.saveChat(chatId!);
+                }
+              },
+              child: Image.asset(
+                'assets/images/history/save_icon.png',
+                scale: 3,
+              ),
+            ),
+          ),
+          // Add the pin_icon to the right
+          GestureDetector(
+            onTap: () {
+              if (isFree) {
+                print(':::::::::::::::FREE::::');
+                Get.snackbar(
+                  'Subscribe!',
+                  'Please Subscribe to enable this feature',
+                  snackPosition: SnackPosition.TOP,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                );
+
+                // Show the subscription popup
+                Get.dialog(
+                  SubscriptionPopup(isManage: true),
+                );
+              } else if (!isFree) {
+                print(':::::::::::::NOT::FREE::::');
+                _showDatePicker(context, chatId!);
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: SvgPicture.asset(
+                'assets/images/history/pin_icon.svg',
+              ),
+            ),
           ),
         ],
       ),
-      body: Padding(
+        body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         child: Column(
           children: [

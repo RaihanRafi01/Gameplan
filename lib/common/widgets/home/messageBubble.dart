@@ -1,3 +1,4 @@
+import 'package:agcourt/app/data/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // Assuming you may use SVG icons.
 import 'package:agcourt/common/widgets/gradientCard.dart';
@@ -57,7 +58,7 @@ class MessageBubble extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: Obx(() => CircleAvatar(
             radius: 16,
-            backgroundImage: NetworkImage('https://apparently-intense-toad.ngrok-free.app/${controller.profilePicUrl.value}'),
+            backgroundImage: NetworkImage('${ApiService().baseUrl}${controller.profilePicUrl.value}'),
           )),
         ),
       ],

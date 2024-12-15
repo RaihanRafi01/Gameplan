@@ -49,7 +49,7 @@ class HomeView extends GetView<HomeController> {
                     // Navigate to ChatScreen with the message
 
                     final bool isFree = homeController.isFree.value;
-                    final int? chatId = chatController.chatId.value;
+                    int? chatId = chatController.chatId.value;
 
 
                     if (isFree) {
@@ -64,7 +64,7 @@ class HomeView extends GetView<HomeController> {
                         chatController.addUserMessage(message);
                         chatController.createFreeChat(message); // Proceed with chat creation
                       });
-
+                      chatId = chatController.chatId.value;
                       Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
                     }
 
@@ -74,7 +74,7 @@ class HomeView extends GetView<HomeController> {
 
                       //await chatController.createChat(message);
                       await chatController.createChat(message).then((_) {
-                        //final int? chatId = chatController.chatId.value;
+                        chatId = chatController.chatId.value;
                         Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
                       });
 

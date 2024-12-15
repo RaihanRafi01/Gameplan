@@ -94,7 +94,7 @@ class HomeController extends GetxController {
       print('::::::::::::::::::::subscriptionStatus:::::::::::::::::::::::::::$subscriptionStatus');
 
 
-      isFree.value = subscriptionStatus.value == 'not_subscribed';
+      isFree.value = subscriptionStatus.value != 'not_subscribed';
 
 
       /*if (isVerified) {
