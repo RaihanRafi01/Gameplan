@@ -8,7 +8,7 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'https://agcourt.pythonanywhere.com/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/
+  final String baseUrl = 'https://charming-willingly-starfish.ngrok-free.app/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
 
   // Sign-up method
   Future<http.Response> signUp(String email, String password, String username) async {
@@ -361,7 +361,7 @@ class ApiService {
     };
 
     // Make the POST request
-    return await http.patch(
+    return await http.post(
       url,
       headers: headers,
       body: jsonEncode(body),
@@ -449,6 +449,31 @@ class ApiService {
     return await http.delete(
       url,
       headers: headers,
+    );
+  }
+
+  Future<http.Response> editBotMessage(int ChatId, String textContent) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/edit_bot_message/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "text_content": textContent
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
     );
   }
 

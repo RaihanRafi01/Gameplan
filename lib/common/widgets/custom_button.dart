@@ -20,7 +20,7 @@ class CustomButton extends StatelessWidget {
 
   const CustomButton({
     super.key,
-    this.textSize = 16,
+    this.textSize = 16, //16 for all //
     required this.text,
     required this.onPressed,
     this.isGem = false,

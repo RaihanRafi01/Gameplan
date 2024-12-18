@@ -21,6 +21,9 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = Get.put(HomeController());
+    String baseUrl = ApiService().baseUrl.endsWith('/')
+        ? ApiService().baseUrl.substring(0, ApiService().baseUrl.length - 1)
+        : ApiService().baseUrl;
     //controller.fetchProfilePicUrl();
     return Row(
       mainAxisAlignment:
@@ -58,7 +61,7 @@ class MessageBubble extends StatelessWidget {
           padding: const EdgeInsets.only(left: 8.0),
           child: Obx(() => CircleAvatar(
             radius: 16,
-            backgroundImage: NetworkImage('${ApiService().baseUrl}${controller.profilePicUrl.value}'),
+            backgroundImage: NetworkImage('$baseUrl${controller.profilePicUrl.value}'),
           )),
         ),
       ],

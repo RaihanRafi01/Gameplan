@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -157,8 +158,16 @@ class HistoryController extends GetxController {
 
   Future<void> updateChatTitle(int chatId, String title) async {
     try {
+
+
       // Make the API call to get chat list
       final http.Response verificationResponse = await _service.updateChatTitle(chatId,title);
+
+      print('hit update chat ::::::::::::::::::::::::::chatId:::::::::::::::::$chatId');
+      print('hit update chat ::::::::::::::::::::::::::::title:::::::::::::::$title');
+
+      print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.statusCode}');
+      print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.body}');
 
       if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
@@ -182,26 +191,6 @@ class HistoryController extends GetxController {
       print('::::::::::::::::::::::::CODE::::::${response.toString()}');
 
       if (response.statusCode == 200) {
-        // Decode the API response into a list of maps
-        //fetchData();
-
-        // Add an event to the calendar controller
-
-        // Add an event to the CalendarController
-        /*calendarController.events.add(
-          Event(
-            date: pinDate,
-            title: chatName,
-            time: DateFormat('hh:mm a').format(pinDate), // Format time as a string
-          ),
-        );
-
-        calendarController.events.add(
-          Event(
-            date: pinDate,
-            title: chatName,
-          ),
-        );*/
         Get.snackbar('Pinned', 'Plan pinned successfully');
         fetchPinChatList();
       } else {
@@ -356,6 +345,12 @@ class HistoryController extends GetxController {
 
     // Group chats by date and update the reactive variable
     groupedChatHistory.value = groupChatsByDate(parsedChats);
+  }
+
+  Chat? getChatById(int chatId) {
+    return groupedChatHistory.values
+        .expand((chats) => chats)
+        .firstWhereOrNull((chat) => chat.id == chatId);
   }
 
 }

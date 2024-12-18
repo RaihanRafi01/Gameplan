@@ -59,7 +59,8 @@ class ProfileView extends GetView<ProfileController> {
               text: 'MANAGE SUBSCRIPTION',
               onTap: () {
                 print(':::::::::::::::::::VALUE::::::::::::::::${homeController.subscriptionStatus.value}');
-                if (homeController.subscriptionStatus.value == 'not_subscribed') {
+                final bool isFree = homeController.isFree.value;
+                if (isFree) {
                   showDialog(
                     context: context,
                     barrierDismissible: true, // Prevent closing the dialog by tapping outside

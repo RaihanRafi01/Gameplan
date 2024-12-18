@@ -16,7 +16,6 @@ class ChatScreen extends StatelessWidget {
   final String? initialMessage;
   final int? chatId;
   final String? chatName;
-  final bool? isfree;
 
   ChatScreen(
       {super.key,
@@ -24,7 +23,7 @@ class ChatScreen extends StatelessWidget {
       this.initialMessage,
       this.chatId,
       this.chatName,
-      this.isfree});
+      });
 
   // Initialize the controller
   final ChatController chatController = Get.put(ChatController());
@@ -61,6 +60,7 @@ class ChatScreen extends StatelessWidget {
       chatController.addUserMessage(initialMessage!);
     }*/
 
+
     if (chat != null) {
       chatController.initializeMessages(chat!);
       chatController.chatId.value = chatId;
@@ -71,6 +71,7 @@ class ChatScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 40,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: GestureDetector(
@@ -84,6 +85,8 @@ class ChatScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: isFree? CustomButton(
+          height: 30,
+          textSize: 12,
           text: 'Upgrade To Pro',
           onPressed: () {
             showDialog(
@@ -183,7 +186,7 @@ class ChatScreen extends StatelessWidget {
                       isSentByUser: messageData['isSentByUser'],
                       editCallback: !messageData['isSentByUser']
                           ? () =>
-                              chatController.startEditingBotMessage(actualIndex)
+                              chatController.startEditingMessage(actualIndex)
                           : null,
                     );
                   },
@@ -195,13 +198,7 @@ class ChatScreen extends StatelessWidget {
                 padding: 0,
                 textController: chatController.messageController,
                 onSend: (){
-                  if(isfree == true){
-                    print('free send');
-                    chatController.sendFreeMessage() ;
-                  }else{
-                    print('paid send');
-                    chatController.sendMessage() ;
-                  }
+                  chatController.sendMessage() ;
                 }  ,
                 hintText: chatController.editingMessageIndex.value != null
                     ? 'Edit bot message'

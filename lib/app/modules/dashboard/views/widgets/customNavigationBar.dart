@@ -10,7 +10,6 @@ class CustomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
 
-
     final List<Map<String, String>> navItems = [
       {
         'label': 'History',
@@ -34,23 +33,23 @@ class CustomNavigationBar extends StatelessWidget {
       },
     ];
 
-    return Obx(() => BottomNavigationBar(
-      currentIndex: controller.currentIndex.value,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      onTap: controller.updateIndex,
-      items: navItems.map((item) {
-        final isSelected = navItems.indexOf(item) == controller.currentIndex.value;
-        return BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            isSelected ? item['filledIcon']! : item['defaultIcon']!,
-            key: ValueKey('${item['label']}_$isSelected'), // Unique key for each icon
-          ),
-          label: item['label'],
-        );
-      }).toList(),
-    ));
+    return Container(
+      height: 70, // Set the desired height
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: List.generate(navItems.length, (index) {
+          final isSelected = index == controller.currentIndex.value;
+          final item = navItems[index];
+          return GestureDetector(
+            onTap: () => controller.updateIndex(index),
+            child: SvgPicture.asset(
+              isSelected ? item['filledIcon']! : item['defaultIcon']!,
+              key: ValueKey('${item['label']}_$isSelected'),
+            ),
+          );
+        }),
+      ),
+    );
   }
 }

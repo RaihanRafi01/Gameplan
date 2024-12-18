@@ -1,3 +1,4 @@
+import 'package:agcourt/app/data/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -30,7 +31,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
           onUrlChange: (UrlChange change) {
             print('::::::::::::::::::::::::::::::URL::::${change.url}');
-            if (change.url == 'https://apparently-intense-toad.ngrok-free.app/subscription_app/success/') {
+            if (change.url == '${ApiService().baseUrl}subscription_app/success/') {
               // Navigate back to the previous screen
               Navigator.pop(context);
               widget.onUrlMatched();

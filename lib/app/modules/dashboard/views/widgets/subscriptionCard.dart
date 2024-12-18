@@ -29,53 +29,59 @@ class SubscriptionOptionCard extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: AppColors.borderGradient,
+                colors: AppColors.cardGradient,
               ),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Container(
-              margin: const EdgeInsets.all(3), // Space between the gradient border and the inner content
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Text(
-                      title,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Text(
+                    title,
+                    style: h4.copyWith(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    price,
+                    style: h4.copyWith(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    weeklyRate,
+                    style: h4.copyWith(fontSize: 14, color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  // New "Choose" button with rounded white background
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white, // White background
+                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                    ),
+                    child: Text(
+                      'Choose',
                       style: h4.copyWith(
-                        fontSize: 16,
-                        color: isBestValue ? Colors.blue : Colors.black,
+                        fontSize: 14,
+                        color: AppColors.appColor, // Adjust color if you have a primary theme color
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      price,
-                      style: h4.copyWith(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      weeklyRate,
-                      style: h4.copyWith(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          if (isBestValue)
-            Positioned(
-              top: -26, // Position the image above the border
-              left: 06,
-              right: 06,
-              child: SvgPicture.asset(
-                'assets/images/home/best_value.svg',
-                height: 40,
-                width: 20, // Adjust the height as needed
-              ),
-            ),
         ],
       ),
     );

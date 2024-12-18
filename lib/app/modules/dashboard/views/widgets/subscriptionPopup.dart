@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../../common/appColors.dart';
 import '../../../authentication/controllers/authentication_controller.dart';
 import 'subscriptionCard.dart';
 
@@ -10,6 +11,14 @@ class SubscriptionPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthenticationController _controller = Get.put(AuthenticationController());
+
+    // List of features
+    final List<String> features = [
+      'Unlimited Ai plan',
+      'Unlimited Calendar use',
+      '24/7 Customer support',
+      'Cancel Anytime',
+    ];
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -33,19 +42,27 @@ class SubscriptionPopup extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                "Easy Life",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Personalized Responses (E.G., Tailored To User Preferences).",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
+            Column(
+              children: features.map((feature) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5), // Adds spacing between rows
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: AppColors.appColor2),
+                      const SizedBox(width: 10),
+                      Text(
+                        feature,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+
               const SizedBox(height: 30),
               // Subscription Option Cards (Horizontal Scroll)
               SingleChildScrollView(

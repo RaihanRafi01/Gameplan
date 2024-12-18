@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../home/views/chat_screen_view.dart';
 import '../controllers/history_controller.dart';
@@ -18,12 +20,34 @@ class HistoryView extends GetView<HistoryController> {
     final bool isFree = homeController.isFree.value;
 
     return Scaffold(
-      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            SizedBox(height: 40),
+            if(isFree)
+            CustomButton(
+              height: 30,
+              textSize: 12,
+              text: 'Upgrade To Pro',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true, // Prevent closing the dialog by tapping outside
+                  builder: (BuildContext context) {
+                    return const SubscriptionPopup(
+                        isManage: true); // Use the SubscriptionPopup widget
+                  },
+                );
+              },
+              width: 150,
+              backgroundGradientColor: AppColors.transparent,
+              borderGradientColor: AppColors.cardGradient,
+              isEditPage: true,
+              textColor: AppColors.textColor,
+            ),
+            SizedBox(height: 12),
             Row(
               children: [
                 Text(
@@ -95,7 +119,6 @@ class HistoryView extends GetView<HistoryController> {
                             title: GestureDetector(
                               onTap: () {
                                 Get.to(() => ChatScreen(
-                                  isfree: isFree,
                                   chat: chat.chatContents,
                                   chatId: chat.id,
                                   chatName: chat.chatName,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color appColor = Color(0xFF3D619B);
-  //static const Color appColor2 = Color(0xFF4568AC);
+  static const Color appColor2 = Color(0xFF051960);
   static const Color textColor = Color(0xFF123456);
   static const Color textColorLink = Color(0xFF4568AC);
   static const Color textHistory = Color(0xFF434343);
@@ -11,6 +11,7 @@ class AppColors {
   static const List<Color> transparent = [Colors.transparent,Colors.transparent];
   static const List<Color> colorGreen = [Color(0xFF46E038), Color(0xFF46E038)];
   static const List<Color> colorRed = [Color(0xFFFF1515), Color(0xFFFF1515)];
+  static const List<Color> colorBlack = [Color(0xFF434343), Color(0xFF434343)];
 
   static const Color textHeader = Color(0xFF1B1B1B);
   static const Color textHeader2 = Color(0xFF1B1B1B);

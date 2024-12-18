@@ -32,6 +32,43 @@ class ChatController extends GetxController {
     }
   }
 
+  /// Save the edited bot message
+  Future<void> saveEditedMessage(String newMessage) async {
+    final index = editingMessageIndex.value;
+
+    if (index != null && index >= 0 && !messages[index]['isSentByUser']) {
+
+      print('::::::::::::::::::::::::::::::::::::::INDEX : $index');
+
+      try {
+        final http.Response response = await _service.editBotMessage(index,newMessage);
+
+        print('::::::::::::::::::::::::::::::::::::::EDIT BOT            CODE: ${response.statusCode}');
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+
+          print('::::::::::::::::::::::::::::::::::::::EDIT BOT : ${response.body}');
+
+
+        } else {
+          // Handle non-200/201 responses
+
+        }
+      } catch (e) {
+        // Handle unexpected errors
+        print('Error: $e');
+      }
+
+      // Update the message in the list
+      messages[index] = {
+        'message': newMessage,
+        'isSentByUser': false,
+      };
+      editingMessageIndex.value = null; // Exit editing mode
+      messageController.clear(); // Clear the input field
+    }
+  }
+
   /// Add a new message (either from user or bot)
   void addMessage(ChatContent content) {
     final isSentByUser = content.sentBy.toLowerCase() == 'user';
@@ -57,16 +94,33 @@ class ChatController extends GetxController {
     });
   }
 
+  /// Start editing a message
+  void startEditingMessage(int index) {
+    final isBotMessage = !messages[index]['isSentByUser'];
+    if (isBotMessage) {
+      editingMessageIndex.value = index;
+      messageController.text = messages[index]['message']; // Pre-fill input
+    } else {
+      Get.snackbar(
+        'Error',
+        'You can only edit bot messages.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   /// Send a message and fetch the bot's response
   Future<void> sendMessage() async {
     final text = messageController.text.trim();
     if (text.isNotEmpty) {
       if (editingMessageIndex.value != null) {
         // Edit an existing bot message
-        //saveEditedMessage(text);
+        saveEditedMessage(text);
       } else {
         // Add user message
-        addUserMessage(text);
+        //addUserMessage(text);
         messageController.clear();
 
         // Fetch bot response
@@ -84,7 +138,7 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<void> sendFreeMessage() async {
+  /*Future<void> sendFreeMessage() async {
     final text = messageController.text.trim();
     if (text.isNotEmpty) {
       // Add user message
@@ -99,13 +153,13 @@ class ChatController extends GetxController {
       // Ensure you call createFreeChat or other logic to fetch bot response
       await createFreeChat(text);
     }
-  }
+  }*/
 
 
 
 
 
-  /// Save a chat message (user or bot) in free mode
+  /*/// Save a chat message (user or bot) in free mode
   Future<void> saveFreeChatMessage(String message, bool isSentByUser) async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -128,9 +182,9 @@ class ChatController extends GetxController {
     } catch (e) {
       print('Error saving free chat message: $e');
     }
-  }
+  }*/
 
-  /// Retrieve free-mode messages from SharedPreferences
+  /*/// Retrieve free-mode messages from SharedPreferences
   Future<List<Map<String, dynamic>>> getFreeMessages() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -144,10 +198,10 @@ class ChatController extends GetxController {
       print('Error retrieving free messages: $e');
       return [];
     }
-  }
+  }*/
 
   /// Load free-mode messages into the chat controller
-  void loadFreeMessages() async {
+  /*void loadFreeMessages() async {
     final List<Map<String, dynamic>> freeMessages = await getFreeMessages();
     print('Free messages loaded: $freeMessages'); // Debug log
 
@@ -157,12 +211,12 @@ class ChatController extends GetxController {
         'isSentByUser': messageData['isSentByUser'],
       });
     }
-  }
+  }*/
 
 
 
 
-  Future<void> createFreeChat(String textContent) async {
+  /*Future<void> createFreeChat(String textContent) async {
     try {
       final http.Response response = await _service.createFreeChat(textContent);
 
@@ -205,11 +259,7 @@ class ChatController extends GetxController {
     } catch (e) {
       print('Error: $e');
     }
-  }
-
-
-
-
+  }*/
 
 
   /// Create a new chat and fetch the bot's first message
@@ -251,6 +301,16 @@ class ChatController extends GetxController {
       } else {
         // Handle non-200/201 responses
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        Get.snackbar(
+            'Limit Crossed',
+            'You already reached your limit!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white
+        );
+        Get.dialog(
+          SubscriptionPopup(isManage: true),
+        );
         print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
       }
     } catch (e) {
@@ -265,6 +325,8 @@ class ChatController extends GetxController {
       final http.Response response = await _service.chat(textContent, id);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+
+        addUserMessage(textContent);
         // Parse the response body
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
@@ -284,6 +346,16 @@ class ChatController extends GetxController {
       } else {
         // Handle non-200/201 responses
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        Get.snackbar(
+            'Limit Crossed',
+            'You already reached your limit!',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white
+        );
+        Get.dialog(
+          SubscriptionPopup(isManage: true),
+        );
         print('Error: ${responseBody['message'] ?? 'Unknown error occurred.'}');
       }
     } catch (e) {
@@ -292,9 +364,9 @@ class ChatController extends GetxController {
     }
   }
 
-  /// Start editing an existing bot message
+  /*/// Start editing an existing bot message
   void startEditingBotMessage(int index) {
     editingMessageIndex.value = index;
     messageController.text = messages[index]['message'];
-  }
+  }*/
 }

@@ -24,70 +24,71 @@ class SettingsView extends GetView {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Subscription Details',style: h3.copyWith(fontSize: 18)),
-            SizedBox(height: 20,),
-            // The existing card
-            Container(
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  style: BorderStyle.solid,
-                  color: Colors.transparent,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Subscription Details',style: h3.copyWith(fontSize: 18)),
+              SizedBox(height: 20,),
+              // The existing card
+              Container(
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  gradient: const LinearGradient(
+                    colors: AppColors.cardGradient,  // Gradient colors
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(10),
-                gradient: const LinearGradient(
-                  colors: AppColors.cardGradient,  // Gradient colors
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: h4.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        price,
-                        style: h1.copyWith(fontSize: 20),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Expiry Date: $expiryDate",
-                        style: h4.copyWith(fontSize: 12),
-                      ),
-                    ],
+                child: Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: h4.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          price,
+                          style: h1.copyWith(fontSize: 20),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Expiry Date: $expiryDate",
+                          style: h4.copyWith(fontSize: 12),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Two buttons at the bottom
-            SizedBox(height: 30), // Space between the card and the buttons
-            CustomButton(text: 'Update', onPressed: (){
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                showDialog(
-                  context: context,
-                  barrierDismissible: true,  // Prevent closing the dialog by tapping outside
-                  builder: (BuildContext context) {
-                    return const SubscriptionPopup(isManage: true,);  // Use the SubscriptionPopup widget
-                  },
-                );
-              });
-            },backgroundGradientColor: AppColors.colorGreen,),
-          ],
+              // Two buttons at the bottom
+              SizedBox(height: 30), // Space between the card and the buttons
+              CustomButton(text: 'Update', onPressed: (){
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,  // Prevent closing the dialog by tapping outside
+                    builder: (BuildContext context) {
+                      return const SubscriptionPopup(isManage: true,);  // Use the SubscriptionPopup widget
+                    },
+                  );
+                });
+              },backgroundGradientColor: AppColors.cardGradient,),
+              SizedBox(height: 16),
+              CustomButton(text: 'Cancel', onPressed: (){
+                // do the cancel logic to stripe
+              },backgroundGradientColor: AppColors.colorBlack,),
+            ],
+          ),
         ),
       ),
     );
