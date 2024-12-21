@@ -27,6 +27,10 @@ class _EditProfileViewState extends State<EditProfileView> {
   late final TextEditingController _emailController;
   late final TextEditingController _aboutYouController;
 
+  String baseUrl = ApiService().baseUrl.endsWith('/')
+      ? ApiService().baseUrl.substring(0, ApiService().baseUrl.length - 1)
+      : ApiService().baseUrl;
+
   @override
   void initState() {
     super.initState();
@@ -91,7 +95,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ? NetworkImage(
                         // https://agcourt.pythonanywhere.com         //  https://apparently-intense-toad.ngrok-free.app
 
-                          '${ApiService().baseUrl}${homeController.profilePicUrl.value}')
+                          '$baseUrl${homeController.profilePicUrl.value}')
                           : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
                     ),
                     Positioned(

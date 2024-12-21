@@ -1,9 +1,12 @@
+import 'package:agcourt/app/modules/authentication/views/reset_password_view.dart';
 import 'package:agcourt/app/modules/authentication/views/verify_o_t_p_view.dart';
 import 'package:agcourt/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:agcourt/app/modules/home/views/webViewScreen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../common/widgets/auth/popUpWidget.dart';
 import '../../../data/services/api_services.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../home/views/home_view.dart';
@@ -13,6 +16,7 @@ import 'package:http/http.dart' as http;
 class AuthenticationController extends GetxController {
   final HomeController homeController = Get.put(HomeController());
   final ApiService _service = ApiService();
+  var isLoading = false.obs; // Reactive loading state
 
 
   // Observable variable to store username
@@ -28,6 +32,7 @@ class AuthenticationController extends GetxController {
   }
 
   Future<void> signUp(String email, String password, String username) async {
+    isLoading.value = true; // Show the loading screen
     try {
       final http.Response response = await _service.signUp(
           email, password, username);
@@ -69,10 +74,13 @@ class AuthenticationController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
       print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
     }
   }
 
   Future<void> login(String username, String password) async {
+    isLoading.value = true; // Show the loading screen
     try {
       final http.Response response = await _service.login(username, password);
 
@@ -111,11 +119,14 @@ class AuthenticationController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
       print('Error: $e');
+    } finally {
+      isLoading.value = false; // Hide the loading screen
     }
   }
 
 
   Future<void> verifyOTP(String userName,String otp) async {
+    isLoading.value = true; // Show the loading screen
     try {
       print(':::::OTP:::::::$otp::::::USERNAME:::::$userName::::');
       final http.Response response = await _service.verifyOTP(
@@ -142,10 +153,45 @@ class AuthenticationController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
       print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
+    }
+  }
+
+  Future<void> verifyForgotOTP(String userName,String otp) async {
+    isLoading.value = true; // Show the loading screen
+    try {
+      print(':::::FORGOT HIT::::');
+      print(':::::OTP:::::::$otp::::::USERNAME:::::$userName::::');
+      final http.Response response = await _service.verifyForgotOTP(
+          userName, otp);
+
+      print(':::::::::::::::RESPONSE:::::::::::::::::::::${response.body
+          .toString()}');
+      print(':::::::::::::::CODE:::::::::::::::::::::${response.statusCode}');
+      print(':::::::::::::::REQUEST:::::::::::::::::::::${response.request}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Assuming the server responds with success on code 200 or 201
+        final responseBody = jsonDecode(response.body);
+
+        print(':::::::::::::::responseBody:::::::::::::::::::::${responseBody}');
+        Get.offAll (() => ResetPasswordView(userName: userName,));
+
+      } else {
+        final responseBody = jsonDecode(response.body);
+        Get.snackbar('Error', responseBody['message'] ?? 'Verification failed');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred');
+      print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
     }
   }
 
   Future<void> resendOTP() async {
+    isLoading.value = true; // Show the loading screen
     try {
       print(':::::resendOTP:::::::::::::::::');
       final http.Response response = await _service.resendOTP();
@@ -168,9 +214,91 @@ class AuthenticationController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
       print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
     }
   }
 
+  Future<void> sendResetOTP(String userName) async {
+    isLoading.value = true; // Show the loading screen
+    try {
+      print('::::::::USERNAME:::::$userName::::');
+      final http.Response response = await _service.sendResetOTP(userName);
+
+      print(':::::::::::::::RESPONSE:::::::::::::::::::::${response.body
+          .toString()}');
+      print(':::::::::::::::CODE:::::::::::::::::::::${response.statusCode}');
+      print(':::::::::::::::REQUEST:::::::::::::::::::::${response.request}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Assuming the server responds with success on code 200 or 201
+        final responseBody = jsonDecode(response.body);
+
+        print(':::::::::::::::responseBody:::::::::::::::::::::${responseBody}');
+
+        Get.offAll(() => VerifyOTPView(forgotUserName: userName,isForgot: true,));
+
+
+      } else {
+        final responseBody = jsonDecode(response.body);
+        Get.snackbar('Error', responseBody['message'] ?? 'Please Provide your correct UserName');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An unexpected error occurred');
+      print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
+    }
+  }
+
+
+  Future<void> resetPassword(String userName,String password) async {
+    isLoading.value = true; // Show the loading screen
+    try {
+      print(':::::resetPassword API Call Started:::::');
+      final http.Response response = await _service.resetPassword(userName,password);
+
+      print(':::::RESPONSE::::: ${response.body.toString()}');
+      print(':::::CODE::::: ${response.statusCode}');
+      print(':::::REQUEST::::: ${response.request}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Assuming the server responds with success on code 200 or 201
+        final responseBody = jsonDecode(response.body);
+        print(':::::responseBody::::: $responseBody');
+
+        // Show bottom sheet on successful response
+        Get.bottomSheet(
+          PasswordChangedBottomSheet(
+            onBackToLogin: () {
+              Get.back(); // Close the bottom sheet
+              // Navigate to the login screen or perform another action here
+            },
+          ),
+          isScrollControlled: true,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to reset password. Please try again later.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      print('Error: $e');
+    }finally {
+      isLoading.value = false; // Hide the loading screen
+    }
+  }
 
   /*Future<void> checkVerified() async {
 

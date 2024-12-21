@@ -18,7 +18,8 @@ class SignUpView extends StatefulWidget {
 }
 
 class _SignUpViewState extends State<SignUpView> {
-  final AuthenticationController _controller = Get.put(AuthenticationController());
+  final AuthenticationController _controller = Get.put(
+      AuthenticationController());
   final HomeController homeController = Get.put(HomeController());
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -33,11 +34,19 @@ class _SignUpViewState extends State<SignUpView> {
     });
   }
 
-  void  _handleSignUp() {
-    if (_usernameController.text.trim().isEmpty ||
-        _emailController.text.trim().isEmpty ||
-        _passwordController.text.trim().isEmpty ||
-        _confirmPasswordController.text.trim().isEmpty) {
+  void _handleSignUp() {
+    if (_usernameController.text
+        .trim()
+        .isEmpty ||
+        _emailController.text
+            .trim()
+            .isEmpty ||
+        _passwordController.text
+            .trim()
+            .isEmpty ||
+        _confirmPasswordController.text
+            .trim()
+            .isEmpty) {
       Get.snackbar('Error', 'Please fill in all fields');
       return;
     }
@@ -49,7 +58,8 @@ class _SignUpViewState extends State<SignUpView> {
 
     homeController.usernameOBS.value = _usernameController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
+    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS
+        .value}');
 
     // Proceed with sign-up logic if validations pass
     _controller.signUp(
@@ -64,76 +74,96 @@ class _SignUpViewState extends State<SignUpView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomHeadertext(
-                header1: "Create an account",
-                header2: "Sign up now to get started on your journey.",
-              ),
-              const SizedBox(height: 30),
-              CustomTextField(
-                label: 'User Name',
-                hint: 'Enter UserName',
-                prefixIcon: Icons.person_outline_rounded,
-                controller: _usernameController,
-              ),
-              CustomTextField(
-                label: 'Your email',
-                hint: 'Enter Email',
-                keyboardType: TextInputType.emailAddress,
-                prefixIcon: Icons.email_outlined,
-                controller: _emailController,
-              ),
-              CustomTextField(
-                label: 'Password',
-                hint: 'Enter Password',
-                prefixIcon: Icons.lock_outline_rounded,
-                isPassword: true,
-                controller: _passwordController,
-              ),
-              CustomTextField(
-                label: 'Confirm Password',
-                hint: 'Confirm Password',
-                prefixIcon: Icons.lock_outline_rounded,
-                isPassword: true,
-                controller: _confirmPasswordController,
-              ),
-              TermsAndConditionsCheckbox(
-                onCheckboxChanged: _onCheckboxChanged,
-              ),
-              const SizedBox(height: 20),
-              CustomButton(
-                text: "Sign Up",
-                onPressed: _isChecked ? (){
-                  _handleSignUp();
-                } : (){
-                  Get.snackbar('Error', 'Please accept Terms & condition & privacy policy');
-                },
-              ),
-              Row(
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Already Have an Account?",
-                    style: h4,
+                  CustomHeadertext(
+                    header1: "Create an account",
+                    header2: "Sign up now to get started on your journey.",
                   ),
-                  TextButton(
-                    onPressed: () => Get.to(() => AuthenticationView()),
-                    child: Text(
-                      "Log In",
-                      style: h3.copyWith(color: AppColors.textColorLink),
-                    ),
+                  const SizedBox(height: 30),
+                  CustomTextField(
+                    label: 'User Name',
+                    hint: 'Enter UserName',
+                    prefixIcon: Icons.person_outline_rounded,
+                    controller: _usernameController,
+                  ),
+                  CustomTextField(
+                    label: 'Your email',
+                    hint: 'Enter Email',
+                    keyboardType: TextInputType.emailAddress,
+                    prefixIcon: Icons.email_outlined,
+                    controller: _emailController,
+                  ),
+                  CustomTextField(
+                    label: 'Password',
+                    hint: 'Enter Password',
+                    prefixIcon: Icons.lock_outline_rounded,
+                    isPassword: true,
+                    controller: _passwordController,
+                  ),
+                  CustomTextField(
+                    label: 'Confirm Password',
+                    hint: 'Confirm Password',
+                    prefixIcon: Icons.lock_outline_rounded,
+                    isPassword: true,
+                    controller: _confirmPasswordController,
+                  ),
+                  TermsAndConditionsCheckbox(
+                    onCheckboxChanged: _onCheckboxChanged,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    text: "Sign Up",
+                    onPressed: _isChecked
+                        ? () {
+                      _handleSignUp();
+                    }
+                        : () {
+                      Get.snackbar(
+                        'Error',
+                        'Please accept Terms & Conditions & Privacy Policy',
+                      );
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Already Have an Account?",
+                        style: h4,
+                      ),
+                      TextButton(
+                        onPressed: () => Get.to(() => AuthenticationView()),
+                        child: Text(
+                          "Log In",
+                          style: h3.copyWith(color: AppColors.textColorLink),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+          // Loading Indicator
+          Obx(() {
+            return _controller.isLoading.value
+                ? Container(
+              color: Colors.black45,
+              child: const Center(
+                child: CircularProgressIndicator(color: AppColors.appColor2,),
+              ),
+            )
+                : const SizedBox.shrink();
+          }),
+        ],
       ),
     );
   }

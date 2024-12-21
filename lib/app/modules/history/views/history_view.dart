@@ -20,12 +20,16 @@ class HistoryView extends GetView<HistoryController> {
     final bool isFree = homeController.isFree.value;
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: SvgPicture.asset('assets/images/auth/app_logo.svg'),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 40),
+            //SizedBox(height: 40),
             if(isFree)
             CustomButton(
               height: 30,

@@ -20,6 +20,7 @@ class ChatController extends GetxController {
 
   // To keep track of editing index
   Rxn<int> editingMessageIndex = Rxn<int>();
+  Rxn<int> botIndex = Rxn<int>();
 
   // Reactive variable to store the chat ID
   Rxn<int> chatId = Rxn<int>();
@@ -33,15 +34,15 @@ class ChatController extends GetxController {
   }
 
   /// Save the edited bot message
-  Future<void> saveEditedMessage(String newMessage) async {
+  Future<void> saveEditedMessage(String newMessage,int botChatId) async {
     final index = editingMessageIndex.value;
 
     if (index != null && index >= 0 && !messages[index]['isSentByUser']) {
 
-      print('::::::::::::::::::::::::::::::::::::::INDEX : $index');
+      print('::::::::::::::::::::::::::::::::::::::INDEX : $botChatId');
 
       try {
-        final http.Response response = await _service.editBotMessage(index,newMessage);
+        final http.Response response = await _service.editBotMessage(botChatId,newMessage);
 
         print('::::::::::::::::::::::::::::::::::::::EDIT BOT            CODE: ${response.statusCode}');
 
@@ -95,8 +96,9 @@ class ChatController extends GetxController {
   }
 
   /// Start editing a message
-  void startEditingMessage(int index) {
+  void startEditingMessage(int index ,int botChatId) {
     final isBotMessage = !messages[index]['isSentByUser'];
+    botIndex.value = botChatId;
     if (isBotMessage) {
       editingMessageIndex.value = index;
       messageController.text = messages[index]['message']; // Pre-fill input
@@ -117,7 +119,8 @@ class ChatController extends GetxController {
     if (text.isNotEmpty) {
       if (editingMessageIndex.value != null) {
         // Edit an existing bot message
-        saveEditedMessage(text);
+
+        saveEditedMessage(text,botIndex.value!);
       } else {
         // Add user message
         //addUserMessage(text);

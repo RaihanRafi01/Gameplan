@@ -23,26 +23,28 @@ class HelpSupportView extends GetView {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            CustomTextField(
-              label: 'Email',
-              prefixIcon: Icons.email_outlined,
-              controller: emailController, // Attach controller
-            ),
-            const SizedBox(height: 20),
-            CustomTextField(
-              label: 'Write Your Problem',
-              controller: problemController, // Attach controller
-            ),
-            const Spacer(),
-            CustomButton(
-              text: 'SEND',
-              onPressed: () {
-                _validateAndSend(context, emailController, problemController);
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              CustomTextField(
+                label: 'Email',
+                prefixIcon: Icons.email_outlined,
+                controller: emailController, // Attach controller
+              ),
+              const SizedBox(height: 20),
+              CustomTextField(
+                label: 'Write Your Problem',
+                controller: problemController, // Attach controller
+              ),
+              SizedBox(height: 30,),
+              CustomButton(
+                text: 'SEND',
+                onPressed: () {
+                  _validateAndSend(context, emailController, problemController);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

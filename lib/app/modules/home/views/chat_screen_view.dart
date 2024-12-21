@@ -103,15 +103,48 @@ class ChatScreen extends StatelessWidget {
           borderGradientColor: AppColors.cardGradient,
           isEditPage: true,
           textColor: AppColors.textColor,
-        ): Text('AppLogo'),
+        ): SvgPicture.asset('assets/images/auth/app_logo.svg'),
         actions: [
-          // Add the custom back button
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: GestureDetector(
-              onTap: () {
-                if (isFree) {
-                  print(':::::::::::::::FREE::::');
+          PopupMenuButton<int>(
+            color: Colors.white,
+            icon: Icon(Icons.menu), // 3-line "hamburger" menu icon
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12), // Rounded corners
+            ),
+            offset: Offset(0, 50), // Position the menu below the AppBar
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/history/save_icon.png',
+                      scale: 3,
+                    ),
+                    SizedBox(width: 8),
+                    Text("Save"),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/history/pin_icon.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                    SizedBox(width: 8),
+                    Text("Pin"),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 1) {
+                // Handle "Save" action
+                /*if (isFree) {
                   Get.snackbar(
                     'Subscribe!',
                     'Please Subscribe to enable this feature',
@@ -120,49 +153,31 @@ class ChatScreen extends StatelessWidget {
                     colorText: Colors.white,
                   );
 
-                  // Show the subscription popup
                   Get.dialog(
                     SubscriptionPopup(isManage: true),
                   );
-                } else if (!isFree) {
-                  print(':::::::::::::NOT::FREE::::');
+                } else {*/
                   historyController.saveChat(chatId!);
-                }
-              },
-              child: Image.asset(
-                'assets/images/history/save_icon.png',
-                scale: 3,
-              ),
-            ),
-          ),
-          // Add the pin_icon to the right
-          GestureDetector(
-            onTap: () {
-              if (isFree) {
-                print(':::::::::::::::FREE::::');
-                Get.snackbar(
-                  'Subscribe!',
-                  'Please Subscribe to enable this feature',
-                  snackPosition: SnackPosition.TOP,
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                );
+                //}
+              } else if (value == 2) {
+                // Handle "Pin" action
+                /*if (isFree) {
+                  Get.snackbar(
+                    'Subscribe!',
+                    'Please Subscribe to enable this feature',
+                    snackPosition: SnackPosition.TOP,
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
 
-                // Show the subscription popup
-                Get.dialog(
-                  SubscriptionPopup(isManage: true),
-                );
-              } else if (!isFree) {
-                print(':::::::::::::NOT::FREE::::');
-                _showDatePicker(context, chatId!);
+                  Get.dialog(
+                    SubscriptionPopup(isManage: true),
+                  );
+                } else {*/
+                  _showDatePicker(context, chatId!);
+                //}
               }
             },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: SvgPicture.asset(
-                'assets/images/history/pin_icon.svg',
-              ),
-            ),
           ),
         ],
       ),
@@ -185,8 +200,12 @@ class ChatScreen extends StatelessWidget {
                       message: messageData['message'],
                       isSentByUser: messageData['isSentByUser'],
                       editCallback: !messageData['isSentByUser']
-                          ? () =>
-                              chatController.startEditingMessage(actualIndex)
+                          ? () {
+                        var botChatId = chat?[actualIndex].id;
+                        print('::::::::::botChatId HIT::::::::::::::::::::::::::::::::::$botChatId');
+                        chatController.startEditingMessage(actualIndex,botChatId!);
+                      }
+
                           : null,
                     );
                   },

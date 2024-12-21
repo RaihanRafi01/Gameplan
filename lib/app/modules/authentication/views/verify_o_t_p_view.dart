@@ -11,7 +11,9 @@ import '../../../data/services/api_services.dart';
 import '../controllers/authentication_controller.dart';
 
 class VerifyOTPView extends StatefulWidget {
-  const VerifyOTPView({super.key});
+  final String? forgotUserName;
+  final bool isForgot;
+  const VerifyOTPView({super.key,this.forgotUserName,this.isForgot = false});
 
   @override
   State<VerifyOTPView> createState() => _VerifyOTPViewState();
@@ -77,76 +79,94 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'OTP has been sent to your Email',
-              style: h4.copyWith(fontSize: 14),
-            ),
-            const SizedBox(height: 20),
-            PinCodeInputField(
-              onCompleted: (code) {
-                // Save the OTP entered by the user
-                _otpController.text = code;
-              },
-            ),
-            if (_verificationMessage != null) // Only show message after `onCompleted`
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  _verificationMessage!,
-                  style: h4.copyWith(
-                    color: _verificationMessage == "Code is Correct"
-                        ? Colors.green
-                        : Colors.red,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 20),
-            CustomButton(
-              borderRadius: 5,
-              width: 150,
-              text: "Verify OTP",
-              onPressed: () {
-                final otp = _otpController.text.trim();
-                if (otp.isEmpty) {
-                  Get.snackbar('Error', 'Please enter the OTP');
-                } else {
-                  _controller.verifyOTP(username,otp);
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            Row(
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  _formatTime(_remainingSeconds),
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
+                  'OTP has been sent to your Email',
+                  style: h4.copyWith(fontSize: 14),
                 ),
-                const Text(' | ', style: TextStyle(fontSize: 16)),
-                GestureDetector(
-                  onTap: _isResendEnabled ? _resendOTP : null,
-                  child: Text(
-                    'Resend OTP',
-                    style: h4.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: _isResendEnabled
-                          ? AppColors.appColor
-                          : Colors.grey, // Grey if disabled
+                const SizedBox(height: 20),
+                PinCodeInputField(
+                  onCompleted: (code) {
+                    // Save the OTP entered by the user
+                    _otpController.text = code;
+                  },
+                ),
+                if (_verificationMessage != null) // Only show message after `onCompleted`
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      _verificationMessage!,
+                      style: h4.copyWith(
+                        color: _verificationMessage == "Code is Correct"
+                            ? Colors.green
+                            : Colors.red,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
+                const SizedBox(height: 20),
+                CustomButton(
+                  borderRadius: 5,
+                  width: 150,
+                  text: "Verify OTP",
+                  onPressed: () {
+                    print(':::::::::::::::::::::::::USERNAME TO BE SENT:::${widget.forgotUserName}');
+                    final otp = _otpController.text.trim();
+                    if (otp.isEmpty) {
+                      Get.snackbar('Error', 'Please enter the OTP');
+                    } else {
+                      widget.isForgot
+                          ? _controller.verifyForgotOTP(widget.forgotUserName!, otp)
+                          : _controller.verifyOTP(username, otp);
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _formatTime(_remainingSeconds),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                    ),
+                    const Text(' | ', style: TextStyle(fontSize: 16)),
+                    GestureDetector(
+                      onTap: _isResendEnabled ? _resendOTP : null,
+                      child: Text(
+                        'Resend OTP',
+                        style: h4.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: _isResendEnabled
+                              ? AppColors.appColor
+                              : Colors.grey, // Grey if disabled
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          // Loading Indicator
+          Obx(() {
+            return _controller.isLoading.value
+                ? Container(
+              color: Colors.black45,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+                : const SizedBox.shrink();
+          }),
+        ],
       ),
     );
   }

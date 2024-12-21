@@ -1,4 +1,5 @@
 import 'package:agcourt/app/modules/dashboard/views/dashboard_view.dart';
+import 'package:agcourt/common/appColors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../common/customFont.dart';
@@ -13,13 +14,18 @@ import 'forgot_password_view.dart';
 class AuthenticationView extends GetView<AuthenticationController> {
   AuthenticationView({Key? key}) : super(key: key);
 
-  final AuthenticationController _controller = Get.put(AuthenticationController());
+  final AuthenticationController _controller = Get.put(
+      AuthenticationController());
   final HomeController homeController = Get.put(HomeController());
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   void _handleLogin() {
-    if (_usernameController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+    if (_usernameController.text
+        .trim()
+        .isEmpty || _passwordController.text
+        .trim()
+        .isEmpty) {
       Get.snackbar(
         'Error',
         'Please fill in all fields',
@@ -29,7 +35,8 @@ class AuthenticationView extends GetView<AuthenticationController> {
     }
     homeController.usernameOBS.value = _usernameController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
+    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS
+        .value}');
 
     // Proceed with login logic if validations pass
     _controller.login(
@@ -47,12 +54,11 @@ class AuthenticationView extends GetView<AuthenticationController> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/auth/background.jpg'), // Replace with your image path
+                image: AssetImage('assets/images/auth/background.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          // Centered curved card
           Align(
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
@@ -65,7 +71,8 @@ class AuthenticationView extends GetView<AuthenticationController> {
                 ),
                 elevation: 8.0,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -100,7 +107,6 @@ class AuthenticationView extends GetView<AuthenticationController> {
                         text: "Login",
                         onPressed: () {
                           _handleLogin();
-                          //Get.off(() => DashboardView());
                         },
                       ),
                       const SizedBox(height: 10),
@@ -112,6 +118,17 @@ class AuthenticationView extends GetView<AuthenticationController> {
               ),
             ),
           ),
+          // Loading Indicator
+          Obx(() {
+            return _controller.isLoading.value
+                ? Container(
+              color: Colors.black45,
+              child: const Center(
+                child: CircularProgressIndicator(color: AppColors.appColor2,),
+              ),
+            )
+                : const SizedBox.shrink();
+          }),
         ],
       ),
     );

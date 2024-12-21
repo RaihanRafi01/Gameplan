@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../modules/authentication/bindings/authentication_binding.dart';
 import '../modules/authentication/views/authentication_view.dart';
+import '../modules/authentication/views/reset_password_view.dart';
 import '../modules/authentication/views/splash_view.dart';
 import '../modules/calender/bindings/calender_binding.dart';
 import '../modules/calender/views/calender_view.dart';
@@ -32,7 +33,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => DashboardView(),
+      page: () => DashboardView(),   // DashboardView
       binding: HomeBinding(),
     ),
     GetPage(
@@ -42,7 +43,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.AUTHENTICATION,
-      page: () => AuthenticationView(),
+      page: () => AuthenticationView(),  //AuthenticationView  // ResetPasswordView
       binding: AuthenticationBinding(),
     ),
     GetPage(

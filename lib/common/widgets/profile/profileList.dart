@@ -16,25 +16,16 @@ class ProfileList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap, // Call the provided callback when tapped
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                SvgPicture.asset(svgPath),
-                SizedBox(width: 10),
-                Text(text,style: h4,),
-                Spacer(),
-                Icon(Icons.navigate_next),
-              ],
-            ),
-            Divider(),
-          ],
+    return Column(
+      children: [
+        ListTile(
+          onTap: onTap,
+          leading: SvgPicture.asset(svgPath),
+          title: Text(text,style: h4,),
+          trailing: Icon(Icons.navigate_next),
         ),
-      ),
+        Divider()
+      ],
     );
   }
 }

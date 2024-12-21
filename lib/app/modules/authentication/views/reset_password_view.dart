@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
 import '../../../../common/widgets/auth/popUpWidget.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../controllers/authentication_controller.dart';
 
 class ResetPasswordView extends GetView {
-  const ResetPasswordView({super.key});
+  final String userName;
+  const ResetPasswordView({super.key, required this.userName});
 
   @override
   Widget build(BuildContext context) {
+    final AuthenticationController _controller = Get.put(AuthenticationController());
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController confirmPasswordController = TextEditingController();
 
-    void validateAndShowBottomSheet() {
-      String password = passwordController.text;
-      String confirmPassword = confirmPasswordController.text;
+    void validateAndResetPassword() async {
+      String password = passwordController.text.trim();
+      String confirmPassword = confirmPasswordController.text.trim();
 
       if (password.isEmpty || confirmPassword.isEmpty) {
         Get.snackbar(
@@ -26,15 +30,8 @@ class ResetPasswordView extends GetView {
           colorText: Colors.white,
         );
       } else if (password == confirmPassword) {
-        Get.bottomSheet(
-          PasswordChangedBottomSheet(
-            onBackToLogin: () {
-              Get.back(); // Close the bottom sheet
-              // Navigate to the login screen or perform another action here
-            },
-          ),
-          isScrollControlled: true,  // Makes sure the bottom sheet can be custom-sized
-        );
+        // Call the resetPassword API
+        await _controller.resetPassword(userName, password);
       } else {
         Get.snackbar(
           "Error",
@@ -48,39 +45,58 @@ class ResetPasswordView extends GetView {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: SvgPicture.asset('assets/images/auth/app_logo.svg'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomHeadertext(
-              header1: "Reset Password",
-              header2: "Enter a new password",
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomHeadertext(
+                    header1: "Reset Password",
+                    header2: "Enter a new password",
+                  ),
+                  const SizedBox(height: 30),
+                  CustomTextField(
+                    controller: passwordController,
+                    label: "Password",
+                    hint: "Enter Password",
+                    prefixIcon: Icons.lock_outline_rounded,
+                    isPassword: true,
+                  ),
+                  CustomTextField(
+                    controller: confirmPasswordController,
+                    label: "Confirm Password",
+                    hint: "Confirm Password",
+                    prefixIcon: Icons.lock_outline_rounded,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 30),
+                  CustomButton(
+                    text: "Reset Password",
+                    onPressed: validateAndResetPassword,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 30),
-            CustomTextField(
-              controller: passwordController,
-              label: "Password",
-              hint: "Enter Password",
-              prefixIcon: Icons.lock_outline_rounded,
-              isPassword: true,
-            ),
-            CustomTextField(
-              controller: confirmPasswordController,
-              label: "Confirm Password",
-              hint: "Confirm Password",
-              prefixIcon: Icons.lock_outline_rounded,
-              isPassword: true,
-            ),
-            const SizedBox(height: 30),
-            CustomButton(
-              text: "Reset Password",
-              onPressed: validateAndShowBottomSheet,
-            ),
-          ],
-        ),
+          ),
+          // Loading Indicator
+          Obx(() {
+            return _controller.isLoading.value
+                ? Container(
+              color: Colors.black54,
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+                : const SizedBox.shrink();
+          }),
+        ],
       ),
     );
   }

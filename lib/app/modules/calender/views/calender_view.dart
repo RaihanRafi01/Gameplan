@@ -25,118 +25,118 @@ class CalenderView extends GetView<CalenderController> {
     final bool isFree = homeController.isFree.value;
     Get.put(CalenderController());
     return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 40),
-          if(isFree)
-          CustomButton(
-            height: 30,
-            textSize: 12,
-            text: 'Upgrade To Pro',
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: true, // Prevent closing the dialog by tapping outside
-                builder: (BuildContext context) {
-                  return const SubscriptionPopup(
-                      isManage: true); // Use the SubscriptionPopup widget
-                },
-              );
-            },
-            width: 150,
-            backgroundGradientColor: AppColors.transparent,
-            borderGradientColor: AppColors.cardGradient,
-            isEditPage: true,
-            textColor: AppColors.textColor,
-          ),
-          SizedBox(height: 12),
-          Container(
-            height: 70,
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.cardGradient,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                'Calendar',
-                style: h3.copyWith(
-                  fontSize: 24,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          // Reactive Calendar
-          // Calendar view code with highlighted event dates
-          Obx(() => TableCalendar(
-            focusedDay: controller.focusedDate.value,
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            calendarFormat: CalendarFormat.month,
-            selectedDayPredicate: (day) {
-              return isSameDay(day, controller.selectedDate.value);
-            },
-            onDaySelected: (selectedDay, focusedDay) {
-              controller.selectDate(selectedDay);
-              controller.focusedDate.value = focusedDay;
-            },
-            headerStyle: const HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-            ),
-            calendarStyle: CalendarStyle(
-              isTodayHighlighted: false,
-              /*todayDecoration: const BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),*/
-              selectedDecoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: AppColors.cardGradient,
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-                shape: BoxShape.circle,
-              ),
-            ),
-            // Highlight event dates
-            eventLoader: (day) {
-              // Check if the date has events
-              return controller.events
-                  .where((event) => isSameDay(event.date, day))
-                  .toList();
-            },
-            calendarBuilders: CalendarBuilders(
-              markerBuilder: (context, day, events) {
-                if (events.isNotEmpty) {
-                  return Positioned(
-                    bottom: 4,
-                    child: Container(
-                      width: 40,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: AppColors.cardGradient,
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  );
-                }
-                return null;
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 40),
+            if(isFree)
+            CustomButton(
+              height: 30,
+              textSize: 12,
+              text: 'Upgrade To Pro',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true, // Prevent closing the dialog by tapping outside
+                  builder: (BuildContext context) {
+                    return const SubscriptionPopup(
+                        isManage: true); // Use the SubscriptionPopup widget
+                  },
+                );
               },
+              width: 150,
+              backgroundGradientColor: AppColors.transparent,
+              borderGradientColor: AppColors.cardGradient,
+              isEditPage: true,
+              textColor: AppColors.textColor,
             ),
-          )),
-          SizedBox(height: 20),
-          // Events List for selected date
-          Expanded(
-            child: Obx(() {
+            SizedBox(height: 12),
+            Container(
+              height: 70,
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: AppColors.cardGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'Calendar',
+                  style: h3.copyWith(
+                    fontSize: 24,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            // Reactive Calendar
+            // Calendar view code with highlighted event dates
+            Obx(() => TableCalendar(
+              focusedDay: controller.focusedDate.value,
+              firstDay: DateTime(2020),
+              lastDay: DateTime(2030),
+              calendarFormat: CalendarFormat.month,
+              selectedDayPredicate: (day) {
+                return isSameDay(day, controller.selectedDate.value);
+              },
+              onDaySelected: (selectedDay, focusedDay) {
+                controller.selectDate(selectedDay);
+                controller.focusedDate.value = focusedDay;
+              },
+              headerStyle: const HeaderStyle(
+                formatButtonVisible: false,
+                titleCentered: true,
+              ),
+              calendarStyle: CalendarStyle(
+                isTodayHighlighted: false,
+                /*todayDecoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),*/
+                selectedDecoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: AppColors.cardGradient,
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              // Highlight event dates
+              eventLoader: (day) {
+                // Check if the date has events
+                return controller.events
+                    .where((event) => isSameDay(event.date, day))
+                    .toList();
+              },
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, day, events) {
+                  if (events.isNotEmpty) {
+                    return Positioned(
+                      bottom: 4,
+                      child: Container(
+                        width: 40,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: AppColors.cardGradient,
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    );
+                  }
+                  return null;
+                },
+              ),
+            )),
+            SizedBox(height: 20),
+            // Events List for selected date
+            Obx(() {
               // Filter events for the selected date
               final selectedDateEvents = controller.events
                   .where((event) => isSameDay(event.date, controller.selectedDate.value))
@@ -225,8 +225,8 @@ class CalenderView extends GetView<CalenderController> {
                 },
               );
             }),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

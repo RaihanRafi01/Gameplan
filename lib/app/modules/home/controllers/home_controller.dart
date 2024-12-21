@@ -9,6 +9,7 @@ class HomeController extends GetxController {
   final ApiService _service = ApiService();
   var email = ''.obs;
   var password = ''.obs;
+  var username = ''.obs;
   var isLoading = false.obs;
   var profilePicUrl = ''.obs; // Store the profile picture URL
   final RxString usernameOBS = ''.obs;
@@ -82,10 +83,12 @@ class HomeController extends GetxController {
       String? _name = responseData['name'];
       String? about_you = responseData['about_you'];
       String? _email = responseData['email'];
+      String? _username = responseData['username'];
 
       aboutYou.value = about_you ?? '';
       name.value = _name ?? '';
       email.value = _email ?? '';
+      username.value = _username ?? '';
       profilePicUrl.value = _profilePicture ?? '';
       subscriptionStatus.value = _subscriptionStatus ?? '';
       subscriptionExpireDate.value = _subscriptionExpireDate ?? '';

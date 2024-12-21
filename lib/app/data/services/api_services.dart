@@ -8,7 +8,7 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'https://charming-willingly-starfish.ngrok-free.app/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
+  final String baseUrl = 'https://agcourt2.pythonanywhere.com/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
 
   // Sign-up method
   Future<http.Response> signUp(String email, String password, String username) async {
@@ -83,6 +83,29 @@ class ApiService {
     );
   }
 
+  Future<http.Response> verifyForgotOTP(String username, String otp) async {
+    // Construct the endpoint URL
+    final Uri url = Uri.parse('${baseUrl}authentication_app/verify_forget_password_otp/');
+
+    // Headers for the HTTP request
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "username": username,
+      "otp": otp,
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
   Future<http.Response> resendOTP() async {
     // Construct the endpoint URL
     final Uri url = Uri.parse('${baseUrl}authentication_app/resend_otp/');
@@ -101,6 +124,29 @@ class ApiService {
     return await http.post(
       url,
       headers: headers
+    );
+  }
+
+
+  Future<http.Response> sendResetOTP(String username) async {
+    // Construct the endpoint URL
+    final Uri url = Uri.parse('${baseUrl}authentication_app/forgot_password/');
+
+    // Headers for the HTTP request
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "username": username
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
     );
   }
 
@@ -467,6 +513,28 @@ class ApiService {
     // Request body
     final Map<String, String> body = {
       "text_content": textContent
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> resetPassword(String userName,String password) async {
+    final Uri url = Uri.parse('${baseUrl}authentication_app/reset_password/');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "username": userName,
+      "password": password
     };
 
     // Make the POST request
