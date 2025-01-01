@@ -106,7 +106,7 @@ class _SignUpViewState extends State<SignUpView> {
                     hint: 'Enter Password',
                     prefixIcon: Icons.lock_outline_rounded,
                     isPassword: true,
-                    controller: _passwordController,
+                    controller: _emailController,
                   ),
                   CustomTextField(
                     label: 'Confirm Password',
