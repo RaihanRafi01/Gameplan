@@ -302,7 +302,7 @@ class _ExportScreenState extends State<ExportScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: List.generate(widget.messages.length, (index) {
                 return pw.Padding(
-                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  padding: const pw.EdgeInsets.only(bottom: 8), // Line spacing
                   child: pw.Text(
                     widget.messages[index]['message'],
                     style: pw.TextStyle(
@@ -320,11 +320,8 @@ class _ExportScreenState extends State<ExportScreen> {
                           ? pw.TextDecoration.underline
                           : pw.TextDecoration.none,
                     ),
-                    textAlign: textAlignments[index] == TextAlign.left
-                        ? pw.TextAlign.left
-                        : textAlignments[index] == TextAlign.center
-                        ? pw.TextAlign.center
-                        : pw.TextAlign.right,
+                    textAlign: _convertTextAlignToPdfTextAlign(
+                        textAlignments[index]),
                   ),
                 );
               }),
@@ -344,6 +341,20 @@ class _ExportScreenState extends State<ExportScreen> {
       return null;
     }
   }
+
+
+  pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
+    switch (textAlign) {
+      case TextAlign.center:
+        return pw.TextAlign.center;
+      case TextAlign.right:
+        return pw.TextAlign.right;
+      case TextAlign.left:
+      default:
+        return pw.TextAlign.left;
+    }
+  }
+
 
   void _showPDF(String filePath) {
     Navigator.push(
