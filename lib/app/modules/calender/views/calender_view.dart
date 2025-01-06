@@ -14,7 +14,6 @@ import '../../home/views/chat_screen_view.dart';
 import '../controllers/calender_controller.dart';
 
 class CalenderView extends GetView<CalenderController> {
-
   const CalenderView({super.key});
 
   @override
@@ -24,12 +23,12 @@ class CalenderView extends GetView<CalenderController> {
     historyController.fetchPinChatList();
     final bool isFree = homeController.isFree.value;
     Get.put(CalenderController());
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 40),
-            if(isFree)
+      body: Column(
+        children: [
+          SizedBox(height: 40),
+          if (isFree)
             CustomButton(
               height: 30,
               textSize: 12,
@@ -50,93 +49,89 @@ class CalenderView extends GetView<CalenderController> {
               isEditPage: true,
               textColor: AppColors.textColor,
             ),
-            SizedBox(height: 12),
-            Container(
-              height: 70,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: AppColors.cardGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+          SizedBox(height: 12),
+          Container(
+            height: 70,
+            width: double.maxFinite,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: AppColors.cardGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              child: Center(
-                child: Text(
-                  'Calendar',
-                  style: h3.copyWith(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
+            ),
+            child: Center(
+              child: Text(
+                'Calendar',
+                style: h3.copyWith(
+                  fontSize: 24,
+                  color: Colors.white,
                 ),
               ),
             ),
-            // Reactive Calendar
-            // Calendar view code with highlighted event dates
-            Obx(() => TableCalendar(
-              focusedDay: controller.focusedDate.value,
-              firstDay: DateTime(2020),
-              lastDay: DateTime(2030),
-              calendarFormat: CalendarFormat.month,
-              selectedDayPredicate: (day) {
-                return isSameDay(day, controller.selectedDate.value);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                controller.selectDate(selectedDay);
-                controller.focusedDate.value = focusedDay;
-              },
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-              ),
-              calendarStyle: CalendarStyle(
-                isTodayHighlighted: false,
-                /*todayDecoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),*/
-                selectedDecoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.cardGradient,
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  shape: BoxShape.circle,
+          ),
+          // Reactive Calendar
+          Obx(() => TableCalendar(
+            focusedDay: controller.focusedDate.value,
+            firstDay: DateTime(2020),
+            lastDay: DateTime(2030),
+            calendarFormat: CalendarFormat.month,
+            selectedDayPredicate: (day) {
+              return isSameDay(day, controller.selectedDate.value);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              controller.selectDate(selectedDay);
+              controller.focusedDate.value = focusedDay;
+            },
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+            ),
+            calendarStyle: CalendarStyle(
+              isTodayHighlighted: false,
+              selectedDecoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: AppColors.cardGradient,
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                 ),
+                shape: BoxShape.circle,
               ),
-              // Highlight event dates
-              eventLoader: (day) {
-                // Check if the date has events
-                return controller.events
-                    .where((event) => isSameDay(event.date, day))
-                    .toList();
-              },
-              calendarBuilders: CalendarBuilders(
-                markerBuilder: (context, day, events) {
-                  if (events.isNotEmpty) {
-                    return Positioned(
-                      bottom: 4,
-                      child: Container(
-                        width: 40,
-                        height: 6,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: AppColors.cardGradient,
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          shape: BoxShape.circle,
+            ),
+            // Highlight event dates
+            eventLoader: (day) {
+              // Check if the date has events
+              return controller.events
+                  .where((event) => isSameDay(event.date, day))
+                  .toList();
+            },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, day, events) {
+                if (events.isNotEmpty) {
+                  return Positioned(
+                    bottom: 4,
+                    child: Container(
+                      width: 40,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: AppColors.cardGradient,
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
                         ),
+                        shape: BoxShape.circle,
                       ),
-                    );
-                  }
-                  return null;
-                },
-              ),
-            )),
-            SizedBox(height: 20),
-            // Events List for selected date
-            Obx(() {
+                    ),
+                  );
+                }
+                return null;
+              },
+            ),
+          )),
+          SizedBox(height: 20),
+          // Expanded Event List View
+          Expanded(
+            child: Obx(() {
               // Filter events for the selected date
               final selectedDateEvents = controller.events
                   .where((event) => isSameDay(event.date, controller.selectedDate.value))
@@ -225,8 +220,8 @@ class CalenderView extends GetView<CalenderController> {
                 },
               );
             }),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

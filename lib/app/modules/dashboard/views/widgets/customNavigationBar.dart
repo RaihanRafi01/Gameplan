@@ -39,14 +39,22 @@ class CustomNavigationBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(navItems.length, (index) {
-          final isSelected = index == controller.currentIndex.value;
           final item = navItems[index];
           return GestureDetector(
             onTap: () => controller.updateIndex(index),
-            child: SvgPicture.asset(
-              isSelected ? item['filledIcon']! : item['defaultIcon']!,
-              key: ValueKey('${item['label']}_$isSelected'),
-            ),
+            child: Obx(() {
+              final isSelected = index == controller.currentIndex.value;
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200), // Smooth transition duration
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child: SvgPicture.asset(
+                  isSelected ? item['filledIcon']! : item['defaultIcon']!,
+                  key: ValueKey('${item['label']}_$isSelected'),
+                ),
+              );
+            }),
           );
         }),
       ),

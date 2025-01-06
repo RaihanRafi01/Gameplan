@@ -17,6 +17,10 @@ class ExportScreen extends StatefulWidget {
 
 class _ExportScreenState extends State<ExportScreen> {
   late List<TextEditingController> controllers;
+  late List<TextStyle> textStyles;
+  late List<TextAlign> textAlignments;
+  double _fontSize = 16.0;
+  int _currentEditingIndex = -1;
 
   @override
   void initState() {
@@ -26,11 +30,16 @@ class _ExportScreenState extends State<ExportScreen> {
     controllers = widget.messages
         .map((message) => TextEditingController(text: message['message']))
         .toList();
+
+    // Initialize text styles and alignments for each message
+    textStyles = List<TextStyle>.generate(
+        widget.messages.length, (index) => TextStyle(fontSize: 16.0));
+    textAlignments = List<TextAlign>.generate(
+        widget.messages.length, (index) => TextAlign.left);
   }
 
   @override
   void dispose() {
-    // Dispose all controllers
     for (var controller in controllers) {
       controller.dispose();
     }
@@ -65,75 +74,184 @@ class _ExportScreenState extends State<ExportScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.grey, // Outline border color
-              width: 1.5, // Border width
+        child: Column(
+          children: [
+            _buildToolbar(),
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.messages.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Focus(
+                      onFocusChange: (hasFocus) {
+                        if (hasFocus) {
+                          setState(() {
+                            _currentEditingIndex = index;
+                          });
+                        }
+                      },
+                      child: TextField(
+                        controller: controllers[index],
+                        maxLines: null,
+                        onChanged: (value) {
+                          widget.messages[index]['message'] = value;
+                        },
+                        style: textStyles[index],
+                        textAlign: textAlignments[index],
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Type your message here...",
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-            borderRadius: BorderRadius.circular(12), // Rounded corners
-          ),
-          child: ListView.builder(
-            itemCount: widget.messages.length,
-            itemBuilder: (context, index) {
-              final isSentByUser = widget.messages[index]['isSentByUser'];
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: TextField(
-                  controller: controllers[index],
-                  maxLines: null,
-                  onChanged: (value) {
-                    // Update the messages dynamically
-                    widget.messages[index]['message'] = value;
-                  },
-                  style: TextStyle(
-                    color: isSentByUser ? Colors.black : Colors.purple,
-                    fontSize: 16,
-                  ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: isSentByUser
-                        ? "Type your message here..."
-                        : "Type bot response here...",
-                  ),
-                ),
-              );
-            },
-          ),
+          ],
         ),
       ),
     );
   }
 
-  void _copyAllMessages(BuildContext context) {
-    // Copy the entire text from the messages
-    final allMessages =
-    widget.messages.map((message) => message['message']).join("\n");
-    Clipboard.setData(ClipboardData(text: allMessages));
-
-    // Show confirmation message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("All messages copied to clipboard!")),
+  Widget _buildToolbar() {
+    return Row(
+      children: [
+        DropdownButton<double>(
+          value: _fontSize,
+          items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
+              .map((size) => DropdownMenuItem(
+            value: size,
+            child: Text(size.toString()),
+          ))
+              .toList(),
+          onChanged: (value) {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                _fontSize = value!;
+                textStyles[_currentEditingIndex] =
+                    textStyles[_currentEditingIndex].copyWith(fontSize: _fontSize);
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_bold),
+          color: _currentEditingIndex != -1 &&
+              textStyles[_currentEditingIndex].fontWeight == FontWeight.bold
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textStyles[_currentEditingIndex] =
+                    textStyles[_currentEditingIndex].copyWith(
+                        fontWeight: textStyles[_currentEditingIndex].fontWeight ==
+                            FontWeight.bold
+                            ? FontWeight.normal
+                            : FontWeight.bold);
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_italic),
+          color: _currentEditingIndex != -1 &&
+              textStyles[_currentEditingIndex].fontStyle == FontStyle.italic
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textStyles[_currentEditingIndex] =
+                    textStyles[_currentEditingIndex].copyWith(
+                        fontStyle: textStyles[_currentEditingIndex].fontStyle ==
+                            FontStyle.italic
+                            ? FontStyle.normal
+                            : FontStyle.italic);
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_underline),
+          color: _currentEditingIndex != -1 &&
+              textStyles[_currentEditingIndex].decoration ==
+                  TextDecoration.underline
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textStyles[_currentEditingIndex] =
+                    textStyles[_currentEditingIndex].copyWith(
+                        decoration:
+                        textStyles[_currentEditingIndex].decoration ==
+                            TextDecoration.underline
+                            ? TextDecoration.none
+                            : TextDecoration.underline);
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_align_left),
+          color: _currentEditingIndex != -1 &&
+              textAlignments[_currentEditingIndex] == TextAlign.left
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textAlignments[_currentEditingIndex] = TextAlign.left;
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_align_center),
+          color: _currentEditingIndex != -1 &&
+              textAlignments[_currentEditingIndex] == TextAlign.center
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textAlignments[_currentEditingIndex] = TextAlign.center;
+              });
+            }
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.format_align_right),
+          color: _currentEditingIndex != -1 &&
+              textAlignments[_currentEditingIndex] == TextAlign.right
+              ? Colors.blue
+              : Colors.black,
+          onPressed: () {
+            if (_currentEditingIndex != -1) {
+              setState(() {
+                textAlignments[_currentEditingIndex] = TextAlign.right;
+              });
+            }
+          },
+        ),
+      ],
     );
   }
 
   Future<String?> _promptAndSavePDF() async {
-    // Ask the user to select a directory and set the file name
     String? outputDir = await FilePicker.platform.getDirectoryPath();
     if (outputDir == null) {
-      // User canceled the picker
       return null;
     }
 
     String? fileName = await _getFileName(context);
     if (fileName == null || fileName.trim().isEmpty) {
-      // User canceled or entered an empty name
       return null;
     }
 
-    // Add .pdf extension if not provided
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
@@ -157,13 +275,13 @@ class _ExportScreenState extends State<ExportScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(null); // Cancel
+                Navigator.of(context).pop(null);
               },
               child: Text("Cancel"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(fileNameController.text); // Confirm
+                Navigator.of(context).pop(fileNameController.text);
               },
               child: Text("Save"),
             ),
@@ -182,15 +300,34 @@ class _ExportScreenState extends State<ExportScreen> {
           build: (pw.Context context) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: widget.messages.map((message) {
-                return pw.Text(
-                  message['message'],
-                  style: pw.TextStyle(
-                    fontSize: 14,
-                    color: message['isSentByUser'] ? PdfColors.black : PdfColors.purple,
+              children: List.generate(widget.messages.length, (index) {
+                return pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.Text(
+                    widget.messages[index]['message'],
+                    style: pw.TextStyle(
+                      fontSize: textStyles[index].fontSize ?? 14,
+                      fontWeight: textStyles[index].fontWeight ==
+                          FontWeight.bold
+                          ? pw.FontWeight.bold
+                          : pw.FontWeight.normal,
+                      fontStyle: textStyles[index].fontStyle ==
+                          FontStyle.italic
+                          ? pw.FontStyle.italic
+                          : pw.FontStyle.normal,
+                      decoration: textStyles[index].decoration ==
+                          TextDecoration.underline
+                          ? pw.TextDecoration.underline
+                          : pw.TextDecoration.none,
+                    ),
+                    textAlign: textAlignments[index] == TextAlign.left
+                        ? pw.TextAlign.left
+                        : textAlignments[index] == TextAlign.center
+                        ? pw.TextAlign.center
+                        : pw.TextAlign.right,
                   ),
                 );
-              }).toList(),
+              }),
             );
           },
         ),
@@ -214,6 +351,16 @@ class _ExportScreenState extends State<ExportScreen> {
       MaterialPageRoute(
         builder: (context) => PDFViewerScreen(filePath: filePath),
       ),
+    );
+  }
+
+  void _copyAllMessages(BuildContext context) {
+    final allMessages =
+    widget.messages.map((message) => message['message']).join("\n");
+    Clipboard.setData(ClipboardData(text: allMessages));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("All messages copied to clipboard!")),
     );
   }
 }
