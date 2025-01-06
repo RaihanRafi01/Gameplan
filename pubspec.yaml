@@ -46,6 +46,12 @@ dependencies:
   webview_flutter: ^4.10.0
   shared_preferences: ^2.3.3
   collection: ^1.18.0
+  printing: ^5.13.4
+  pdf: ^3.11.1
+  file_picker: ^8.1.7
+  open_file: ^3.5.10
+  flutter_pdfview: ^1.4.0
+  flutter_quill: ^10.8.5
 
 dev_dependencies:
   flutter_test:

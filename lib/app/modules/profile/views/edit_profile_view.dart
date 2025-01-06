@@ -133,6 +133,7 @@ class _EditProfileViewState extends State<EditProfileView> {
             ),
             const SizedBox(height: 40),
             CustomTextField(
+              isMaxLength: true,
               label: 'Full Name',
               controller: _nameController,
               prefixIcon: Icons.person_outline_rounded,
