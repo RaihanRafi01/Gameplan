@@ -81,6 +81,7 @@ class _ExportScreenState extends State<ExportScreen> {
               child: ListView.builder(
                 itemCount: widget.messages.length,
                 itemBuilder: (context, index) {
+                  final isSentByUser = widget.messages[index]['isSentByUser'];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Focus(
@@ -97,11 +98,15 @@ class _ExportScreenState extends State<ExportScreen> {
                         onChanged: (value) {
                           widget.messages[index]['message'] = value;
                         },
-                        style: textStyles[index],
+                        style: textStyles[index].copyWith(
+                          color: isSentByUser ? Colors.black : Colors.purple,
+                        ),
                         textAlign: textAlignments[index],
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: "Type your message here...",
+                          hintText: isSentByUser
+                              ? "Type your message here..."
+                              : "Type bot response here...",
                         ),
                       ),
                     ),
@@ -116,128 +121,133 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Widget _buildToolbar() {
-    return Row(
-      children: [
-        DropdownButton<double>(
-          value: _fontSize,
-          items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
-              .map((size) => DropdownMenuItem(
-            value: size,
-            child: Text(size.toString()),
-          ))
-              .toList(),
-          onChanged: (value) {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                _fontSize = value!;
-                textStyles[_currentEditingIndex] =
-                    textStyles[_currentEditingIndex].copyWith(fontSize: _fontSize);
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_bold),
-          color: _currentEditingIndex != -1 &&
-              textStyles[_currentEditingIndex].fontWeight == FontWeight.bold
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textStyles[_currentEditingIndex] =
-                    textStyles[_currentEditingIndex].copyWith(
-                        fontWeight: textStyles[_currentEditingIndex].fontWeight ==
-                            FontWeight.bold
-                            ? FontWeight.normal
-                            : FontWeight.bold);
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_italic),
-          color: _currentEditingIndex != -1 &&
-              textStyles[_currentEditingIndex].fontStyle == FontStyle.italic
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textStyles[_currentEditingIndex] =
-                    textStyles[_currentEditingIndex].copyWith(
-                        fontStyle: textStyles[_currentEditingIndex].fontStyle ==
-                            FontStyle.italic
-                            ? FontStyle.normal
-                            : FontStyle.italic);
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_underline),
-          color: _currentEditingIndex != -1 &&
-              textStyles[_currentEditingIndex].decoration ==
-                  TextDecoration.underline
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textStyles[_currentEditingIndex] =
-                    textStyles[_currentEditingIndex].copyWith(
-                        decoration:
-                        textStyles[_currentEditingIndex].decoration ==
-                            TextDecoration.underline
-                            ? TextDecoration.none
-                            : TextDecoration.underline);
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_align_left),
-          color: _currentEditingIndex != -1 &&
-              textAlignments[_currentEditingIndex] == TextAlign.left
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textAlignments[_currentEditingIndex] = TextAlign.left;
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_align_center),
-          color: _currentEditingIndex != -1 &&
-              textAlignments[_currentEditingIndex] == TextAlign.center
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textAlignments[_currentEditingIndex] = TextAlign.center;
-              });
-            }
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.format_align_right),
-          color: _currentEditingIndex != -1 &&
-              textAlignments[_currentEditingIndex] == TextAlign.right
-              ? Colors.blue
-              : Colors.black,
-          onPressed: () {
-            if (_currentEditingIndex != -1) {
-              setState(() {
-                textAlignments[_currentEditingIndex] = TextAlign.right;
-              });
-            }
-          },
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          DropdownButton<double>(
+            value: _fontSize,
+            items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
+                .map((size) => DropdownMenuItem(
+              value: size,
+              child: Text(size.toString()),
+            ))
+                .toList(),
+            onChanged: (value) {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  _fontSize = value!;
+                  textStyles[_currentEditingIndex] =
+                      textStyles[_currentEditingIndex].copyWith(fontSize: _fontSize);
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_bold),
+            color: _currentEditingIndex != -1 &&
+                textStyles[_currentEditingIndex].fontWeight ==
+                    FontWeight.bold
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textStyles[_currentEditingIndex] =
+                      textStyles[_currentEditingIndex].copyWith(
+                          fontWeight:
+                          textStyles[_currentEditingIndex].fontWeight ==
+                              FontWeight.bold
+                              ? FontWeight.normal
+                              : FontWeight.bold);
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_italic),
+            color: _currentEditingIndex != -1 &&
+                textStyles[_currentEditingIndex].fontStyle == FontStyle.italic
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textStyles[_currentEditingIndex] =
+                      textStyles[_currentEditingIndex].copyWith(
+                          fontStyle: textStyles[_currentEditingIndex].fontStyle ==
+                              FontStyle.italic
+                              ? FontStyle.normal
+                              : FontStyle.italic);
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_underline),
+            color: _currentEditingIndex != -1 &&
+                textStyles[_currentEditingIndex].decoration ==
+                    TextDecoration.underline
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textStyles[_currentEditingIndex] =
+                      textStyles[_currentEditingIndex].copyWith(
+                          decoration:
+                          textStyles[_currentEditingIndex].decoration ==
+                              TextDecoration.underline
+                              ? TextDecoration.none
+                              : TextDecoration.underline);
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_align_left),
+            color: _currentEditingIndex != -1 &&
+                textAlignments[_currentEditingIndex] == TextAlign.left
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textAlignments[_currentEditingIndex] = TextAlign.left;
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_align_center),
+            color: _currentEditingIndex != -1 &&
+                textAlignments[_currentEditingIndex] == TextAlign.center
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textAlignments[_currentEditingIndex] = TextAlign.center;
+                });
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.format_align_right),
+            color: _currentEditingIndex != -1 &&
+                textAlignments[_currentEditingIndex] == TextAlign.right
+                ? Colors.blue
+                : Colors.black,
+            onPressed: () {
+              if (_currentEditingIndex != -1) {
+                setState(() {
+                  textAlignments[_currentEditingIndex] = TextAlign.right;
+                });
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -301,24 +311,14 @@ class _ExportScreenState extends State<ExportScreen> {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: List.generate(widget.messages.length, (index) {
+                final isSentByUser = widget.messages[index]['isSentByUser'];
                 return pw.Padding(
-                  padding: const pw.EdgeInsets.only(bottom: 8), // Line spacing
+                  padding: const pw.EdgeInsets.only(bottom: 8),
                   child: pw.Text(
                     widget.messages[index]['message'],
                     style: pw.TextStyle(
                       fontSize: textStyles[index].fontSize ?? 14,
-                      fontWeight: textStyles[index].fontWeight ==
-                          FontWeight.bold
-                          ? pw.FontWeight.bold
-                          : pw.FontWeight.normal,
-                      fontStyle: textStyles[index].fontStyle ==
-                          FontStyle.italic
-                          ? pw.FontStyle.italic
-                          : pw.FontStyle.normal,
-                      decoration: textStyles[index].decoration ==
-                          TextDecoration.underline
-                          ? pw.TextDecoration.underline
-                          : pw.TextDecoration.none,
+                      color: isSentByUser ? PdfColors.black : PdfColors.purple,
                     ),
                     textAlign: _convertTextAlignToPdfTextAlign(
                         textAlignments[index]),
@@ -342,7 +342,6 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
-
   pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
     switch (textAlign) {
       case TextAlign.center:
@@ -354,7 +353,6 @@ class _ExportScreenState extends State<ExportScreen> {
         return pw.TextAlign.left;
     }
   }
-
 
   void _showPDF(String filePath) {
     Navigator.push(
