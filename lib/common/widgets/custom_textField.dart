@@ -3,6 +3,7 @@ import '../appColors.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
+  final bool isMaxLength;
   final bool readOnly;
   final TextEditingController? controller;
   final IconData? prefixIcon;
@@ -15,6 +16,7 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     this.readOnly = false,
+    this.isMaxLength = false,
     required this.label,
     this.controller,
     this.prefixIcon,
@@ -38,6 +40,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Text(widget.label, style: const TextStyle(fontSize: 16, color: Colors.black)),
         const SizedBox(height: 8),
         TextField(
+          maxLength: widget.isMaxLength ? 10 : null,
           readOnly: widget.readOnly,
           cursorColor: AppColors.appColor,
           controller: widget.controller,

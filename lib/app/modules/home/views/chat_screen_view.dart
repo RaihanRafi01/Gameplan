@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
@@ -10,6 +15,7 @@ import '../../../../common/widgets/home/messageBubble.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/chat_controller.dart';
+import 'export_screen_view.dart';
 
 class ChatScreen extends StatelessWidget {
   final List<ChatContent>? chat;
@@ -33,33 +39,6 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-    /*if (initialMessage != null && isfree == true) {
-      print('hit free');
-
-      // Load previous free messages first
-      chatController.loadFreeMessages();
-
-      // Delay the adding of the initial user message
-      Future.delayed(Duration(milliseconds: 500), () {
-        // Now add the initial user message after the previous messages are loaded
-        chatController.addUserMessage(initialMessage!);
-        chatController.createFreeChat(initialMessage!); // Proceed with chat creation
-      });
-    }
-
-
-    if (initialMessage != null && isfree == false) {
-      print('hit subscribed');
-      chatController.addUserMessage(initialMessage!);
-      chatController.createChat(initialMessage!);
-    }*/
-
-    /*if (initialMessage != null) {
-      chatController.addUserMessage(initialMessage!);
-    }*/
-
 
     if (chat != null) {
       chatController.initializeMessages(chat!);
@@ -107,75 +86,103 @@ class ChatScreen extends StatelessWidget {
         actions: [
           PopupMenuButton<int>(
             color: Colors.white,
-            icon: Icon(Icons.menu), // 3-line "hamburger" menu icon
+            icon: Icon(Icons.menu),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12), // Rounded corners
+              borderRadius: BorderRadius.circular(12),
             ),
-            offset: Offset(0, 50), // Position the menu below the AppBar
+            offset: Offset(0, 50),
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: 1,
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/history/save_icon.png',
-                      scale: 3,
-                    ),
-                    SizedBox(width: 8),
-                    Text("Save"),
-                  ],
+                child: SizedBox(
+                  width: 135, // Ensure the same width for all items
+                  child: Row(
+                    children: [
+                      Icon(Icons.copy_rounded),
+                      SizedBox(width: 8),
+                      Text("Copy"),
+                    ],
+                  ),
                 ),
               ),
               PopupMenuItem(
                 value: 2,
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/history/pin_icon.svg',
-                      width: 24,
-                      height: 24,
-                    ),
-                    SizedBox(width: 8),
-                    Text("Pin"),
-                  ],
+                child: SizedBox(
+                  width: 135, // Ensure the same width for all items
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit),
+                      SizedBox(width: 8),
+                      Text("Edit"),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 3,
+                child: SizedBox(
+                  width: 135, // Ensure the same width for all items
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/history/save_icon.png',
+                        scale: 3,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Save To Class"),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 4,
+                child: SizedBox(
+                  width: 135, // Adjust width consistently
+                  child: Row(
+                    children: [
+                      Icon(Icons.file_upload_outlined),
+                      SizedBox(width: 8),
+                      Text("Export"),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 5,
+                child: SizedBox(
+                  width: 135, // Adjust width consistently
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/history/pin_icon.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Pin To Calender"),
+                    ],
+                  ),
                 ),
               ),
             ],
             onSelected: (value) {
               if (value == 1) {
-                // Handle "Save" action
-                /*if (isFree) {
-                  Get.snackbar(
-                    'Subscribe!',
-                    'Please Subscribe to enable this feature',
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-
-                  Get.dialog(
-                    SubscriptionPopup(isManage: true),
-                  );
-                } else {*/
-                  historyController.saveChat(chatId!);
-                //}
+                _copyAllMessages(context);
               } else if (value == 2) {
-                // Handle "Pin" action
-                /*if (isFree) {
-                  Get.snackbar(
-                    'Subscribe!',
-                    'Please Subscribe to enable this feature',
-                    snackPosition: SnackPosition.TOP,
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-
-                  Get.dialog(
-                    SubscriptionPopup(isManage: true),
-                  );
-                } else {*/
-                  _showDatePicker(context, chatId!);
-                //}
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ExportScreen(messages: chatController.messages),
+                  ),
+                );
+              } else if (value == 3) {
+                historyController.saveChat(chatId!);
+              }
+              else if (value == 4) {
+                _exportToPDF(context);
+              }
+              else if (value == 5) {
+                _showDatePicker(context, chatId!);
               }
             },
           ),
@@ -261,4 +268,49 @@ class ChatScreen extends StatelessWidget {
       }
     }
   }
+
+  void _copyAllMessages(BuildContext context) {
+    final allMessages = chatController.messages
+        .map((message) => message['message'])
+        .join("\n");
+    Clipboard.setData(ClipboardData(text: allMessages));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("All messages copied to clipboard!")),
+    );
+  }
+
+  Future<void> _exportToPDF(BuildContext context) async {
+    String? outputDir = await FilePicker.platform.getDirectoryPath();
+    if (outputDir == null) return;
+
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: chatController.messages.map((message) {
+              return pw.Text(
+                message['message'],
+                style: pw.TextStyle(
+                  fontSize: 14,
+                  color: message['isSentByUser']
+                      ? PdfColors.black
+                      : PdfColors.purple,
+                ),
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
+
+    final file = File("$outputDir/chat_export.pdf");
+    await file.writeAsBytes(await pdf.save());
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("PDF saved to: ${file.path}")),
+    );
+  }
+
+
 }
