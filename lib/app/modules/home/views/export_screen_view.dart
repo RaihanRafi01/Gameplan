@@ -312,7 +312,24 @@ class _ExportScreenState extends State<ExportScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: List.generate(widget.messages.length, (index) {
                 final isSentByUser = widget.messages[index]['isSentByUser'];
-                return pw.Padding(
+
+                // Map TextAlign to Container Alignment
+                pw.Alignment alignment;
+                switch (textAlignments[index]) {
+                  case TextAlign.center:
+                    alignment = pw.Alignment.center;
+                    break;
+                  case TextAlign.right:
+                    alignment = pw.Alignment.centerRight;
+                    break;
+                  case TextAlign.left:
+                  default:
+                    alignment = pw.Alignment.centerLeft;
+                    break;
+                }
+
+                return pw.Container(
+                  alignment: alignment, // Aligns the text
                   padding: const pw.EdgeInsets.only(bottom: 8),
                   child: pw.Text(
                     widget.messages[index]['message'],
@@ -320,8 +337,6 @@ class _ExportScreenState extends State<ExportScreen> {
                       fontSize: textStyles[index].fontSize ?? 14,
                       color: isSentByUser ? PdfColors.black : PdfColors.purple,
                     ),
-                    textAlign: _convertTextAlignToPdfTextAlign(
-                        textAlignments[index]),
                   ),
                 );
               }),
@@ -341,6 +356,7 @@ class _ExportScreenState extends State<ExportScreen> {
       return null;
     }
   }
+
 
   pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
     switch (textAlign) {
