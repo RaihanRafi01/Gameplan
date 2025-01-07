@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class ExportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
@@ -68,6 +69,15 @@ class _ExportScreenState extends State<ExportScreen> {
             icon: Icon(Icons.copy),
             onPressed: () {
               _copyAllMessages(context);
+            },
+          ),
+          // Add new button to generate and show HTML
+          IconButton(
+            icon: Icon(Icons.code),
+            onPressed: () {
+              final htmlContent = _generateHTMLContent();
+              print(':::::::::::::::::::::::::::::::::::::::::HTML: $htmlContent');
+              _showHTMLDialog(htmlContent);
             },
           ),
         ],
@@ -388,6 +398,68 @@ class _ExportScreenState extends State<ExportScreen> {
       SnackBar(content: Text("All messages copied to clipboard!")),
     );
   }
+
+  String _generateHTMLContent() {
+    final htmlContent = StringBuffer();
+   // htmlContent.write('<html><body>');
+
+    for (int index = 0; index < widget.messages.length; index++) {
+      final isSentByUser = widget.messages[index]['isSentByUser'];
+
+      // Determine text alignment
+      String alignment;
+      switch (textAlignments[index]) {
+        case TextAlign.center:
+          alignment = 'center';
+          break;
+        case TextAlign.right:
+          alignment = 'right';
+          break;
+        case TextAlign.left:
+        default:
+          alignment = 'left';
+          break;
+      }
+
+      // Generate inline styles
+      final style = '''
+        font-size: ${textStyles[index].fontSize}px;
+        font-weight: ${textStyles[index].fontWeight == FontWeight.bold ? 'bold' : 'normal'};
+        font-style: ${textStyles[index].fontStyle == FontStyle.italic ? 'italic' : 'normal'};
+        text-decoration: ${textStyles[index].decoration == TextDecoration.underline ? 'underline' : 'none'};
+        color: ${isSentByUser ? 'black' : 'purple'};
+        text-align: $alignment;
+      ''';
+
+      htmlContent.write(
+        '<div style="$style">${widget.messages[index]['message']}</div>',
+      );
+    }
+
+   // htmlContent.write('</body></html>');
+    return htmlContent.toString();
+  }
+
+  void _showHTMLDialog(String htmlContent) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Generated HTML"),
+          content: SingleChildScrollView(
+            child: Html(data: htmlContent), // Display the HTML content
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
 class PDFViewerScreen extends StatelessWidget {
   final String filePath;
@@ -406,3 +478,5 @@ class PDFViewerScreen extends StatelessWidget {
     );
   }
 }
+
+
