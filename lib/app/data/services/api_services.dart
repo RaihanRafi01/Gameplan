@@ -8,7 +8,7 @@ class ApiService {
 
   final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'https://agcourt2.pythonanywhere.com/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
+  final String baseUrl = 'http://192.168.20.201:4040/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
 
   // Sign-up method
   Future<http.Response> signUp(String email, String password, String username) async {

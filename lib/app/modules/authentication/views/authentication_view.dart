@@ -110,7 +110,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      const SignupWithOther(),
+                      SignupWithOther(),
                       const SizedBox(height: 10),
                     ],
                   ),
