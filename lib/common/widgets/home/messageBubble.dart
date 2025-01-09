@@ -45,14 +45,14 @@ class MessageBubble extends StatelessWidget {
                 text: message,
                 isSentByUser: isSentByUser,
               ),
-              if (!isSentByUser && editCallback != null)
+              /*if (!isSentByUser && editCallback != null)
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: GestureDetector(
                     onTap: editCallback,
                     child: SvgPicture.asset('assets/images/home/edit_icon.svg'),
                   ),
-                ),
+                ),*/
             ],
           ),
         ),
