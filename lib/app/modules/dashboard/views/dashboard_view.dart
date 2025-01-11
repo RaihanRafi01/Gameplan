@@ -1,5 +1,5 @@
 import 'package:agcourt/app/modules/calender/views/calender_view.dart';
-import 'package:agcourt/app/modules/history/views/history_view.dart';
+import 'package:agcourt/app/modules/history/views/history__tabs_view.dart';
 import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
 import 'package:agcourt/app/modules/profile/views/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ class _DashboardViewState extends State<DashboardView> {
 
     // List of pages for navigation
     final List<Widget> pages = [
-      HistoryView(),
+      HistoryTabsView(),
       HomeView(),
       CalenderView(),
       ProfileView(),

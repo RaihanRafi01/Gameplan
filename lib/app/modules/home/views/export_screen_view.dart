@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:agcourt/app/modules/history/controllers/edit_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
@@ -9,14 +11,16 @@ import 'package:flutter_html/flutter_html.dart';
 
 class ExportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
+  final int chatId;
 
-  ExportScreen({required this.messages});
+  const ExportScreen({super.key, required this.messages, required this.chatId});
 
   @override
   _ExportScreenState createState() => _ExportScreenState();
 }
 
 class _ExportScreenState extends State<ExportScreen> {
+  final EditController editController = Get.put(EditController());
   late List<TextEditingController> controllers;
   late List<TextStyle> textStyles;
   late List<TextAlign> textAlignments;
@@ -76,8 +80,10 @@ class _ExportScreenState extends State<ExportScreen> {
             icon: Icon(Icons.code),
             onPressed: () {
               final htmlContent = _generateHTMLContent();
+              editController.addEditChat(widget.chatId, htmlContent);
+
               print(':::::::::::::::::::::::::::::::::::::::::HTML: $htmlContent');
-              _showHTMLDialog(htmlContent);
+              //_showHTMLDialog(htmlContent);
             },
           ),
         ],
@@ -464,7 +470,7 @@ class _ExportScreenState extends State<ExportScreen> {
 class PDFViewerScreen extends StatelessWidget {
   final String filePath;
 
-  PDFViewerScreen({required this.filePath});
+  PDFViewerScreen({super.key, required this.filePath});
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import '../modules/calender/views/calender_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/history/bindings/history_binding.dart';
-import '../modules/history/views/history_view.dart';
+import '../modules/history/views/history__tabs_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
@@ -58,7 +58,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.HISTORY,
-      page: () => const HistoryView(),
+      page: () => const HistoryTabsView(),
       binding: HistoryBinding(),
     ),
     GetPage(

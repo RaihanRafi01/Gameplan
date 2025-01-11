@@ -1,0 +1,277 @@
+import 'dart:convert';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import '../../../data/services/api_services.dart';
+
+class EditController extends GetxController {
+  final ApiService _service = ApiService();
+
+  // Reactive variable for selected filter
+  var selectedFilter = 'All'.obs;
+
+  // Reactive grouped list for chat content
+  var groupedChatHistory = <String, List<Chat>>{}.obs;
+
+  // Update the filter and fetch data accordingly
+  void updateFilter(String filter) {
+    selectedFilter.value = filter;
+
+    switch (filter) {
+      case 'All':
+        fetchAllChatList();
+        break;
+      case 'Pin':
+        fetchPinChatList();
+        break;
+      case 'Save':
+        fetchSaveChatList();
+        break;
+      default:
+        Get.snackbar('Error', 'Unknown filter selected');
+    }
+  }
+
+  // Fetch all chat content list from API
+  Future<void> fetchAllChatList() async {
+    try {
+      final http.Response response = await _service.getEditedChatList();
+      if (response.statusCode == 200) {
+        List<dynamic> apiResponse = jsonDecode(response.body);
+        setChatHistory(apiResponse);
+      } else {
+        Get.snackbar('Error', 'Failed to load chat list');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  // Fetch pinned chat content list from API
+  Future<void> fetchPinChatList() async {
+    try {
+      // Make the API call to get the pinned chat list
+      final http.Response response = await _service.getPinChatList();
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        List<dynamic> apiResponse = jsonDecode(response.body);
+
+        // Parse the API response and update the chat history
+        setChatHistory(apiResponse);
+
+        // Perform additional actions for pinned chats
+        for (var chatData in apiResponse) {
+          final Chat chat = Chat.fromJson(chatData);
+
+          // Only process pinned chats
+          if (chat.isPinned && chat.pinDate != null) {
+            final pinDate = chat.pinDate!;
+
+            // Example of additional action: Print event info
+            print(
+                'Pinned Chat: Content=${chat.content}, Date=${DateTime(pinDate.year, pinDate.month, pinDate.day)}, Time=${DateFormat('hh:mm a').format(pinDate)}');
+
+            // Add your specific logic here (e.g., update a calendar, notify other components)
+            // Example: Add to calendar or another list
+            // calendarController.addEvent(chat);
+          }
+        }
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to load pinned chats');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+
+  // Fetch saved chat content list from API
+  Future<void> fetchSaveChatList() async {
+    try {
+      final http.Response response = await _service.getSaveChatList();
+      if (response.statusCode == 200) {
+        List<dynamic> apiResponse = jsonDecode(response.body);
+        setChatHistory(apiResponse);
+      } else {
+        Get.snackbar('Error', 'Failed to load saved chats');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  // Function to parse API response and update grouped chat history
+  void setChatHistory(List<dynamic> apiResponse) {
+    final parsedChats = apiResponse.map((chatData) => Chat.fromJson(chatData)).toList();
+    parsedChats.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    groupedChatHistory.value = groupChatsByDate(parsedChats);
+  }
+
+  // Group chat content by date
+  Map<String, List<Chat>> groupChatsByDate(List<Chat> chats) {
+    final Map<String, List<Chat>> groupedChats = {};
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    for (var chat in chats) {
+      final chatDate = DateTime(chat.timestamp.year, chat.timestamp.month, chat.timestamp.day);
+      String groupKey;
+      if (chatDate == today) {
+        groupKey = 'Today';
+      } else if (chatDate == today.subtract(const Duration(days: 1))) {
+        groupKey = 'Yesterday';
+      } else {
+        groupKey = DateFormat('dd MMM yyyy').format(chatDate);
+      }
+
+      if (!groupedChats.containsKey(groupKey)) {
+        groupedChats[groupKey] = [];
+      }
+      groupedChats[groupKey]!.add(chat);
+    }
+
+    final sortedKeys = groupedChats.keys.toList()
+      ..sort((a, b) {
+        if (a == 'Today') return -1;
+        if (b == 'Today') return 1;
+        if (a == 'Yesterday') return -1;
+        if (b == 'Yesterday') return 1;
+        final dateA = DateFormat('dd MMM yyyy').parse(a);
+        final dateB = DateFormat('dd MMM yyyy').parse(b);
+        return dateB.compareTo(dateA);
+      });
+
+    return {for (var key in sortedKeys) key: groupedChats[key]!};
+  }
+
+  // Update chat content
+  Future<void> updateChatContent(int chatId, String content) async {
+    try {
+      final http.Response response = await _service.updateChatTitle(chatId, content);
+      if (response.statusCode == 200) {
+        fetchAllChatList();
+      } else {
+        Get.snackbar('Error', 'Failed to update content');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> addEditChat(int chatId, String content) async {
+    try {
+      final http.Response response = await _service.addEditChat(chatId, content);
+      if (response.statusCode == 200) {
+        Get.snackbar('Success', 'Successfully added the edit message');
+      } else {
+        Get.snackbar('Error', 'Failed to add content');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  // Delete chat content
+  Future<void> deleteChat(int chatId) async {
+    try {
+      final http.Response response = await _service.deleteEditChat(chatId);
+      if (response.statusCode == 200) {
+        fetchAllChatList();
+      } else {
+        Get.snackbar('Error', 'Failed to delete content');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> pinChat(int chatId, DateTime pinDate) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.pinEditChat(chatId,pinDate);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        Get.snackbar('Pinned', 'Plan pinned successfully');
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to pin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> unpinChat(int chatId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.unpinEditChat(chatId);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        Get.snackbar('Unpinned', 'Plan Unpinned successfully');
+        // Find and remove the event corresponding to the chatId
+        /*final eventToRemove = calendarController.events.firstWhere(
+                (event) => event.ChatId == chatId // Return null if no matching event is found
+        );
+
+        if (eventToRemove != null) {
+          // Remove the event from the calendarController events list
+          calendarController.events.remove(eventToRemove);
+
+          // Optionally refresh the calendar view if needed
+          // calendarController.events.refresh();
+        }
+        fetchData();*/
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to unpin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+}
+
+// Chat model class
+class Chat {
+  final int id;
+  final int chatId;
+  final int ownerUser;
+  final String content;
+  final bool isPinned;
+  final DateTime timestamp;
+  final DateTime? pinDate;
+
+  Chat({
+    required this.id,
+    required this.chatId,
+    required this.ownerUser,
+    required this.content,
+    required this.isPinned,
+    required this.timestamp,
+    this.pinDate,
+  });
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    return Chat(
+      id: json['id'],
+      chatId: json['chat'],
+      ownerUser: json['owner_user'],
+      content: json['content'],
+      isPinned: json['is_pinned'],
+      timestamp: DateTime.parse(json['timestamp']),
+      pinDate: json['pin_date'] != null ? DateTime.parse(json['pin_date']) : null,
+    );
+  }
+}

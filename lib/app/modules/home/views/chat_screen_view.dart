@@ -172,7 +172,7 @@ class ChatScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ExportScreen(messages: chatController.messages),
+                    builder: (context) => ExportScreen(messages: chatController.messages,chatId: chatId!,),
                   ),
                 );
               } else if (value == 3) {

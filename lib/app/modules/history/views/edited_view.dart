@@ -1,70 +1,55 @@
+import 'package:agcourt/app/modules/history/controllers/edit_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
-import '../../../../common/widgets/custom_button.dart';
-import '../../dashboard/views/widgets/subscriptionPopup.dart';
-import '../../home/controllers/home_controller.dart';
-import '../../home/views/chat_screen_view.dart';
-import '../controllers/history_controller.dart';
 
-class HistoryView extends GetView<HistoryController> {
-  const HistoryView({super.key});
+class EditedScreen extends GetView<EditController> {
+  const EditedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HistoryController());
-    Get.find<HistoryController>().fetchAllChatList();
+    Get.put(EditController());
+    Get.find<EditController>().fetchAllChatList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Row(
             children: [
               Text(
-                'History',
+                'Edited Content',
                 style: h2.copyWith(fontSize: 28, color: AppColors.textHistory),
               ),
-              Spacer(),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: DropdownButtonHideUnderline(
-                    child: Obx(
-                          () => DropdownButton<String>(
-                        value: controller.selectedFilter.value,
-                        items: [
-                          DropdownMenuItem(value: 'All', child: Text('All Plans', style: h3)),
-                          DropdownMenuItem(value: 'Pin', child: Text('Pin Plans', style: h3)),
-                          DropdownMenuItem(value: 'Save', child: Text('Save Plans', style: h3)),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.updateFilter(value);
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        alignment: AlignmentDirectional.bottomStart,
-                      ),
-                    ),
-                  ),
+              const Spacer(),
+              Obx(
+                    () => DropdownButton<String>(
+                  value: controller.selectedFilter.value,
+                  items: [
+                    DropdownMenuItem(value: 'All', child: Text('All', style: h3)),
+                    DropdownMenuItem(value: 'Pin', child: Text('Pinned', style: h3)),
+                    DropdownMenuItem(value: 'Save', child: Text('Saved', style: h3)),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.updateFilter(value);
+                    }
+                  },
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
           const SizedBox(height: 16),
           Expanded(
             child: Obx(() {
               final groupedChats = controller.groupedChatHistory;
 
               if (groupedChats.isEmpty) {
-                return Center(child: Text('No plans available', style: h3));
+                return Center(child: Text('No content available', style: h3));
               }
 
               return ListView.builder(
@@ -85,18 +70,9 @@ class HistoryView extends GetView<HistoryController> {
                       ),
                       ...chats.map((chat) {
                         return ListTile(
-                          title: GestureDetector(
-                            onTap: () {
-                              Get.to(() => ChatScreen(
-                                chat: chat.chatContents,
-                                chatId: chat.id,
-                                chatName: chat.chatName,
-                              ))?.then((value) => controller.fetchData());
-                            },
-                            child: Text(
-                              chat.chatName,
-                              style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
-                            ),
+                          title: Text(
+                            chat.content,
+                            style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
                           ),
                           trailing: PopupMenuButton<int>(
                             icon: const Icon(Icons.more_horiz_rounded),
@@ -110,7 +86,7 @@ class HistoryView extends GetView<HistoryController> {
                                   }
                                   break;
                                 case 1:
-                                  _showEditDialog(context, chat.id, chat.chatName);
+                                  //_showEditDialog(context, chat.id, chat.chatName);
                                   break;
                                 case 2:
                                   _showDeleteDialog(context, chat.id);
@@ -222,7 +198,7 @@ class HistoryView extends GetView<HistoryController> {
               onPressed: () {
                 final newTitle = textController.text.trim();
                 if (newTitle.isNotEmpty) {
-                  controller.updateChatTitle(chatId, newTitle);
+                  //controller.updateChatTitle(chatId, newTitle);
                 }
                 Navigator.pop(context);
               },

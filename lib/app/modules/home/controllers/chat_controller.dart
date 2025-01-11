@@ -209,7 +209,7 @@ class ChatController extends GetxController {
 
         // Find the bot's message in `chat_contents`
         final List<dynamic> chatContents = responseBody['chat_contents'];
-        final botMessage = chatContents.firstWhere(
+        final botMessage = chatContents.lastWhere(
               (message) => message['sent_by'] == 'Bot',
           orElse: () => null, // Handle the case where no Bot message exists
         );

@@ -193,6 +193,7 @@ class HistoryController extends GetxController {
       if (response.statusCode == 200) {
         Get.snackbar('Pinned', 'Plan pinned successfully');
         fetchPinChatList();
+        //fetchData();
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to pin');

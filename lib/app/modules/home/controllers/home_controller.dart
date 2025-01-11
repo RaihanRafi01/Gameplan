@@ -97,6 +97,8 @@ class HomeController extends GetxController {
       print('::::::::::::::::::::subscriptionStatus:::::::::::::::::::::::::::$subscriptionStatus');
 
 
+      // TODO make this == before deployment
+
       isFree.value = subscriptionStatus.value != 'not_subscribed';
 
 
