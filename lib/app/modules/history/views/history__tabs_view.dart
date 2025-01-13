@@ -1,13 +1,11 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
-import '../../../../common/customFont.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
-import '../../home/views/chat_screen_view.dart';
-import '../controllers/history_controller.dart';
 import 'edited_view.dart';
 import 'history_view.dart';
 
@@ -74,4 +72,4 @@ class HistoryTabsView extends StatelessWidget {
       ),
     );
   }
-}
+}*/

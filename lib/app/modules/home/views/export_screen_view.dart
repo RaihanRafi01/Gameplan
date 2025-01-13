@@ -1,13 +1,18 @@
 import 'dart:io';
+import 'package:agcourt/app/modules/dashboard/views/widgets/customNavigationBar.dart';
 import 'package:agcourt/app/modules/history/controllers/edit_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_html/flutter_html.dart';
+
+import '../../dashboard/controllers/dashboard_controller.dart';
+import '../controllers/chat_edit_controller.dart';
 
 class ExportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
@@ -20,7 +25,10 @@ class ExportScreen extends StatefulWidget {
 }
 
 class _ExportScreenState extends State<ExportScreen> {
-  final EditController editController = Get.put(EditController());
+  final ChatEditController editController = Get.put(ChatEditController());
+  final EditController historyEditController = Get.put(EditController());
+  final DashboardController dashboardController = Get.put(DashboardController());
+
   late List<TextEditingController> controllers;
   late List<TextStyle> textStyles;
   late List<TextAlign> textAlignments;
@@ -53,45 +61,74 @@ class _ExportScreenState extends State<ExportScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //dashboardController.currentIndex.value = 1;
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Plan"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.file_upload_outlined),
-            onPressed: () async {
-              final filePath = await _promptAndSavePDF();
-              if (filePath != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("PDF saved to: $filePath")),
-                );
-                _showPDF(filePath);
-              }
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.copy),
-            onPressed: () {
-              _copyAllMessages(context);
-            },
-          ),
-          // Add new button to generate and show HTML
-          IconButton(
-            icon: Icon(Icons.code),
-            onPressed: () {
-              final htmlContent = _generateHTMLContent();
-              editController.addEditChat(widget.chatId, htmlContent);
-
-              print(':::::::::::::::::::::::::::::::::::::::::HTML: $htmlContent');
-              //_showHTMLDialog(htmlContent);
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            Obx(() => Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (editController.isEditing.value) ...[
+                  GestureDetector(
+                    onTap: () {
+                      editController.disableEditing();
+                    },
+                    child: SvgPicture.asset(
+                        'assets/images/history/edit_icon.svg'),
+                  ),
+                  SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: () {
+                      // Pin functionality
+                    },
+                    child: SvgPicture.asset(
+                        'assets/images/history/pin_icon.svg'),
+                  ),
+                  SizedBox(width: 16),
+                  GestureDetector(
+                    onTap: () {
+                      // Delete functionality
+                    },
+                    child: SvgPicture.asset(
+                        'assets/images/history/delete_icon.svg'),
+                  ),
+                  SizedBox(width: 16),
+                ],
+                GestureDetector(
+                  onTap: () async {
+                    final filePath = await _promptAndSavePDF();
+                    if (filePath != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("PDF saved to: $filePath")),
+                      );
+                      _showPDF(filePath);
+                      editController.disableEditing();
+                    }
+                  },
+                  child: SvgPicture.asset(
+                      'assets/images/history/export_icon.svg'),
+                ),
+                SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () {
+                    final htmlContent = _generateHTMLContent();
+                    historyEditController.addEditChat(widget.chatId, htmlContent);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Saved successfully!")),
+                    );
+                    editController.disableEditing(); // Disable editing after saving
+                  },
+                  child: SvgPicture.asset(
+                      'assets/images/history/save_icon.svg'),
+                ),
+              ],
+            )),
+            SizedBox(height: 10),
             _buildToolbar(),
             Expanded(
               child: ListView.builder(
@@ -145,16 +182,17 @@ class _ExportScreenState extends State<ExportScreen> {
             value: _fontSize,
             items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
                 .map((size) => DropdownMenuItem(
-              value: size,
-              child: Text(size.toString()),
-            ))
+                      value: size,
+                      child: Text(size.toString()),
+                    ))
                 .toList(),
             onChanged: (value) {
               if (_currentEditingIndex != -1) {
                 setState(() {
                   _fontSize = value!;
                   textStyles[_currentEditingIndex] =
-                      textStyles[_currentEditingIndex].copyWith(fontSize: _fontSize);
+                      textStyles[_currentEditingIndex]
+                          .copyWith(fontSize: _fontSize);
                 });
               }
             },
@@ -162,8 +200,8 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_bold),
             color: _currentEditingIndex != -1 &&
-                textStyles[_currentEditingIndex].fontWeight ==
-                    FontWeight.bold
+                    textStyles[_currentEditingIndex].fontWeight ==
+                        FontWeight.bold
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -172,10 +210,10 @@ class _ExportScreenState extends State<ExportScreen> {
                   textStyles[_currentEditingIndex] =
                       textStyles[_currentEditingIndex].copyWith(
                           fontWeight:
-                          textStyles[_currentEditingIndex].fontWeight ==
-                              FontWeight.bold
-                              ? FontWeight.normal
-                              : FontWeight.bold);
+                              textStyles[_currentEditingIndex].fontWeight ==
+                                      FontWeight.bold
+                                  ? FontWeight.normal
+                                  : FontWeight.bold);
                 });
               }
             },
@@ -183,7 +221,8 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_italic),
             color: _currentEditingIndex != -1 &&
-                textStyles[_currentEditingIndex].fontStyle == FontStyle.italic
+                    textStyles[_currentEditingIndex].fontStyle ==
+                        FontStyle.italic
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -191,10 +230,11 @@ class _ExportScreenState extends State<ExportScreen> {
                 setState(() {
                   textStyles[_currentEditingIndex] =
                       textStyles[_currentEditingIndex].copyWith(
-                          fontStyle: textStyles[_currentEditingIndex].fontStyle ==
-                              FontStyle.italic
-                              ? FontStyle.normal
-                              : FontStyle.italic);
+                          fontStyle:
+                              textStyles[_currentEditingIndex].fontStyle ==
+                                      FontStyle.italic
+                                  ? FontStyle.normal
+                                  : FontStyle.italic);
                 });
               }
             },
@@ -202,8 +242,8 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_underline),
             color: _currentEditingIndex != -1 &&
-                textStyles[_currentEditingIndex].decoration ==
-                    TextDecoration.underline
+                    textStyles[_currentEditingIndex].decoration ==
+                        TextDecoration.underline
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -212,10 +252,10 @@ class _ExportScreenState extends State<ExportScreen> {
                   textStyles[_currentEditingIndex] =
                       textStyles[_currentEditingIndex].copyWith(
                           decoration:
-                          textStyles[_currentEditingIndex].decoration ==
-                              TextDecoration.underline
-                              ? TextDecoration.none
-                              : TextDecoration.underline);
+                              textStyles[_currentEditingIndex].decoration ==
+                                      TextDecoration.underline
+                                  ? TextDecoration.none
+                                  : TextDecoration.underline);
                 });
               }
             },
@@ -223,7 +263,7 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_align_left),
             color: _currentEditingIndex != -1 &&
-                textAlignments[_currentEditingIndex] == TextAlign.left
+                    textAlignments[_currentEditingIndex] == TextAlign.left
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -237,7 +277,7 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_align_center),
             color: _currentEditingIndex != -1 &&
-                textAlignments[_currentEditingIndex] == TextAlign.center
+                    textAlignments[_currentEditingIndex] == TextAlign.center
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -251,7 +291,7 @@ class _ExportScreenState extends State<ExportScreen> {
           IconButton(
             icon: Icon(Icons.format_align_right),
             color: _currentEditingIndex != -1 &&
-                textAlignments[_currentEditingIndex] == TextAlign.right
+                    textAlignments[_currentEditingIndex] == TextAlign.right
                 ? Colors.blue
                 : Colors.black,
             onPressed: () {
@@ -373,7 +413,6 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
-
   pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
     switch (textAlign) {
       case TextAlign.center:
@@ -397,7 +436,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
   void _copyAllMessages(BuildContext context) {
     final allMessages =
-    widget.messages.map((message) => message['message']).join("\n");
+        widget.messages.map((message) => message['message']).join("\n");
     Clipboard.setData(ClipboardData(text: allMessages));
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -407,7 +446,7 @@ class _ExportScreenState extends State<ExportScreen> {
 
   String _generateHTMLContent() {
     final htmlContent = StringBuffer();
-   // htmlContent.write('<html><body>');
+    // htmlContent.write('<html><body>');
 
     for (int index = 0; index < widget.messages.length; index++) {
       final isSentByUser = widget.messages[index]['isSentByUser'];
@@ -442,7 +481,7 @@ class _ExportScreenState extends State<ExportScreen> {
       );
     }
 
-   // htmlContent.write('</body></html>');
+    // htmlContent.write('</body></html>');
     return htmlContent.toString();
   }
 
@@ -465,8 +504,8 @@ class _ExportScreenState extends State<ExportScreen> {
       },
     );
   }
-
 }
+
 class PDFViewerScreen extends StatelessWidget {
   final String filePath;
 
@@ -484,5 +523,3 @@ class PDFViewerScreen extends StatelessWidget {
     );
   }
 }
-
-

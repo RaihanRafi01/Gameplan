@@ -8,7 +8,8 @@ import '../../app/modules/home/controllers/home_controller.dart';
 import '../appColors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({Key? key}) : super(key: key);
+  final String title;
+  const CustomAppBar({super.key,this.title = ''});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -21,19 +22,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      leading: GestureDetector(
-        onTap: (){
-          if(isFree){
-            print(':::::::::::::::FREE::::');
-          }
-          else if(!isFree){
-            print(':::::::::::::NOT::FREE::::');
-          }
-
-        },
-          child: Image.asset('assets/images/history/save_icon.png',scale: 3,)),
       centerTitle: true,
-      title: CustomButton(
+      title: isFree ? CustomButton(
         text: 'Upgrade To Pro',
         onPressed: () {
           showDialog(
@@ -49,17 +39,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         borderGradientColor: AppColors.cardGradient,
         isEditPage: true,
         textColor: AppColors.textColor,
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: GestureDetector(
-              onTap: (){
-
-              },
-              child: SvgPicture.asset('assets/images/history/pin_icon.svg')),
-        ),
-      ],
+      ) : Text(title),
     );
   }
 }

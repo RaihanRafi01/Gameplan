@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-class EditController extends GetxController {
+class ChatEditController extends GetxController {
   // Messages with persistent TextEditingControllers
   var messages = <Map<String, dynamic>>[].obs;
   var textControllers = <TextEditingController>[].obs;
@@ -70,4 +70,16 @@ class EditController extends GetxController {
       fontSize: size ?? style.fontSize,
     );
   }
+
+  var isEditing = false.obs; // Start with editing mode enabled
+
+  void enableEditing() {
+    isEditing.value = true;
+  }
+
+  void disableEditing() {
+    isEditing.value = false;
+  }
+
+
 }

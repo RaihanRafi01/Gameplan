@@ -17,6 +17,11 @@ class CustomNavigationBar extends StatelessWidget {
         'defaultIcon': 'assets/images/navbar/history_icon.svg',
       },
       {
+        'label': 'History',
+        'filledIcon': 'assets/images/navbar/save_icon_filled.svg',
+        'defaultIcon': 'assets/images/navbar/save_icon.svg',
+      },
+      {
         'label': 'Chat',
         'filledIcon': 'assets/images/navbar/chat_icon_filled.svg',
         'defaultIcon': 'assets/images/navbar/chat_icon.svg',

@@ -98,20 +98,11 @@ class ChatScreen extends StatelessWidget {
                   width: 135, // Ensure the same width for all items
                   child: Row(
                     children: [
-                      Icon(Icons.copy_rounded),
-                      SizedBox(width: 8),
-                      Text("Copy"),
-                    ],
-                  ),
-                ),
-              ),
-              PopupMenuItem(
-                value: 2,
-                child: SizedBox(
-                  width: 135, // Ensure the same width for all items
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit),
+                      SvgPicture.asset(
+                        'assets/images/history/edit_icon.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                       SizedBox(width: 8),
                       Text("Edit"),
                     ],
@@ -119,36 +110,7 @@ class ChatScreen extends StatelessWidget {
                 ),
               ),
               PopupMenuItem(
-                value: 3,
-                child: SizedBox(
-                  width: 135, // Ensure the same width for all items
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/history/save_icon.png',
-                        scale: 3,
-                      ),
-                      SizedBox(width: 8),
-                      Text("Save To Class"),
-                    ],
-                  ),
-                ),
-              ),
-              PopupMenuItem(
-                value: 4,
-                child: SizedBox(
-                  width: 135, // Adjust width consistently
-                  child: Row(
-                    children: [
-                      Icon(Icons.file_upload_outlined),
-                      SizedBox(width: 8),
-                      Text("Export"),
-                    ],
-                  ),
-                ),
-              ),
-              PopupMenuItem(
-                value: 5,
+                value: 2,
                 child: SizedBox(
                   width: 135, // Adjust width consistently
                   child: Row(
@@ -167,21 +129,13 @@ class ChatScreen extends StatelessWidget {
             ],
             onSelected: (value) {
               if (value == 1) {
-                _copyAllMessages(context);
-              } else if (value == 2) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ExportScreen(messages: chatController.messages,chatId: chatId!,),
                   ),
                 );
-              } else if (value == 3) {
-                historyController.saveChat(chatId!);
-              }
-              else if (value == 4) {
-                _exportToPDF(context);
-              }
-              else if (value == 5) {
+              } else if (value == 2) {
                 _showDatePicker(context, chatId!);
               }
             },
