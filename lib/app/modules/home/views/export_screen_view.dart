@@ -6,10 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../dashboard/controllers/dashboard_controller.dart';
 import '../controllers/chat_edit_controller.dart';
@@ -308,23 +310,41 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<String?> _promptAndSavePDF() async {
-    String? outputDir = await FilePicker.platform.getDirectoryPath();
-    if (outputDir == null) {
-      return null;
-    }
-
     String? fileName = await _getFileName(context);
     if (fileName == null || fileName.trim().isEmpty) {
       return null;
     }
 
+    // Ensure the file name ends with .pdf
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
 
-    final path = "$outputDir/$fileName";
-    return await _generateAndSavePDF(path);
+    try {
+      // Get the full save path using the helper function
+      final filePath = await getSavePath(fileName);
+      return await _generateAndSavePDF(filePath);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to determine save path: $e")),
+      );
+      return null;
+    }
   }
+
+  Future<String> getSavePath(String fileName) async {
+    // Get the external storage directory (unique to the app)
+    final directory = await getExternalStorageDirectory();
+    if (directory == null) {
+      throw Exception("Unable to access external storage directory.");
+    }
+
+    // Combine the directory path with the file name
+    final path = "${directory.path}/$fileName";
+    return path;
+  }
+
+
 
   Future<String?> _getFileName(BuildContext context) async {
     TextEditingController fileNameController = TextEditingController();
@@ -357,7 +377,32 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 
+
+  Future<void> requestPermissions() async {
+    if (Platform.isAndroid) {
+      if (!await Permission.storage.isGranted) {
+        await Permission.storage.request();
+      }
+
+      if (await Permission.storage.isDenied) {
+        // Show a message to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Storage permission is required to save PDFs.")),
+        );
+        return;
+      }
+
+      if (await Permission.storage.isPermanentlyDenied) {
+        // Open app settings
+        openAppSettings();
+      }
+    }
+  }
+
+
+
   Future<String?> _generateAndSavePDF(String filePath) async {
+    requestPermissions();
     try {
       final pdf = pw.Document();
 
@@ -369,7 +414,6 @@ class _ExportScreenState extends State<ExportScreen> {
               children: List.generate(widget.messages.length, (index) {
                 final isSentByUser = widget.messages[index]['isSentByUser'];
 
-                // Map TextAlign to Container Alignment
                 pw.Alignment alignment;
                 switch (textAlignments[index]) {
                   case TextAlign.center:
@@ -385,7 +429,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 }
 
                 return pw.Container(
-                  alignment: alignment, // Aligns the text
+                  alignment: alignment,
                   padding: const pw.EdgeInsets.only(bottom: 8),
                   child: pw.Text(
                     widget.messages[index]['message'],
@@ -409,9 +453,11 @@ class _ExportScreenState extends State<ExportScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to save PDF: $e")),
       );
+      print('Error: $e');
       return null;
     }
   }
+
 
   pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
     switch (textAlign) {
