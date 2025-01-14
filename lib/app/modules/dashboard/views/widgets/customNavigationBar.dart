@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../controllers/dashboard_controller.dart';
+import '../../controllers/theme_controller.dart';
 
 class CustomNavigationBar extends StatelessWidget {
   const CustomNavigationBar({super.key});
@@ -38,31 +39,36 @@ class CustomNavigationBar extends StatelessWidget {
       },
     ];
 
-    return Container(
-      height: 70, // Set the desired height
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(navItems.length, (index) {
-          final item = navItems[index];
-          return GestureDetector(
-            onTap: () => controller.updateIndex(index),
-            child: Obx(() {
-              final isSelected = index == controller.currentIndex.value;
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200), // Smooth transition duration
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                child: SvgPicture.asset(
-                  isSelected ? item['filledIcon']! : item['defaultIcon']!,
-                  key: ValueKey('${item['label']}_$isSelected'),
-                ),
-              );
-            }),
-          );
-        }),
-      ),
-    );
+    return Obx(() {
+      final ThemeController themeController = Get.find<ThemeController>();
+      return Container(
+        height: 70, // Set the desired height
+        color: themeController.isDarkTheme.value
+            ? Colors.black // Border color in dark mode
+            : Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(navItems.length, (index) {
+            final item = navItems[index];
+            return GestureDetector(
+              onTap: () => controller.updateIndex(index),
+              child: Obx(() {
+                final isSelected = index == controller.currentIndex.value;
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200), // Smooth transition duration
+                  transitionBuilder: (child, animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: SvgPicture.asset(
+                    isSelected ? item['filledIcon']! : item['defaultIcon']!,
+                    key: ValueKey('${item['label']}_$isSelected'),
+                  ),
+                );
+              }),
+            );
+          }),
+        ),
+      );
+    });
   }
 }

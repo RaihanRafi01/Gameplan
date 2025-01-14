@@ -1,5 +1,6 @@
- import 'package:flutter/material.dart';
-
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../app/modules/dashboard/controllers/theme_controller.dart';
 import '../../appColors.dart';
 import '../../customFont.dart';
 
@@ -15,7 +16,6 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final Function()? onTap;
   final double radius;
-  final Color textColor;
 
   const CustomTextField({
     super.key,
@@ -30,7 +30,6 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType,
     this.onTap,
     this.radius = 12,
-    this.textColor = AppColors.blurtext
   });
 
   @override
@@ -39,6 +38,7 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   bool _obscureText = true;
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -59,10 +59,21 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: h4.copyWith(fontSize: 16, fontWeight: FontWeight.bold,color: widget.textColor)),
+        Obx(() => Text(
+          widget.label,
+          style: h4.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: themeController.isDarkTheme.value
+                ? Colors.white
+                : Colors.black, // Dynamic text color
+          ),
+        )),
         const SizedBox(height: 8),
-        TextField(
-          cursorColor: AppColors.appColor,
+        Obx(() => TextField(
+          cursorColor: themeController.isDarkTheme.value
+              ? Colors.white
+              : AppColors.appColor, // Dynamic cursor color
           controller: widget.controller,
           onChanged: widget.onChanged,
           obscureText: widget.isPassword ? _obscureText : false,
@@ -71,31 +82,66 @@ class _CustomTextFieldState extends State<CustomTextField> {
           onTap: widget.onTap,
           decoration: InputDecoration(
             hintText: widget.hint,
-            hintStyle: h4.copyWith(color: AppColors.appColor),
-            prefixIcon: widget.prefixIcon != null ? Icon(color: AppColors.appColor,widget.prefixIcon) : null,
+            hintStyle: h4.copyWith(
+              color: themeController.isDarkTheme.value
+                  ? Colors.white54
+                  : AppColors.appColor, // Dynamic hint color
+            ),
+            prefixIcon: widget.prefixIcon != null
+                ? Icon(
+              widget.prefixIcon,
+              color: themeController.isDarkTheme.value
+                  ? Colors.white
+                  : AppColors.appColor, // Dynamic prefix icon color
+            )
+                : null,
             suffixIcon: widget.isPassword
                 ? IconButton(
               icon: Icon(
-                color: AppColors.appColor,
-                _obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                _obscureText
+                    ? Icons.visibility_off_rounded
+                    : Icons.visibility_rounded,
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor, // Dynamic suffix icon color
               ),
               onPressed: _togglePasswordVisibility,
             )
-                : (widget.suffixIcon != null ? Icon(widget.suffixIcon) : null),
+                : (widget.suffixIcon != null
+                ? Icon(
+              widget.suffixIcon,
+              color: themeController.isDarkTheme.value
+                  ? Colors.white
+                  : AppColors.appColor, // Dynamic suffix icon color
+            )
+                : null),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: const BorderSide(color: AppColors.appColor),
+              borderSide: BorderSide(
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor, // Dynamic border color
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: const BorderSide(color: AppColors.appColor),
+              borderSide: BorderSide(
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor, // Dynamic enabled border color
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: const BorderSide(color: AppColors.appColor, width: 2),
+              borderSide: BorderSide(
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor, // Dynamic focused border color
+                width: 2,
+              ),
             ),
           ),
-        ),
+        )),
         const SizedBox(height: 12),
       ],
     );

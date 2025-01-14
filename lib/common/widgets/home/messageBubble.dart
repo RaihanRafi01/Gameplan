@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart'; // Assuming you may use SVG icons
 import 'package:agcourt/common/widgets/gradientCard.dart';
 import 'package:get/get.dart';
 
+import '../../../app/modules/dashboard/controllers/theme_controller.dart';
 import '../../../app/modules/home/controllers/home_controller.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -39,13 +40,18 @@ class MessageBubble extends StatelessWidget {
           ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              GradientCard(
-                text: message,
-                isSentByUser: isSentByUser,
-              ),
-              /*if (!isSentByUser && editCallback != null)
+          child: Obx(() {
+            final ThemeController themeController = Get.find<ThemeController>();
+            return Row(
+              children: [
+                GradientCard(
+                  text: message,
+                  isSentByUser: isSentByUser,
+                  textColor: themeController.isDarkTheme.value
+                      ? Colors.white // Border color in dark mode
+                      : Colors.black,
+                ),
+                /*if (!isSentByUser && editCallback != null)
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: GestureDetector(
@@ -53,17 +59,20 @@ class MessageBubble extends StatelessWidget {
                     child: SvgPicture.asset('assets/images/home/edit_icon.svg'),
                   ),
                 ),*/
-            ],
-          ),
+              ],
+            );
+          }),
         ),
         if (isSentByUser) // Avatar on the right for bot's messages
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Obx(() => CircleAvatar(
-            radius: 16,
-            backgroundImage: NetworkImage('$baseUrl${controller.profilePicUrl.value}'),
-          )),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Obx(() =>
+                CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage(
+                      '$baseUrl${controller.profilePicUrl.value}'),
+                )),
+          ),
       ],
     );
   }

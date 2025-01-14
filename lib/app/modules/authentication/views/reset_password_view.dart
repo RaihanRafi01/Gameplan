@@ -5,6 +5,7 @@ import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
 import '../../../../common/widgets/auth/popUpWidget.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../controllers/authentication_controller.dart';
 
 class ResetPasswordView extends GetView {
@@ -46,7 +47,15 @@ class ResetPasswordView extends GetView {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: SvgPicture.asset('assets/images/auth/app_logo.svg'),
+        title: Obx(() {
+          final ThemeController themeController = Get.find<ThemeController>();
+          return SvgPicture.asset(
+            'assets/images/auth/app_logo.svg',
+            color: themeController.isDarkTheme.value
+                ? Colors.white // White in dark mode
+                : null, // Black in light mode
+          );
+        }),
       ),
       body: Stack(
         children: [

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 
@@ -31,18 +32,25 @@ class SettingsView extends GetView {
               Text('Subscription Details',style: h3.copyWith(fontSize: 18)),
               SizedBox(height: 20,),
               // The existing card
-              Container(
+            Obx(() {
+              final themeController = Get.find<ThemeController>();
+              final isDarkTheme = themeController.isDarkTheme.value;
+
+              return Container(
                 width: double.maxFinite,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  gradient: const LinearGradient(
-                    colors: AppColors.cardGradient,  // Gradient colors
+                  gradient: LinearGradient(
+                    colors: isDarkTheme
+                        ? [Colors.grey[900]!, Colors.grey[800]!] // Dark theme gradient
+                        : AppColors.cardGradient, // Light theme gradient
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                 ),
                 child: Card(
                   elevation: 5,
+                  color: isDarkTheme ? Colors.grey[850] : Colors.white, // Card background color
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -53,23 +61,34 @@ class SettingsView extends GetView {
                       children: [
                         Text(
                           title,
-                          style: h4.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: h4.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isDarkTheme ? Colors.white : Colors.black, // Text color
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           price,
-                          style: h1.copyWith(fontSize: 20),
+                          style: h1.copyWith(
+                            fontSize: 20,
+                            color: isDarkTheme ? Colors.white : Colors.black, // Text color
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           "Expiry Date: $expiryDate",
-                          style: h4.copyWith(fontSize: 12),
+                          style: h4.copyWith(
+                            fontSize: 12,
+                            color: isDarkTheme ? Colors.grey[400] : Colors.grey[700], // Subtle text color
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
+              );
+            }),
               // Two buttons at the bottom
               SizedBox(height: 30), // Space between the card and the buttons
               CustomButton(text: 'Update', onPressed: (){

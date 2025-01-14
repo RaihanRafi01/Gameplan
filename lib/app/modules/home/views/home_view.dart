@@ -8,6 +8,7 @@ import '../../../../common/customFont.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/home/custom_messageInputField.dart';
 import '../../../../common/widgets/gradientCard.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/home_controller.dart';
@@ -24,6 +25,7 @@ class HomeView extends GetView<HomeController> {
     historyController.fetchPinChatList();
     final TextEditingController textController = TextEditingController();
     final bool isFree2 = homeController.isFree.value;
+    final ThemeController themeController = Get.find<ThemeController>();
 
     return Scaffold(
       body: Padding(
@@ -54,7 +56,15 @@ class HomeView extends GetView<HomeController> {
                 textColor: AppColors.textColor,
               ),
               SizedBox(height: 60),
-              SvgPicture.asset('assets/images/auth/app_logo.svg'),
+              Obx(() {
+                //final ThemeController themeController = Get.find<ThemeController>();
+                return SvgPicture.asset(
+                  'assets/images/auth/app_logo.svg',
+                  color: themeController.isDarkTheme.value
+                      ? Colors.white // White in dark mode
+                      : null, // Black in light mode
+                );
+              }),
               SizedBox(height: 30,),
               Text(
                 "What do you need help with today?",
@@ -63,8 +73,12 @@ class HomeView extends GetView<HomeController> {
               ),
               const SizedBox(height: 50), // Add some spacing at the top
               Obx(() {
+                //final ThemeController themeController = Get.find<ThemeController>();
                 final bool isFree = homeController.isFree.value;
                 return CustomMessageInputField(
+                  color: themeController.isDarkTheme.value
+                      ? Colors.white // Border color in dark mode
+                      : Colors.black,
                   textController: textController,
                   onSend: () async {
                     // Store the current text in a variable
@@ -133,30 +147,37 @@ class HomeView extends GetView<HomeController> {
                 child: Center(
                   child: GestureDetector(
                     onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxWidth: double
-                            .maxFinite, // Set maximum width for the container
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      // Add inner padding
-                      decoration: BoxDecoration(
-                        color: Colors.transparent, // Transparent background
-                        borderRadius: BorderRadius.circular(25), // Rounded border
-                        border: Border.all(
-                          color: Colors.black, // Border color
-                          width: 1, // Border width
+                    child: Obx(() {
+                      final ThemeController themeController = Get.find<ThemeController>();
+
+                      return Container(
+                        constraints: BoxConstraints(
+                          maxWidth: double.maxFinite, // Set maximum width for the container
                         ),
-                      ),
-                      child: Text(
-                        "What should I type in text box?",
-                        style: TextStyle(
-                          fontSize: 16, // Font size
-                          color: Colors.black, // Text color
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        // Add inner padding
+                        decoration: BoxDecoration(
+                          color: Colors.transparent, // Transparent background
+                          borderRadius: BorderRadius.circular(25), // Rounded border
+                          border: Border.all(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white // Border color in dark mode
+                                : Colors.black, // Border color in light mode
+                            width: 1, // Border width
+                          ),
                         ),
-                        textAlign: TextAlign.center, // Center-align the text
-                      ),
-                    ),
+                        child: Text(
+                          "What should I tell the AI to get the best session plan?",
+                          style: TextStyle(
+                            fontSize: 16, // Font size
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white // Text color in dark mode
+                                : Colors.black, // Text color in light mode
+                          ),
+                          textAlign: TextAlign.center, // Center-align the text
+                        ),
+                      );
+                    }),
                   ),
                 ),
               ),

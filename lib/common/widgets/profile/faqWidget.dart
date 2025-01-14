@@ -32,17 +32,24 @@ class FaqWidget extends StatelessWidget {
               controller.setSelectedFAQIndex(index); // Expand if not selected
             }
           },
-          child: Row(
-            children: [
-              Text(question, style: h3),
-              Spacer(),
-              Obx(() {
-                return controller.selectedFAQIndex.value == index
-                    ? Icon(Icons.arrow_downward_rounded)
-                    : Icon(Icons.navigate_next_rounded);
-              })
-            ],
-          ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    question,
+                    style: h3,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+                Obx(() {
+                  return controller.selectedFAQIndex.value == index
+                      ? Icon(Icons.arrow_downward_rounded)
+                      : Icon(Icons.navigate_next_rounded);
+                }),
+              ],
+            ),
+
         ),
         Obx(() {
           return controller.selectedFAQIndex.value == index
@@ -50,6 +57,7 @@ class FaqWidget extends StatelessWidget {
               : const SizedBox.shrink(); // Hide the answer if not selected
         }),
         const Divider(),
+        SizedBox(height: 10,)
       ],
     );
   }

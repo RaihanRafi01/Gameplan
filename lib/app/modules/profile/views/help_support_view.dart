@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 
 class HelpSupportView extends GetView {
   const HelpSupportView({super.key});
@@ -87,36 +88,49 @@ class HelpSupportView extends GetView {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          contentPadding: const EdgeInsets.all(20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          title: Column(
-            children: [
-              Text(
-                'Help!',
-                textAlign: TextAlign.center,
-                style: h1.copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Our team will contact you within 24 hours',
-                textAlign: TextAlign.center,
-                style: h4.copyWith(fontSize: 16),
-              ),
-              const SizedBox(height: 20),
-              CustomButton(
-                text: 'OK',
-                onPressed: () {
-                  Navigator.pop(context); // Close the dialog
-                },
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
-                isEditPage: true,
-                textColor: AppColors.textColor,
-              ),
-            ],
-          ),
-        );
+        return Obx(() {
+          final themeController = Get.find<ThemeController>();
+          final isDarkTheme = themeController.isDarkTheme.value;
+
+          return AlertDialog(
+            contentPadding: const EdgeInsets.all(20),
+            backgroundColor: isDarkTheme ? Colors.grey[850] : Colors.white, // Dynamic background color
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            title: Column(
+              children: [
+                Text(
+                  'Help!',
+                  textAlign: TextAlign.center,
+                  style: h1.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkTheme ? Colors.white : Colors.black, // Dynamic text color
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Our team will contact you within 24 hours',
+                  textAlign: TextAlign.center,
+                  style: h4.copyWith(
+                    fontSize: 16,
+                    color: isDarkTheme ? Colors.grey[400] : Colors.grey[700], // Subtle text color
+                  ),
+                ),
+                const SizedBox(height: 20),
+                CustomButton(
+                  text: 'OK',
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  backgroundGradientColor: AppColors.transparent,
+                  borderGradientColor: AppColors.cardGradient,
+                  isEditPage: true,
+                  textColor: isDarkTheme ? Colors.white : AppColors.textColor, // Dynamic button text color
+                ),
+              ],
+            ),
+          );
+        });
       },
     );
   }

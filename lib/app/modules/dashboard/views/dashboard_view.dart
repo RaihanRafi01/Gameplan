@@ -6,6 +6,8 @@ import 'package:agcourt/app/modules/profile/views/profile_view.dart';
 import 'package:agcourt/app/modules/save_class/views/save_class_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../main.dart';
+import '../controllers/theme_controller.dart';
 import 'widgets/aboutYouPopUp.dart';
 import '../../home/views/home_view.dart';
 import '../controllers/dashboard_controller.dart';
@@ -24,6 +26,7 @@ class DashboardView extends StatefulWidget {
 class _DashboardViewState extends State<DashboardView> {
   bool hasShownAboutPopup = false;
   bool hasShownSubscriptionPopup = false;
+  final ThemeController themeController = Get.find<ThemeController>();
 
   @override
   void initState() {

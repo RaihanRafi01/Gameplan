@@ -7,6 +7,7 @@ import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
 import '../../../../common/widgets/auth/signupWithOther.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/authentication_controller.dart';
 import 'forgot_password_view.dart';
@@ -14,18 +15,15 @@ import 'forgot_password_view.dart';
 class AuthenticationView extends GetView<AuthenticationController> {
   AuthenticationView({Key? key}) : super(key: key);
 
-  final AuthenticationController _controller = Get.put(
-      AuthenticationController());
+  final AuthenticationController _controller =
+      Get.put(AuthenticationController());
   final HomeController homeController = Get.put(HomeController());
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   void _handleLogin() {
-    if (_usernameController.text
-        .trim()
-        .isEmpty || _passwordController.text
-        .trim()
-        .isEmpty) {
+    if (_usernameController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
         'Please fill in all fields',
@@ -35,8 +33,8 @@ class AuthenticationView extends GetView<AuthenticationController> {
     }
     homeController.usernameOBS.value = _usernameController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS
-        .value}');
+    print(
+        ':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
 
     // Proceed with login logic if validations pass
     _controller.login(
@@ -62,71 +60,79 @@ class AuthenticationView extends GetView<AuthenticationController> {
           Align(
             alignment: Alignment.bottomCenter,
             child: SingleChildScrollView(
-              child: Card(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30),
-                    topLeft: Radius.circular(30),
+              child: Obx(() {
+                final ThemeController themeController = Get.find<ThemeController>();
+                return Card(
+                  color: themeController.isDarkTheme.value
+                      ? AppColors.appDarkColor // Text color in dark mode
+                      : Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(30),
+                    ),
                   ),
-                ),
-                elevation: 8.0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 30),
-                      CustomTextField(
-                        label: "Your UserName",
-                        hint: "Enter UserName",
-                        prefixIcon: Icons.person_outline,
-                        controller: _usernameController,
-                      ),
-                      const SizedBox(height: 10),
-                      CustomTextField(
-                        label: "Password",
-                        hint: "Enter Password",
-                        prefixIcon: Icons.lock_outline_rounded,
-                        isPassword: true,
-                        controller: _passwordController,
-                      ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () => Get.to(() => ForgotPasswordView()),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Forgot Password?',
-                            style: h4.copyWith(color: Colors.red),
+                  elevation: 8.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 30),
+                        CustomTextField(
+                          label: "Your UserName",
+                          hint: "Enter UserName",
+                          prefixIcon: Icons.person_outline,
+                          controller: _usernameController,
+                        ),
+                        const SizedBox(height: 10),
+                        CustomTextField(
+                          label: "Password",
+                          hint: "Enter Password",
+                          prefixIcon: Icons.lock_outline_rounded,
+                          isPassword: true,
+                          controller: _passwordController,
+                        ),
+                        const SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () => Get.to(() => ForgotPasswordView()),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Forgot Password?',
+                              style: h4.copyWith(color: Colors.red),
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 30),
-                      CustomButton(
-                        text: "Login",
-                        onPressed: () {
-                          _handleLogin();
-                        },
-                      ),
-                      const SizedBox(height: 10),
-                      SignupWithOther(),
-                      const SizedBox(height: 10),
-                    ],
+                        const SizedBox(height: 30),
+                        CustomButton(
+                          text: "Login",
+                          onPressed: () {
+                            _handleLogin();
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        SignupWithOther(),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
             ),
           ),
           // Loading Indicator
           Obx(() {
             return _controller.isLoading.value
                 ? Container(
-              color: Colors.black45,
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.appColor2,),
-              ),
-            )
+                    color: Colors.black45,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.appColor2,
+                      ),
+                    ),
+                  )
                 : const SizedBox.shrink();
           }),
         ],

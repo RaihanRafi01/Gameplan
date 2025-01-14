@@ -9,6 +9,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/views/chat_screen_view.dart';
 import '../controllers/calender_controller.dart';
@@ -147,76 +148,100 @@ class CalenderView extends GetView<CalenderController> {
                 itemCount: selectedDateEvents.length,
                 itemBuilder: (context, index) {
                   final event = selectedDateEvents[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: InkWell(
-                      onTap: () {
-                        // Fetch the chat and navigate to ChatScreen
-                        final chat = historyController.getChatById(event.ChatId);
-                        if (chat != null) {
-                          Get.to(() => ChatScreen(
-                            chat: chat.chatContents,
-                            chatId: chat.id,
-                            chatName: chat.chatName,
-                          ))?.then((value) => historyController.fetchData());
-                        } else {
-                          Get.snackbar(
-                            'Error',
-                            'Chat not found',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
-                        }
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: AppColors.cardGradient,
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
+                  return Obx(() {
+                    final ThemeController themeController = Get.find<ThemeController>();
+
+                    return Card(
+                      color: themeController.isDarkTheme.value
+                          ? Colors.black
+                          : Colors.white,
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: InkWell(
+                        onTap: () {
+                          // Fetch the chat and navigate to ChatScreen
+                          final chat = historyController.getChatById(event.ChatId);
+                          if (chat != null) {
+                            Get.to(() => ChatScreen(
+                              chat: chat.chatContents,
+                              chatId: chat.id,
+                              chatName: chat.chatName,
+                            ))?.then((value) => historyController.fetchData());
+                          } else {
+                            Get.snackbar(
+                              'Error',
+                              'Chat not found',
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: AppColors.cardGradient,
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  bottomLeft: Radius.circular(8),
+                                ),
                               ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8),
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${event.date.day}',
-                                style: h3.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                              child: Center(
+                                child: Text(
+                                  '${event.date.day}',
+                                  style: h3.copyWith(
+                                    color: Colors.white, // Always white for gradient background
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 10), // Space between the container and text
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(event.title, style: h3),
-                              Text(
-                                DateFormat('EEE, hh:mm a').format(event.date), // Display day and time
-                                style: h3,
+                            const SizedBox(width: 10), // Space between the container and text
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  event.title,
+                                  style: h3.copyWith(
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white
+                                        : Colors.black, // Dynamic text color
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('EEE, hh:mm a').format(event.date), // Display day and time
+                                  style: h3.copyWith(
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white70
+                                        : Colors.black54, // Dynamic text color
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(), // Pushes the icon to the right
+                            GestureDetector(
+                              onTap: () {
+                                // Handle pin/unpin logic here if needed
+                              },
+                              child: SvgPicture.asset(
+                                'assets/images/pin_icon.svg',
+                                color: themeController.isDarkTheme.value
+                                    ? Colors.white
+                                    : Colors.black, // Dynamic icon color
                               ),
-                            ],
-                          ),
-                          const Spacer(), // Pushes the icon to the right
-                          GestureDetector(
-                            onTap: () {
-                              // Handle pin/unpin logic here if needed
-                            },
-                            child: SvgPicture.asset('assets/images/pin_icon.svg'),
-                          ),
-                          const SizedBox(width: 20),
-                        ],
+                            ),
+                            const SizedBox(width: 20),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  });
+
                 },
               );
             }),

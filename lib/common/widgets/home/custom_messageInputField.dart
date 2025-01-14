@@ -6,11 +6,13 @@ class CustomMessageInputField extends StatelessWidget {
   final VoidCallback onSend;
   final String hintText;
   final double padding;
+  final Color color;
 
   const CustomMessageInputField({
     super.key,
     required this.textController,
     required this.onSend,
+    this.color = Colors.black,
     this.padding = 10.0,
     this.hintText = 'type your text',
   });
@@ -26,7 +28,7 @@ class CustomMessageInputField extends StatelessWidget {
               controller: textController,
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: h4,
+                hintStyle: h4.copyWith(color: color),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: const BorderSide(color: Colors.grey),
@@ -48,7 +50,7 @@ class CustomMessageInputField extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: onSend,
-                        child: const Icon(Icons.send, size: 24),
+                        child: Icon(Icons.send, size: 24,color: color,),
                       ),
                       /*const SizedBox(width: 6),
                       GestureDetector(

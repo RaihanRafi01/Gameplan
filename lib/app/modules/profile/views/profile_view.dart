@@ -12,13 +12,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/profile/profileList.dart';
+import '../../../../main.dart';
 import '../../../routes/app_pages.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/profile_controller.dart';
 
+
+
 class ProfileView extends GetView<ProfileController> {
   final HomeController homeController = Get.put(HomeController());
+  final ThemeController themeController = Get.put(ThemeController());
+
   ProfileView({super.key});
 
   @override
@@ -49,10 +55,23 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
             SizedBox(height: 40),
+            Obx(() => SwitchListTile(
+              title: Text(
+                'Dark Mode',
+                style: h3.copyWith(fontSize: 18,
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : Colors.black,),
+              ),
+              value: themeController.isDarkTheme.value,
+              onChanged: (value) {
+                themeController.toggleTheme();
+              },
+            )),
             ProfileList(
               svgPath: 'assets/images/profile/profile_icon.svg',
               text: 'PROFILE',
-              onTap: () => Get.to(()=> EditProfileView()),
+              onTap: () => Get.to(() => EditProfileView()),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/settings_icon.svg',
@@ -76,22 +95,22 @@ class ProfileView extends GetView<ProfileController> {
             ProfileList(
               svgPath: 'assets/images/profile/faq_icon.svg',
               text: 'FAQ',
-              onTap: () => Get.to(()=> FaqView(selectedIndex: 0,)),
+              onTap: () => Get.to(() => FaqView(selectedIndex: 0,)),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/support_icon.svg',
               text: 'HELP & SUPPORT',
-              onTap: () => Get.to(()=> HelpSupportView()),
+              onTap: () => Get.to(() => HelpSupportView()),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/terms_icon.svg',
               text: 'TERMS & CONDITION',
-              onTap: () => Get.to(()=> TermsPrivacyView(isTerms: true,)),
+              onTap: () => Get.to(() => TermsPrivacyView(isTerms: true,)),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/privacy_icon.svg',
               text: 'PRIVACY POLICY',
-              onTap: () => Get.to(()=> TermsPrivacyView(isTerms: false,)),
+              onTap: () => Get.to(() => TermsPrivacyView(isTerms: false,)),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/logout_icon.svg',
@@ -100,24 +119,59 @@ class ProfileView extends GetView<ProfileController> {
                 // Handle Logout
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Log Out',style: h2,),
-                    content: Text('Are you sure you want to log out?',style: h3),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel',style: h2.copyWith(color: AppColors.appColor),),
+                  builder: (context) {
+                    final ThemeController themeController = Get.find<ThemeController>();
+
+                    return Obx(() => AlertDialog(
+                      backgroundColor: themeController.isDarkTheme.value
+                          ? Colors.grey[850]
+                          : Colors.white, // Dynamic dialog background color
+                      title: Text(
+                        'Log Out',
+                        style: h2.copyWith(
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black, // Dynamic title text color
+                        ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          // Add your logout logic here
-                          logout();
-                        },
-                        child: Text('Log Out',style: h2.copyWith(color: Colors.red)),
+                      content: Text(
+                        'Are you sure you want to log out?',
+                        style: h3.copyWith(
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white70
+                              : Colors.black87, // Dynamic content text color
+                        ),
                       ),
-                    ],
-                  ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'Cancel',
+                            style: h2.copyWith(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white70
+                                  : AppColors.appColor, // Dynamic button text color
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            // Add your logout logic here
+                            logout();
+                          },
+                          child: Text(
+                            'Log Out',
+                            style: h2.copyWith(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.redAccent
+                                  : Colors.red, // Dynamic logout button color
+                            ),
+                          ),
+                        ),
+                      ],
+                    ));
+                  },
                 );
               },
             ),
@@ -126,6 +180,7 @@ class ProfileView extends GetView<ProfileController> {
       ),
     );
   }
+
   final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   Future<void> logout() async {
@@ -133,7 +188,6 @@ class ProfileView extends GetView<ProfileController> {
     await _storage.delete(key: 'refresh_token');
 
     // SharedPreferences
-
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false); // User is logged out
 

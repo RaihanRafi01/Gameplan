@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../home/views/chat_screen_view.dart';
@@ -22,238 +23,379 @@ class HistoryView extends GetView<HistoryController> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: SvgPicture.asset('assets/images/auth/app_logo.svg'),
+        title: Obx(() {
+          final ThemeController themeController = Get.find<ThemeController>();
+          return SvgPicture.asset(
+            'assets/images/auth/app_logo.svg',
+            color: themeController.isDarkTheme.value
+                ? Colors.white // White in dark mode
+                : null, // Black in light mode
+          );
+        }),
       ),
-      body: Padding(
+        body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            //SizedBox(height: 40),
-            if(isFree)
-              CustomButton(
-                height: 30,
-                textSize: 12,
-                text: 'Upgrade To Pro',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: true, // Prevent closing the dialog by tapping outside
-                    builder: (BuildContext context) {
-                      return const SubscriptionPopup(
-                          isManage: true); // Use the SubscriptionPopup widget
-                    },
-                  );
-                },
-                width: 150,
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
-                isEditPage: true,
-                textColor: AppColors.textColor,
-              ),
-            SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Recent Plan',
-                    style: h2.copyWith(fontSize: 28, color: AppColors.textHistory),
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: DropdownButtonHideUnderline(
-                        child: Obx(
-                              () => DropdownButton<String>(
-                            value: controller.selectedFilter.value,
-                            items: [
-                              DropdownMenuItem(value: 'All', child: Text('All Plans', style: h3)),
-                              DropdownMenuItem(value: 'Pin', child: Text('Pin Plans', style: h3)),
-                              DropdownMenuItem(value: 'Save', child: Text('Save Plans', style: h3)),
-                            ],
-                            onChanged: (value) {
-                              if (value != null) {
-                                controller.updateFilter(value);
-                              }
-                            },
-                            borderRadius: BorderRadius.circular(12),
-                            alignment: AlignmentDirectional.bottomStart,
+        child: Obx(() {
+          final ThemeController themeController = Get.find<ThemeController>();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isFree)
+          Obx(() {
+            final ThemeController themeController = Get.find<ThemeController>();
+
+            return CustomButton(
+              height: 30,
+              textSize: 12,
+              text: 'Upgrade To Pro',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: true, // Prevent closing the dialog by tapping outside
+                  builder: (BuildContext context) {
+                    return const SubscriptionPopup(
+                        isManage: true); // Use the SubscriptionPopup widget
+                  },
+                );
+              },
+              width: 150,
+              backgroundGradientColor: AppColors.transparent,
+              borderGradientColor: AppColors.cardGradient,
+              isEditPage: true,
+              textColor: themeController.isDarkTheme.value
+                  ? Colors.white
+                  : AppColors.appColor, // Dynamic text color
+            );
+          }),
+              SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Recent Plan',
+                      style: h2.copyWith(
+                        fontSize: 28,
+                        color: themeController.isDarkTheme.value
+                            ? Colors.white
+                            : AppColors.textHistory, // Dynamic text color
+                      ),
+                    ),
+                    Card(
+                      color: themeController.isDarkTheme.value
+                          ? Colors.black38
+                          : Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: DropdownButtonHideUnderline(
+                          child: Obx(
+                                () => DropdownButton<String>(
+                                  dropdownColor: themeController.isDarkTheme.value
+                                      ? Colors.black
+                                      : Colors.white,
+                              value: controller.selectedFilter.value,
+                              items: [
+                                DropdownMenuItem(
+                                  value: 'All',
+                                  child: Text(
+                                    'All Plans',
+                                    style: h3.copyWith(
+                                      color: themeController.isDarkTheme.value
+                                          ? Colors.white
+                                          : Colors.black, // Dynamic text color
+                                    ),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Pin',
+                                  child: Text(
+                                    'Pin Plans',
+                                    style: h3.copyWith(
+                                      color: themeController.isDarkTheme.value
+                                          ? Colors.white
+                                          : Colors.black, // Dynamic text color
+                                    ),
+                                  ),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Save',
+                                  child: Text(
+                                    'Save Plans',
+                                    style: h3.copyWith(
+                                      color: themeController.isDarkTheme.value
+                                          ? Colors.white
+                                          : Colors.black, // Dynamic text color
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) {
+                                  controller.updateFilter(value);
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              alignment: AlignmentDirectional.bottomStart,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Obx(() {
-                final groupedChats = controller.groupedChatHistory;
+              const SizedBox(height: 10),
+              Expanded(
+                child: Obx(() {
+                  final groupedChats = controller.groupedChatHistory;
 
-                if (groupedChats.isEmpty) {
-                  return Center(child: Text('No plans available', style: h3));
-                }
-
-                return ListView.builder(
-                  itemCount: groupedChats.keys.length,
-                  itemBuilder: (context, groupIndex) {
-                    // Get the date group key and its chats
-                    final groupKey = groupedChats.keys.elementAt(groupIndex);
-                    final chats = groupedChats[groupKey]!;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Date group header
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            groupKey,
-                            style: h3.copyWith(fontSize: 22, color: AppColors.textHistory),
-                          ),
+                  if (groupedChats.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No plans available',
+                        style: h3.copyWith(
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white70
+                              : Colors.black87, // Dynamic text color
                         ),
-                        // Chat list for the date group
-                        ...chats.map((chat) {
-                          return ListTile(
-                            title: GestureDetector(
-                              onTap: () {
-                                Get.to(() => ChatScreen(
-                                  chat: chat.chatContents,
-                                  chatId: chat.id,
-                                  chatName: chat.chatName,
-                                ))?.then((value) => controller.fetchData());
-                              },
-                              child: Text(
-                                chat.chatName,
-                                style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: groupedChats.keys.length,
+                    itemBuilder: (context, groupIndex) {
+                      // Get the date group key and its chats
+                      final groupKey = groupedChats.keys.elementAt(groupIndex);
+                      final chats = groupedChats[groupKey]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date group header
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              groupKey,
+                              style: h3.copyWith(
+                                fontSize: 22,
+                                color: themeController.isDarkTheme.value
+                                    ? Colors.white
+                                    : AppColors.textHistory, // Dynamic text color
                               ),
                             ),
-                            trailing: PopupMenuButton<int>(
-                              icon: const Icon(Icons.more_horiz_rounded),
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 0:
-                                    if (chat.isPinned) {
-                                      controller.unpinChat(chat.id);
-                                    } else {
-                                      _showDatePicker(context, chat.id);
-                                    }
-                                    break;
-                                  case 1:
-                                    _showEditDialog(context, chat.id, chat.chatName);
-                                    break;
-                                  case 2:
-                                    _showDeleteDialog(context, chat.id);
-                                    break;
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset(
-                                        chat.isPinned
-                                            ? 'assets/images/history/pin_icon.svg'
-                                            : 'assets/images/history/pin_icon.svg',
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        chat.isPinned ? 'Unpin' : 'Pin',
-                                        style: h3.copyWith(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset('assets/images/history/edit_icon.svg'),
-                                      const SizedBox(width: 10),
-                                      Text('Edit', style: h3.copyWith(fontSize: 16)),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 2,
-                                  child: Row(
-                                    children: [
-                                      SvgPicture.asset('assets/images/history/delete_icon.svg'),
-                                      const SizedBox(width: 10),
-                                      Text('Delete', style: h3.copyWith(fontSize: 16)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ],
-                    );
-                  },
-                );
-              }),
-            ),
-            Text(
-              'Save Class',
-              style: h2.copyWith(fontSize: 28, color: AppColors.textHistory),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Obx(() {
-                final groupedChats = controller.groupedChatHistory;
-
-                if (groupedChats.isEmpty) {
-                  return Center(child: Text('No plans available', style: h3));
-                }
-
-                return ListView.builder(
-                  itemCount: groupedChats.keys.length,
-                  itemBuilder: (context, groupIndex) {
-                    // Get the date group key and its chats
-                    final groupKey = groupedChats.keys.elementAt(groupIndex);
-                    final chats = groupedChats[groupKey]!;
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Date group header
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            groupKey,
-                            style: h3.copyWith(fontSize: 22, color: AppColors.textHistory),
                           ),
+                          // Chat list for the date group
+                          ...chats.map((chat) {
+                            return ListTile(
+                              title: GestureDetector(
+                                onTap: () {
+                                  Get.to(() => ChatScreen(
+                                    chat: chat.chatContents,
+                                    chatId: chat.id,
+                                    chatName: chat.chatName,
+                                  ))?.then((value) => controller.fetchData());
+                                },
+                                child: Text(
+                                  chat.chatName,
+                                  style: h3.copyWith(
+                                    fontSize: 18,
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white
+                                        : AppColors.textHistory, // Dynamic text color
+                                  ),
+                                ),
+                              ),
+                              trailing: PopupMenuButton<int>(
+                                icon: Icon(
+                                  Icons.more_horiz_rounded,
+                                  color: themeController.isDarkTheme.value
+                                      ? Colors.white
+                                      : Colors.black, // Dynamic icon color
+                                ),
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 0:
+                                      if (chat.isPinned) {
+                                        controller.unpinChat(chat.id);
+                                      } else {
+                                        _showDatePicker(context, chat.id);
+                                      }
+                                      break;
+                                    case 1:
+                                      _showEditDialog(context, chat.id, chat.chatName);
+                                      break;
+                                    case 2:
+                                      _showDeleteDialog(context, chat.id);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          chat.isPinned
+                                              ? 'assets/images/history/pin_icon.svg'
+                                              : 'assets/images/history/pin_icon.svg',
+                                          color: themeController.isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors.black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          chat.isPinned ? 'Unpin' : 'Pin',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController.isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors.black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/history/edit_icon.svg',
+                                          color: themeController.isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors.black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          'Edit',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController.isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors.black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/history/delete_icon.svg',
+                                          color: themeController.isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors.black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          'Delete',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController.isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors.black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  );
+                }),
+              ),
+              Text(
+                'Save Class',
+                style: h2.copyWith(
+                  fontSize: 28,
+                  color: themeController.isDarkTheme.value
+                      ? Colors.white
+                      : AppColors.textHistory, // Dynamic text color
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: Obx(() {
+                  final groupedChats = controller.groupedChatHistory;
+
+                  if (groupedChats.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No plans available',
+                        style: h3.copyWith(
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white70
+                              : Colors.black87, // Dynamic text color
                         ),
-                        // Chat list for the date group
-                        ...chats.map((chat) {
-                          return ListTile(
-                            title: GestureDetector(
-                              onTap: () {
-                                Get.to(() => ChatScreen(
-                                  chat: chat.chatContents,
-                                  chatId: chat.id,
-                                  chatName: chat.chatName,
-                                ))?.then((value) => controller.fetchData());
-                              },
-                              child: Text(
-                                chat.chatName,
-                                style: h3.copyWith(fontSize: 18, color: AppColors.textHistory),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: groupedChats.keys.length,
+                    itemBuilder: (context, groupIndex) {
+                      // Get the date group key and its chats
+                      final groupKey = groupedChats.keys.elementAt(groupIndex);
+                      final chats = groupedChats[groupKey]!;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Date group header
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              groupKey,
+                              style: h3.copyWith(
+                                fontSize: 22,
+                                color: themeController.isDarkTheme.value
+                                    ? Colors.white
+                                    : AppColors.textHistory, // Dynamic text color
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ],
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
-        ),
+                          ),
+                          // Chat list for the date group
+                          ...chats.map((chat) {
+                            return ListTile(
+                              title: GestureDetector(
+                                onTap: () {
+                                  Get.to(() => ChatScreen(
+                                    chat: chat.chatContents,
+                                    chatId: chat.id,
+                                    chatName: chat.chatName,
+                                  ))?.then((value) => controller.fetchData());
+                                },
+                                child: Text(
+                                  chat.chatName,
+                                  style: h3.copyWith(
+                                    fontSize: 18,
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white
+                                        : AppColors.textHistory, // Dynamic text color
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
