@@ -5,15 +5,17 @@ import '../../../app/modules/dashboard/controllers/theme_controller.dart';
 import '../../customFont.dart';
 
 class ProfileList extends StatelessWidget {
-  final String svgPath;
+  final String? svgPath;
   final String text;
-  final VoidCallback onTap; // Callback for tap actions
+  final VoidCallback onTap;
+  final Widget? trailingWidget; // Optional trailing widget
 
   const ProfileList({
     super.key,
-    required this.svgPath,
+    this.svgPath,
     required this.text,
-    required this.onTap, // Required onTap callback
+    required this.onTap,
+    this.trailingWidget, // Initialize trailingWidget
   });
 
   @override
@@ -24,31 +26,34 @@ class ProfileList extends StatelessWidget {
       children: [
         Obx(() => ListTile(
           onTap: onTap,
-          leading: SvgPicture.asset(
-            svgPath,
+          leading: svgPath != null // Check if svgPath is provided
+              ? SvgPicture.asset(
+            svgPath!,
             color: themeController.isDarkTheme.value
                 ? Colors.white
-                : Colors.black, // Adjust icon color
-          ),
+                : Colors.black,
+          )
+              : null,
           title: Text(
             text,
             style: h3.copyWith(
               color: themeController.isDarkTheme.value
                   ? Colors.white
-                  : Colors.black, // Adjust text color
+                  : Colors.black,
             ),
           ),
-          trailing: Icon(
-            Icons.navigate_next,
-            color: themeController.isDarkTheme.value
-                ? Colors.white
-                : Colors.black, // Adjust trailing icon color
-          ),
+          trailing: trailingWidget ??
+              Icon(
+                Icons.navigate_next,
+                color: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : Colors.black,
+              ),
         )),
         Divider(
           color: themeController.isDarkTheme.value
               ? Colors.white54
-              : Colors.grey, // Adjust divider color
+              : Colors.grey,
         ),
       ],
     );

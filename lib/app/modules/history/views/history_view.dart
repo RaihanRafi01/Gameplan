@@ -25,125 +25,147 @@ class HistoryView extends GetView<HistoryController> {
         centerTitle: true,
         title: Obx(() {
           final ThemeController themeController = Get.find<ThemeController>();
-          return SvgPicture.asset(
-            'assets/images/auth/app_logo.svg',
-            color: themeController.isDarkTheme.value
-                ? Colors.white // White in dark mode
-                : null, // Black in light mode
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/images/auth/app_logo.svg',
+                color: themeController.isDarkTheme.value
+                    ? Colors.white // White in dark mode
+                    : null, // Black in light mode
+              ),
+              if (isFree)
+                Obx(() {
+                  final ThemeController themeController =
+                  Get.find<ThemeController>();
+
+                  return CustomButton(
+                    height: 30,
+                    textSize: 12,
+                    text: 'Upgrade To Pro',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        // Prevent closing the dialog by tapping outside
+                        builder: (BuildContext context) {
+                          return const SubscriptionPopup(
+                              isManage:
+                              true); // Use the SubscriptionPopup widget
+                        },
+                      );
+                    },
+                    width: 150,
+                    backgroundGradientColor: AppColors.transparent,
+                    borderGradientColor: AppColors.cardGradient,
+                    isEditPage: true,
+                    textColor: themeController.isDarkTheme.value
+                        ? Colors.white
+                        : AppColors.appColor, // Dynamic text color
+                  );
+                }),
+            ],
           );
         }),
       ),
-        body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0.0),
         child: Obx(() {
           final ThemeController themeController = Get.find<ThemeController>();
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (isFree)
-          Obx(() {
-            final ThemeController themeController = Get.find<ThemeController>();
-
-            return CustomButton(
-              height: 30,
-              textSize: 12,
-              text: 'Upgrade To Pro',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  barrierDismissible: true, // Prevent closing the dialog by tapping outside
-                  builder: (BuildContext context) {
-                    return const SubscriptionPopup(
-                        isManage: true); // Use the SubscriptionPopup widget
-                  },
-                );
-              },
-              width: 150,
-              backgroundGradientColor: AppColors.transparent,
-              borderGradientColor: AppColors.cardGradient,
-              isEditPage: true,
-              textColor: themeController.isDarkTheme.value
-                  ? Colors.white
-                  : AppColors.appColor, // Dynamic text color
-            );
-          }),
-              SizedBox(height: 12),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recent Plan',
-                      style: h2.copyWith(
-                        fontSize: 28,
-                        color: themeController.isDarkTheme.value
-                            ? Colors.white
-                            : AppColors.textHistory, // Dynamic text color
-                      ),
-                    ),
-                    Card(
-                      color: themeController.isDarkTheme.value
-                          ? Colors.black38
-                          : Colors.white,
-                      child: Padding(
+              Container(
+                height: 50,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: AppColors.cardGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: DropdownButtonHideUnderline(
-                          child: Obx(
-                                () => DropdownButton<String>(
-                                  dropdownColor: themeController.isDarkTheme.value
-                                      ? Colors.black
-                                      : Colors.white,
-                              value: controller.selectedFilter.value,
-                              items: [
-                                DropdownMenuItem(
-                                  value: 'All',
-                                  child: Text(
-                                    'All Plans',
-                                    style: h3.copyWith(
-                                      color: themeController.isDarkTheme.value
-                                          ? Colors.white
-                                          : Colors.black, // Dynamic text color
+                        child: Text(
+                          'Recent Plan',
+                          style: h2.copyWith(
+                            fontSize: 24,
+                            color: Colors.white
+                          ),
+                        ),
+                      ),
+                      Card(
+                        color: themeController.isDarkTheme.value
+                            ? Colors.black38
+                            : Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: DropdownButtonHideUnderline(
+                            child: Obx(
+                              () => DropdownButton<String>(
+                                dropdownColor: themeController.isDarkTheme.value
+                                    ? Colors.black
+                                    : Colors.white,
+                                value: controller.selectedFilter.value,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 'All',
+                                    child: Text(
+                                      'All Plans',
+                                      style: h3.copyWith(
+                                        color: themeController.isDarkTheme.value
+                                            ? Colors.white
+                                            : Colors
+                                                .black, // Dynamic text color
+                                      ),
                                     ),
                                   ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Pin',
-                                  child: Text(
-                                    'Pin Plans',
-                                    style: h3.copyWith(
-                                      color: themeController.isDarkTheme.value
-                                          ? Colors.white
-                                          : Colors.black, // Dynamic text color
+                                  DropdownMenuItem(
+                                    value: 'Pin',
+                                    child: Text(
+                                      'Pin Plans',
+                                      style: h3.copyWith(
+                                        color: themeController.isDarkTheme.value
+                                            ? Colors.white
+                                            : Colors
+                                                .black, // Dynamic text color
+                                      ),
                                     ),
                                   ),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'Save',
-                                  child: Text(
-                                    'Save Plans',
-                                    style: h3.copyWith(
-                                      color: themeController.isDarkTheme.value
-                                          ? Colors.white
-                                          : Colors.black, // Dynamic text color
+                                  DropdownMenuItem(
+                                    value: 'Save',
+                                    child: Text(
+                                      'Save Plans',
+                                      style: h3.copyWith(
+                                        color: themeController.isDarkTheme.value
+                                            ? Colors.white
+                                            : Colors
+                                                .black, // Dynamic text color
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                              onChanged: (value) {
-                                if (value != null) {
-                                  controller.updateFilter(value);
-                                }
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              alignment: AlignmentDirectional.bottomStart,
+                                ],
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    controller.updateFilter(value);
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                alignment: AlignmentDirectional.bottomStart,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -171,156 +193,186 @@ class HistoryView extends GetView<HistoryController> {
                       final groupKey = groupedChats.keys.elementAt(groupIndex);
                       final chats = groupedChats[groupKey]!;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Date group header
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              groupKey,
-                              style: h3.copyWith(
-                                fontSize: 22,
-                                color: themeController.isDarkTheme.value
-                                    ? Colors.white
-                                    : AppColors.textHistory, // Dynamic text color
-                              ),
-                            ),
-                          ),
-                          // Chat list for the date group
-                          ...chats.map((chat) {
-                            return ListTile(
-                              title: GestureDetector(
-                                onTap: () {
-                                  Get.to(() => ChatScreen(
-                                    chat: chat.chatContents,
-                                    chatId: chat.id,
-                                    chatName: chat.chatName,
-                                  ))?.then((value) => controller.fetchData());
-                                },
-                                child: Text(
-                                  chat.chatName,
-                                  style: h3.copyWith(
-                                    fontSize: 18,
-                                    color: themeController.isDarkTheme.value
-                                        ? Colors.white
-                                        : AppColors.textHistory, // Dynamic text color
-                                  ),
-                                ),
-                              ),
-                              trailing: PopupMenuButton<int>(
-                                icon: Icon(
-                                  Icons.more_horiz_rounded,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Date group header
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                groupKey,
+                                style: h3.copyWith(
+                                  fontSize: 22,
                                   color: themeController.isDarkTheme.value
                                       ? Colors.white
-                                      : Colors.black, // Dynamic icon color
+                                      : AppColors
+                                          .textHistory, // Dynamic text color
                                 ),
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 0:
-                                      if (chat.isPinned) {
-                                        controller.unpinChat(chat.id);
-                                      } else {
-                                        _showDatePicker(context, chat.id);
-                                      }
-                                      break;
-                                    case 1:
-                                      _showEditDialog(context, chat.id, chat.chatName);
-                                      break;
-                                    case 2:
-                                      _showDeleteDialog(context, chat.id);
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 0,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          chat.isPinned
-                                              ? 'assets/images/history/pin_icon.svg'
-                                              : 'assets/images/history/pin_icon.svg',
-                                          color: themeController.isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors.black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          chat.isPinned ? 'Unpin' : 'Pin',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
-                                            color: themeController.isDarkTheme.value
-                                                ? Colors.white
-                                                : Colors.black, // Dynamic text color
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/history/edit_icon.svg',
-                                          color: themeController.isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors.black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Edit',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
-                                            color: themeController.isDarkTheme.value
-                                                ? Colors.white
-                                                : Colors.black, // Dynamic text color
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 2,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/history/delete_icon.svg',
-                                          color: themeController.isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors.black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Delete',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
-                                            color: themeController.isDarkTheme.value
-                                                ? Colors.white
-                                                : Colors.black, // Dynamic text color
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
                               ),
-                            );
-                          }).toList(),
-                        ],
+                            ),
+                            // Chat list for the date group
+                            ...chats.map((chat) {
+                              return ListTile(
+                                title: GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => ChatScreen(
+                                              chat: chat.chatContents,
+                                              chatId: chat.id,
+                                              chatName: chat.chatName,
+                                            ))
+                                        ?.then((value) => controller.fetchData());
+                                  },
+                                  child: Text(
+                                    chat.chatName,
+                                    style: h3.copyWith(
+                                      fontSize: 18,
+                                      color: themeController.isDarkTheme.value
+                                          ? Colors.white
+                                          : AppColors
+                                              .textHistory, // Dynamic text color
+                                    ),
+                                  ),
+                                ),
+                                trailing: PopupMenuButton<int>(
+                                  icon: Icon(
+                                    Icons.more_horiz_rounded,
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white
+                                        : Colors.black, // Dynamic icon color
+                                  ),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 0:
+                                        if (chat.isPinned) {
+                                          controller.unpinChat(chat.id);
+                                        } else {
+                                          _showDatePicker(context, chat.id);
+                                        }
+                                        break;
+                                      case 1:
+                                        _showEditDialog(
+                                            context, chat.id, chat.chatName);
+                                        break;
+                                      case 2:
+                                        _showDeleteDialog(context, chat.id);
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 0,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            chat.isPinned
+                                                ? 'assets/images/history/pin_icon.svg'
+                                                : 'assets/images/history/pin_icon.svg',
+                                            color: themeController
+                                                    .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                    .black, // Dynamic icon color
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            chat.isPinned ? 'Unpin' : 'Pin',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                      .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/edit_icon.svg',
+                                            color: themeController
+                                                    .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                    .black, // Dynamic icon color
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Edit',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                      .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 2,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/delete_icon.svg',
+                                            color: themeController
+                                                    .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                    .black, // Dynamic icon color
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Delete',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                      .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       );
                     },
                   );
                 }),
               ),
-              Text(
-                'Save Class',
-                style: h2.copyWith(
-                  fontSize: 28,
-                  color: themeController.isDarkTheme.value
-                      ? Colors.white
-                      : AppColors.textHistory, // Dynamic text color
+              Container(
+                height: 50,
+                width: double.maxFinite,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: AppColors.cardGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Save Class',
+                    style: h3.copyWith(
+                      fontSize: 24,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -360,7 +412,8 @@ class HistoryView extends GetView<HistoryController> {
                                 fontSize: 22,
                                 color: themeController.isDarkTheme.value
                                     ? Colors.white
-                                    : AppColors.textHistory, // Dynamic text color
+                                    : AppColors
+                                        .textHistory, // Dynamic text color
                               ),
                             ),
                           ),
@@ -370,10 +423,11 @@ class HistoryView extends GetView<HistoryController> {
                               title: GestureDetector(
                                 onTap: () {
                                   Get.to(() => ChatScreen(
-                                    chat: chat.chatContents,
-                                    chatId: chat.id,
-                                    chatName: chat.chatName,
-                                  ))?.then((value) => controller.fetchData());
+                                            chat: chat.chatContents,
+                                            chatId: chat.id,
+                                            chatName: chat.chatName,
+                                          ))
+                                      ?.then((value) => controller.fetchData());
                                 },
                                 child: Text(
                                   chat.chatName,
@@ -381,7 +435,8 @@ class HistoryView extends GetView<HistoryController> {
                                     fontSize: 18,
                                     color: themeController.isDarkTheme.value
                                         ? Colors.white
-                                        : AppColors.textHistory, // Dynamic text color
+                                        : AppColors
+                                            .textHistory, // Dynamic text color
                                   ),
                                 ),
                               ),
@@ -399,7 +454,6 @@ class HistoryView extends GetView<HistoryController> {
       ),
     );
   }
-
 
   void _showDatePicker(BuildContext context, int chatId) async {
     // Step 1: Show Date Picker
@@ -433,10 +487,9 @@ class HistoryView extends GetView<HistoryController> {
     }
   }
 
-
-
   void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
-    final TextEditingController textController = TextEditingController(text: currentTitle);
+    final TextEditingController textController =
+        TextEditingController(text: currentTitle);
 
     showDialog(
       context: context,
@@ -472,7 +525,6 @@ class HistoryView extends GetView<HistoryController> {
   }
 
   void _showDeleteDialog(BuildContext context, int chatId) {
-
     showDialog(
       context: context,
       builder: (context) {
@@ -481,7 +533,8 @@ class HistoryView extends GetView<HistoryController> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: h3.copyWith(color: AppColors.textColor)),
+              child: Text('Cancel',
+                  style: h3.copyWith(color: AppColors.textColor)),
             ),
             TextButton(
               onPressed: () {

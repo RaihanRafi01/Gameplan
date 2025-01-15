@@ -1,14 +1,16 @@
-import 'package:agcourt/common/widgets/customAppBar.dart';
-import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../common/widgets/customAppBar.dart';
+import '../../../../common/widgets/custom_button.dart';
 import '../controllers/save_class_controller.dart';
 
 class SaveClassView extends StatelessWidget {
   final SaveClassController controller = Get.put(SaveClassController());
 
-  SaveClassView({super.key});
+  SaveClassView({super.key}) {
+    // Fetch class list when the view is initialized
+    controller.fetchClassList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class SaveClassView extends StatelessWidget {
         title: 'Save Classes',
       ),
       body: Obx(() {
-        // Check if a class is selected
+        // If a class is selected, show its contents
         if (controller.selectedClass.value.isNotEmpty) {
           return _buildSelectedClassView();
         }
@@ -59,12 +61,13 @@ class SaveClassView extends StatelessWidget {
                   child: ListView.builder(
                     itemCount: controller.classList.length,
                     itemBuilder: (context, index) {
+                      final classData = controller.classList[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: CustomButton(
-                          text: controller.classList[index],
+                          text: classData['folder_name'] ?? 'Unnamed Class',
                           onPressed: () {
-                            controller.selectClass(controller.classList[index]);
+                            controller.selectClass(classData['folder_name']);
                           },
                         ),
                       );
@@ -90,7 +93,7 @@ class SaveClassView extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () {
-                  controller.clearSelection(); // Navigate back to main screen
+                  controller.clearSelection(); // Clear selection and go back
                 },
               ),
               Text(
@@ -105,21 +108,33 @@ class SaveClassView extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Expanded(
-          child: ListView.builder(
-            itemCount: 5, // Number of "Last Chat" items
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Obx(() {
+            if (controller.selectedClassContents.isEmpty) {
+              return const Center(
                 child: Text(
-                  'Last Chat',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  'No contents available for this class.',
+                  style: TextStyle(fontSize: 16),
                 ),
               );
-            },
-          ),
+            }
+
+            return ListView.builder(
+              itemCount: controller.selectedClassContents.length,
+              itemBuilder: (context, index) {
+                final content = controller.selectedClassContents[index];
+                return ListTile(
+                  title: Text(
+                    content['content'] ?? 'Unnamed Content',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  subtitle: Text(
+                    'Timestamp: ${content['timestamp'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                );
+              },
+            );
+          }),
         ),
       ],
     );
@@ -145,7 +160,10 @@ class SaveClassView extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                controller.addClass(classNameController.text.trim());
+                final className = classNameController.text.trim();
+                if (className.isNotEmpty) {
+                  controller.addClass(className);
+                }
                 Get.back();
               },
               child: const Text('Add'),
@@ -156,6 +174,3 @@ class SaveClassView extends StatelessWidget {
     );
   }
 }
-
-// SaveClassController
-

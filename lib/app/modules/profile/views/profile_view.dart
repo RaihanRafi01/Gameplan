@@ -55,19 +55,6 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
             SizedBox(height: 40),
-            Obx(() => SwitchListTile(
-              title: Text(
-                'Dark Mode',
-                style: h3.copyWith(fontSize: 18,
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : Colors.black,),
-              ),
-              value: themeController.isDarkTheme.value,
-              onChanged: (value) {
-                themeController.toggleTheme();
-              },
-            )),
             ProfileList(
               svgPath: 'assets/images/profile/profile_icon.svg',
               text: 'PROFILE',
@@ -111,6 +98,17 @@ class ProfileView extends GetView<ProfileController> {
               svgPath: 'assets/images/profile/privacy_icon.svg',
               text: 'PRIVACY POLICY',
               onTap: () => Get.to(() => TermsPrivacyView(isTerms: false,)),
+            ),
+            ProfileList(
+               // Adjust the icon
+              text: 'Dark Mode',
+              onTap: () {}, // No need to navigate; just toggle switch
+              trailingWidget: Obx(() => Switch(
+                value: themeController.isDarkTheme.value,
+                onChanged: (value) {
+                  themeController.toggleTheme();
+                },
+              )),
             ),
             ProfileList(
               svgPath: 'assets/images/profile/logout_icon.svg',

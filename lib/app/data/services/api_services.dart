@@ -652,4 +652,45 @@ class ApiService {
     );
   }
 
+  Future<http.Response> createClass(String className) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/create_class/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "folder_name": className
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> getClassList() async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/get_all_classes/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Make the GET request
+    return await http.get(url, headers: headers);
+  }
+
 }
