@@ -78,8 +78,9 @@ class SaveClassController extends GetxController {
     try {
       final http.Response response = await _service.createClass(className);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Add the new class to the local list
+        fetchClassList(); // Refresh the folder list
         classList.add({
           'id': DateTime.now().millisecondsSinceEpoch, // Temporary ID
           'owner_user': null, // Replace with actual owner ID if available
@@ -95,4 +96,23 @@ class SaveClassController extends GetxController {
       Get.snackbar('Error', 'Something went wrong: $e');
     }
   }
+
+  Future<void> pinToClass(int editID,int folderID) async {
+    try {
+      final http.Response response = await _service.pinToClass(editID,folderID);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Add the new class to the local list
+
+
+        Get.snackbar('Success', 'Class pinned successfully');
+      } else {
+        Get.snackbar('Error', 'Failed to pinned class');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
 }
+
+

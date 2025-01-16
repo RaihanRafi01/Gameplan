@@ -693,4 +693,25 @@ class ApiService {
     return await http.get(url, headers: headers);
   }
 
+  Future<http.Response> pinToClass(int editId, int folderId) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/pin_an_edited_chat_to_a_folder/$editId/$folderId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+    );
+  }
+
 }

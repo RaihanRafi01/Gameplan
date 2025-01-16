@@ -13,8 +13,11 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../common/widgets/history/folderSelectionDialog.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../save_class/controllers/save_class_controller.dart';
 import '../controllers/chat_edit_controller.dart';
+import '../controllers/textEditorController.dart';
 
 class ExportScreen extends StatefulWidget {
   final List<Map<String, dynamic>> messages;
@@ -30,12 +33,13 @@ class _ExportScreenState extends State<ExportScreen> {
   final ChatEditController editController = Get.put(ChatEditController());
   final EditController historyEditController = Get.put(EditController());
   final DashboardController dashboardController = Get.put(DashboardController());
+  final TextEditorController textEditorController = Get.put(TextEditorController());
+  final EditController edC = Get.put(EditController());
 
   late List<TextEditingController> controllers;
-  late List<TextStyle> textStyles;
-  late List<TextAlign> textAlignments;
-  double _fontSize = 16.0;
-  int _currentEditingIndex = -1;
+  /*late List<TextStyle> textStyles;
+  late List<TextAlign> textAlignments;*/
+
 
   @override
   void initState() {
@@ -47,10 +51,11 @@ class _ExportScreenState extends State<ExportScreen> {
         .toList();
 
     // Initialize text styles and alignments for each message
-    textStyles = List<TextStyle>.generate(
+    /*textStyles = List<TextStyle>.generate(
         widget.messages.length, (index) => TextStyle(fontSize: 16.0));
     textAlignments = List<TextAlign>.generate(
-        widget.messages.length, (index) => TextAlign.left);
+        widget.messages.length, (index) => TextAlign.left);*/
+    textEditorController.initializeStyles(widget.messages.length);
   }
 
   @override
@@ -61,9 +66,10 @@ class _ExportScreenState extends State<ExportScreen> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    //dashboardController.currentIndex.value = 1;
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit Plan"),
@@ -76,17 +82,21 @@ class _ExportScreenState extends State<ExportScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (editController.isEditing.value) ...[
-                  GestureDetector(
+                  /*GestureDetector(
                     onTap: () {
                       editController.disableEditing();
                     },
                     child: SvgPicture.asset(
                         'assets/images/history/edit_icon.svg'),
-                  ),
+                  ),*/
                   SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      // Pin functionality
+                    onTap: () async {
+                      int editId = edC.editId.value;
+                      showDialog(
+                        context: context,
+                        builder: (context) => FolderSelectionDialog(editId: editId),
+                      );
                     },
                     child: SvgPicture.asset(
                         'assets/images/history/pin_icon.svg'),
@@ -109,7 +119,7 @@ class _ExportScreenState extends State<ExportScreen> {
                         SnackBar(content: Text("PDF saved to: $filePath")),
                       );
                       _showPDF(filePath);
-                      editController.disableEditing();
+                      //editController.disableEditing();
                     }
                   },
                   child: SvgPicture.asset(
@@ -118,52 +128,76 @@ class _ExportScreenState extends State<ExportScreen> {
                 SizedBox(width: 16),
                 GestureDetector(
                   onTap: () {
+                    editController.enableEditing();
                     final htmlContent = _generateHTMLContent();
                     historyEditController.addEditChat(widget.chatId, htmlContent);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Saved successfully!")),
                     );
-                    editController.disableEditing(); // Disable editing after saving
+                    //editController.disableEditing(); // Disable editing after saving
                   },
                   child: SvgPicture.asset(
                       'assets/images/history/save_icon.svg'),
                 ),
               ],
             )),
+
+            Obx(() {
+              if(!editController.isEditing.value) {
+                return _buildToolbar();
+              }
+              else{
+                return SizedBox(height: 0);
+              }
+            }),
             SizedBox(height: 10),
-            _buildToolbar(),
             Expanded(
               child: ListView.builder(
                 itemCount: widget.messages.length,
                 itemBuilder: (context, index) {
                   final isSentByUser = widget.messages[index]['isSentByUser'];
+                  final sender = isSentByUser ? "user:" : "bot:";
+
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Focus(
-                      onFocusChange: (hasFocus) {
-                        if (hasFocus) {
-                          setState(() {
-                            _currentEditingIndex = index;
-                          });
-                        }
-                      },
-                      child: TextField(
-                        controller: controllers[index],
-                        maxLines: null,
-                        onChanged: (value) {
-                          widget.messages[index]['message'] = value;
-                        },
-                        style: textStyles[index].copyWith(
-                          color: isSentByUser ? Colors.black : Colors.purple,
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          sender,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14.0,
+                          ),
                         ),
-                        textAlign: textAlignments[index],
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: isSentByUser
-                              ? "Type your message here..."
-                              : "Type bot response here...",
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Focus(
+                            onFocusChange: (hasFocus) {
+                              if (hasFocus) {
+                                textEditorController.currentEditingIndex.value = index;
+                              }
+                            },
+                            child: Obx(() => TextField(
+                              controller: TextEditingController(
+                                  text: widget.messages[index]['message']),
+                              maxLines: null,
+                              textAlign: textEditorController.textAlignments[index],
+                              style: textEditorController.textStyles[index],
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: isSentByUser
+                                    ? "Type your message here..."
+                                    : "Type bot response here...",
+                              ),
+                              onChanged: (value) {
+                                editController.disableEditing();
+                                widget.messages[index]['message'] = value;
+                              },
+                            )),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   );
                 },
@@ -180,134 +214,94 @@ class _ExportScreenState extends State<ExportScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          DropdownButton<double>(
-            value: _fontSize,
+          Obx(() => DropdownButton<double>(
+            value: textEditorController.fontSize.value,
             items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
                 .map((size) => DropdownMenuItem(
-                      value: size,
-                      child: Text(size.toString()),
-                    ))
+              value: size,
+              child: Text(size.toString()),
+            ))
                 .toList(),
             onChanged: (value) {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  _fontSize = value!;
-                  textStyles[_currentEditingIndex] =
-                      textStyles[_currentEditingIndex]
-                          .copyWith(fontSize: _fontSize);
-                });
+              if (textEditorController.currentEditingIndex.value != -1) {
+                textEditorController.fontSize.value = value!;
+                textEditorController.updateTextStyle(
+                  index: textEditorController.currentEditingIndex.value,
+                  fontSize: value,
+                );
               }
             },
-          ),
-          IconButton(
-            icon: Icon(Icons.format_bold),
-            color: _currentEditingIndex != -1 &&
-                    textStyles[_currentEditingIndex].fontWeight ==
-                        FontWeight.bold
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textStyles[_currentEditingIndex] =
-                      textStyles[_currentEditingIndex].copyWith(
-                          fontWeight:
-                              textStyles[_currentEditingIndex].fontWeight ==
-                                      FontWeight.bold
-                                  ? FontWeight.normal
-                                  : FontWeight.bold);
-                });
-              }
+          )),
+          _buildIconButton(
+            icon: Icons.format_bold,
+            isActive: (index) =>
+            textEditorController.textStyles[index].fontWeight == FontWeight.bold,
+            onPressed: (index) {
+              final isBold = textEditorController.textStyles[index].fontWeight == FontWeight.bold;
+              textEditorController.updateTextStyle(
+                index: index,
+                fontWeight: isBold ? FontWeight.normal : FontWeight.bold,
+              );
             },
           ),
-          IconButton(
-            icon: Icon(Icons.format_italic),
-            color: _currentEditingIndex != -1 &&
-                    textStyles[_currentEditingIndex].fontStyle ==
-                        FontStyle.italic
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textStyles[_currentEditingIndex] =
-                      textStyles[_currentEditingIndex].copyWith(
-                          fontStyle:
-                              textStyles[_currentEditingIndex].fontStyle ==
-                                      FontStyle.italic
-                                  ? FontStyle.normal
-                                  : FontStyle.italic);
-                });
-              }
+          _buildIconButton(
+            icon: Icons.format_italic,
+            isActive: (index) =>
+            textEditorController.textStyles[index].fontStyle == FontStyle.italic,
+            onPressed: (index) {
+              final isItalic = textEditorController.textStyles[index].fontStyle == FontStyle.italic;
+              textEditorController.updateTextStyle(
+                index: index,
+                fontStyle: isItalic ? FontStyle.normal : FontStyle.italic,
+              );
             },
           ),
-          IconButton(
-            icon: Icon(Icons.format_underline),
-            color: _currentEditingIndex != -1 &&
-                    textStyles[_currentEditingIndex].decoration ==
-                        TextDecoration.underline
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textStyles[_currentEditingIndex] =
-                      textStyles[_currentEditingIndex].copyWith(
-                          decoration:
-                              textStyles[_currentEditingIndex].decoration ==
-                                      TextDecoration.underline
-                                  ? TextDecoration.none
-                                  : TextDecoration.underline);
-                });
-              }
+          _buildIconButton(
+            icon: Icons.format_align_left,
+            isActive: (index) =>
+            textEditorController.textAlignments[index] == TextAlign.left,
+            onPressed: (index) {
+              textEditorController.updateTextAlignment(index, TextAlign.left);
             },
           ),
-          IconButton(
-            icon: Icon(Icons.format_align_left),
-            color: _currentEditingIndex != -1 &&
-                    textAlignments[_currentEditingIndex] == TextAlign.left
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textAlignments[_currentEditingIndex] = TextAlign.left;
-                });
-              }
+          _buildIconButton(
+            icon: Icons.format_align_center,
+            isActive: (index) =>
+            textEditorController.textAlignments[index] == TextAlign.center,
+            onPressed: (index) {
+              textEditorController.updateTextAlignment(index, TextAlign.center);
             },
           ),
-          IconButton(
-            icon: Icon(Icons.format_align_center),
-            color: _currentEditingIndex != -1 &&
-                    textAlignments[_currentEditingIndex] == TextAlign.center
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textAlignments[_currentEditingIndex] = TextAlign.center;
-                });
-              }
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.format_align_right),
-            color: _currentEditingIndex != -1 &&
-                    textAlignments[_currentEditingIndex] == TextAlign.right
-                ? Colors.blue
-                : Colors.black,
-            onPressed: () {
-              if (_currentEditingIndex != -1) {
-                setState(() {
-                  textAlignments[_currentEditingIndex] = TextAlign.right;
-                });
-              }
+          _buildIconButton(
+            icon: Icons.format_align_right,
+            isActive: (index) =>
+            textEditorController.textAlignments[index] == TextAlign.right,
+            onPressed: (index) {
+              textEditorController.updateTextAlignment(index, TextAlign.right);
             },
           ),
         ],
       ),
     );
   }
+
+  Widget _buildIconButton({
+    required IconData icon,
+    required bool Function(int index) isActive,
+    required void Function(int index) onPressed,
+  }) {
+    return Obx(() {
+      final index = textEditorController.currentEditingIndex.value;
+      final active = index != -1 && isActive(index);
+
+      return IconButton(
+        icon: Icon(icon),
+        color: active ? Colors.blue : Colors.black,
+        onPressed: index != -1 ? () => onPressed(index) : null,
+      );
+    });
+  }
+
 
   Future<String?> _promptAndSavePDF() async {
     String? fileName = await _getFileName(context);
@@ -344,8 +338,6 @@ class _ExportScreenState extends State<ExportScreen> {
     return path;
   }
 
-
-
   Future<String?> _getFileName(BuildContext context) async {
     TextEditingController fileNameController = TextEditingController();
 
@@ -377,7 +369,6 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 
-
   Future<void> requestPermissions() async {
     if (Platform.isAndroid) {
       if (!await Permission.storage.isGranted) {
@@ -387,7 +378,8 @@ class _ExportScreenState extends State<ExportScreen> {
       if (await Permission.storage.isDenied) {
         // Show a message to the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Storage permission is required to save PDFs.")),
+          SnackBar(
+              content: Text("Storage permission is required to save PDFs.")),
         );
         return;
       }
@@ -398,8 +390,6 @@ class _ExportScreenState extends State<ExportScreen> {
       }
     }
   }
-
-
 
   Future<String?> _generateAndSavePDF(String filePath) async {
     requestPermissions();
@@ -413,9 +403,10 @@ class _ExportScreenState extends State<ExportScreen> {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: List.generate(widget.messages.length, (index) {
                 final isSentByUser = widget.messages[index]['isSentByUser'];
+                final sender = isSentByUser ? "user:" : "bot:";
 
                 pw.Alignment alignment;
-                switch (textAlignments[index]) {
+                switch (textEditorController.textAlignments[index]) {
                   case TextAlign.center:
                     alignment = pw.Alignment.center;
                     break;
@@ -432,9 +423,9 @@ class _ExportScreenState extends State<ExportScreen> {
                   alignment: alignment,
                   padding: const pw.EdgeInsets.only(bottom: 8),
                   child: pw.Text(
-                    widget.messages[index]['message'],
+                    "$sender ${widget.messages[index]['message']}",
                     style: pw.TextStyle(
-                      fontSize: textStyles[index].fontSize ?? 14,
+                      fontSize: textEditorController.textStyles[index].fontSize ?? 14,
                       color: isSentByUser ? PdfColors.black : PdfColors.purple,
                     ),
                   ),
@@ -458,19 +449,6 @@ class _ExportScreenState extends State<ExportScreen> {
     }
   }
 
-
-  pw.TextAlign _convertTextAlignToPdfTextAlign(TextAlign textAlign) {
-    switch (textAlign) {
-      case TextAlign.center:
-        return pw.TextAlign.center;
-      case TextAlign.right:
-        return pw.TextAlign.right;
-      case TextAlign.left:
-      default:
-        return pw.TextAlign.left;
-    }
-  }
-
   void _showPDF(String filePath) {
     Navigator.push(
       context,
@@ -480,26 +458,17 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 
-  void _copyAllMessages(BuildContext context) {
-    final allMessages =
-        widget.messages.map((message) => message['message']).join("\n");
-    Clipboard.setData(ClipboardData(text: allMessages));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("All messages copied to clipboard!")),
-    );
-  }
-
   String _generateHTMLContent() {
     final htmlContent = StringBuffer();
     // htmlContent.write('<html><body>');
 
     for (int index = 0; index < widget.messages.length; index++) {
       final isSentByUser = widget.messages[index]['isSentByUser'];
+      final sender = isSentByUser ? "User:" : "Bot:";
 
       // Determine text alignment
       String alignment;
-      switch (textAlignments[index]) {
+      switch (textEditorController.textAlignments[index]) {
         case TextAlign.center:
           alignment = 'center';
           break;
@@ -514,16 +483,16 @@ class _ExportScreenState extends State<ExportScreen> {
 
       // Generate inline styles
       final style = '''
-        font-size: ${textStyles[index].fontSize}px;
-        font-weight: ${textStyles[index].fontWeight == FontWeight.bold ? 'bold' : 'normal'};
-        font-style: ${textStyles[index].fontStyle == FontStyle.italic ? 'italic' : 'normal'};
-        text-decoration: ${textStyles[index].decoration == TextDecoration.underline ? 'underline' : 'none'};
+        font-size: ${textEditorController.textStyles[index].fontSize}px;
+        font-weight: ${textEditorController.textStyles[index].fontWeight == FontWeight.bold ? 'bold' : 'normal'};
+        font-style: ${textEditorController.textStyles[index].fontStyle == FontStyle.italic ? 'italic' : 'normal'};
+        text-decoration: ${textEditorController.textStyles[index].decoration == TextDecoration.underline ? 'underline' : 'none'};
         color: ${isSentByUser ? 'black' : 'purple'};
         text-align: $alignment;
       ''';
 
       htmlContent.write(
-        '<div style="$style">${widget.messages[index]['message']}</div>',
+        '<p style="$style"><strong>$sender</strong> ${widget.messages[index]['message']}</p>',
       );
     }
 

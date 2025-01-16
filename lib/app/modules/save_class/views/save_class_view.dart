@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../common/widgets/customAppBar.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../controllers/save_class_controller.dart';
+import 'chatContentScreen.dart';
 
 class SaveClassView extends StatelessWidget {
   final SaveClassController controller = Get.put(SaveClassController());
@@ -19,16 +20,50 @@ class SaveClassView extends StatelessWidget {
         title: 'Save Classes',
       ),
       body: Obx(() {
-        // If a class is selected, show its contents
-        if (controller.selectedClass.value.isNotEmpty) {
-          return _buildSelectedClassView();
-        }
-
-        // Default view with list of classes
-        if (controller.classList.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: Center(
+        // If no folder is selected
+        if (controller.selectedClass.value.isEmpty) {
+          // Show folder list if classList is not empty
+          if (controller.classList.isNotEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: CustomButton(
+                      width: 180,
+                      height: 32,
+                      textSize: 16,
+                      text: 'Create New Class',
+                      onPressed: () {
+                        _showAddClassDialog(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: controller.classList.length,
+                      itemBuilder: (context, index) {
+                        final classData = controller.classList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: CustomButton(
+                            text: classData['folder_name'] ?? 'Unnamed Class',
+                            onPressed: () {
+                              controller.selectClass(classData['folder_name']);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // If classList is empty, show "Create a Class" button
+            return Center(
               child: CustomButton(
                 height: 60,
                 textSize: 24,
@@ -37,46 +72,11 @@ class SaveClassView extends StatelessWidget {
                   _showAddClassDialog(context);
                 },
               ),
-            ),
-          );
+            );
+          }
         } else {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: CustomButton(
-                    width: 180,
-                    height: 32,
-                    textSize: 16,
-                    text: 'Create New Class',
-                    onPressed: () {
-                      _showAddClassDialog(context);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: controller.classList.length,
-                    itemBuilder: (context, index) {
-                      final classData = controller.classList[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: CustomButton(
-                          text: classData['folder_name'] ?? 'Unnamed Class',
-                          onPressed: () {
-                            controller.selectClass(classData['folder_name']);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
+          // If a folder is selected, show its chat names
+          return _buildSelectedClassView();
         }
       }),
     );
@@ -93,7 +93,7 @@ class SaveClassView extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () {
-                  controller.clearSelection(); // Clear selection and go back
+                  controller.clearSelection(); // Go back to folder list
                 },
               ),
               Text(
@@ -106,13 +106,12 @@ class SaveClassView extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 10),
         Expanded(
           child: Obx(() {
             if (controller.selectedClassContents.isEmpty) {
               return const Center(
                 child: Text(
-                  'No contents available for this class.',
+                  'No chats available in this class.',
                   style: TextStyle(fontSize: 16),
                 ),
               );
@@ -121,15 +120,15 @@ class SaveClassView extends StatelessWidget {
             return ListView.builder(
               itemCount: controller.selectedClassContents.length,
               itemBuilder: (context, index) {
-                final content = controller.selectedClassContents[index];
-                return ListTile(
-                  title: Text(
-                    content['content'] ?? 'Unnamed Content',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  subtitle: Text(
-                    'Timestamp: ${content['timestamp'] ?? 'N/A'}',
-                    style: const TextStyle(fontSize: 14),
+                final chat = controller.selectedClassContents[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: CustomButton(
+                    text: chat['chat_name'] ?? 'Unnamed Chat',
+                    onPressed: () {
+                      print(':::::::::::::::::::::::CHAT: $chat');
+                      Get.to(() => ChatContentScreen(chat: chat,editId: chat['id'],));
+                    },
                   ),
                 );
               },
@@ -139,6 +138,7 @@ class SaveClassView extends StatelessWidget {
       ],
     );
   }
+
 
   void _showAddClassDialog(BuildContext context) {
     TextEditingController classNameController = TextEditingController();

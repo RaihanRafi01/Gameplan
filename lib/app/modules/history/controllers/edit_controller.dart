@@ -161,10 +161,16 @@ class EditController extends GetxController {
     }
   }
 
+  var editId = 0.obs; // Reactive variable to store edit ID
+
   Future<void> addEditChat(int chatId, String content) async {
     try {
       final http.Response response = await _service.addEditChat(chatId, content);
       if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        editId.value = responseData['edit_id']; // Update reactive variable
+        print('Edit ID saved: ${editId.value}');
+
         Get.snackbar('Success', 'Successfully added the edit message');
       } else {
         Get.snackbar('Error', 'Failed to add content');
@@ -173,6 +179,7 @@ class EditController extends GetxController {
       Get.snackbar('Error', 'Something went wrong: $e');
     }
   }
+
 
   // Delete chat content
   Future<void> deleteChat(int chatId) async {

@@ -1,3 +1,4 @@
+import 'package:agcourt/app/modules/history/controllers/history_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -24,6 +25,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
+    final historyController = Get.find<HistoryController>();
 
     return Obx(() {
       bool isDarkTheme = themeController.isDarkTheme.value;
@@ -98,6 +100,22 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem(
                 value: 2,
                 child: SizedBox(
+                  width: 135, // Ensure the same width for all items
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/history/save_icon.png',
+                        scale: 3,
+                      ),
+                      SizedBox(width: 8),
+                      Text("Save To Class"),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 3,
+                child: SizedBox(
                   width: 135,
                   child: Row(
                     children: [
@@ -125,7 +143,11 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                 );
-              } else if (value == 2) {
+              }
+              else if (value == 2) {
+                historyController.saveChat(chatId!);
+              }
+              else if (value == 3) {
                 showDatePicker(context,chatId!);
               }
             },
