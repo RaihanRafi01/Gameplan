@@ -1,4 +1,5 @@
 import 'package:agcourt/app/modules/home/controllers/chat_edit_controller.dart';
+import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,16 +33,24 @@ class FolderSelectionDialog extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Select or Create Folder',
+                  'Create Folder',
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 8.0),
+                // Create Folder Button
+                CustomButton(text: 'Create Folder', onPressed: ()async {
+                  final folderName = folderNameController.text.trim();
+                  if (folderName.isNotEmpty) {
+                    await controller.addClass(folderName);
+                    folderNameController.clear(); // Clear the input field
+                  } else {
+                    Get.snackbar('Error', 'Folder name cannot be empty');
+                  }
+                }),
                 const SizedBox(height: 16.0),
-                Center(
-                  child: CircularProgressIndicator(),
-                ),
               ],
             );
           }
@@ -72,21 +81,15 @@ class FolderSelectionDialog extends StatelessWidget {
               const SizedBox(height: 8.0),
 
               // Create Folder Button
-              ElevatedButton(
-                onPressed: () async {
-                  final folderName = folderNameController.text.trim();
-                  if (folderName.isNotEmpty) {
-                    await controller.addClass(folderName);
-                    folderNameController.clear(); // Clear the input field
-                  } else {
-                    Get.snackbar('Error', 'Folder name cannot be empty');
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                ),
-                child: Text('Create Folder'),
-              ),
+              CustomButton(text: 'Create Folder', onPressed: ()async {
+                final folderName = folderNameController.text.trim();
+                if (folderName.isNotEmpty) {
+                  await controller.addClass(folderName);
+                  folderNameController.clear(); // Clear the input field
+                } else {
+                  Get.snackbar('Error', 'Folder name cannot be empty');
+                }
+              }),
               const SizedBox(height: 16.0),
 
               // Available Folders List

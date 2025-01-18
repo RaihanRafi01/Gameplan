@@ -7,12 +7,17 @@ import 'package:html/parser.dart' as html_parser;
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
 import '../../history/controllers/edit_controller.dart';
 import '../../home/controllers/textEditorController.dart';
+import '../controllers/save_class_controller.dart';
 
 class ChatContentScreen extends StatefulWidget {
-  final Map<String, dynamic> chat;
+  //final Map<String, dynamic> chat;
+  final String content;
+  final int chatId;
   final int editId;
+  final bool isPinned;
+  final int? folderId;
 
-  const ChatContentScreen({super.key, required this.chat, required this.editId});
+  const ChatContentScreen({super.key,required this.editId,required this.chatId,required this.content,required this.isPinned,this.folderId});
 
   @override
   _ChatContentScreenState createState() => _ChatContentScreenState();
@@ -23,11 +28,12 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   final messages = <Map<String, dynamic>>[].obs; // Reactive list for messages
   late List<TextEditingController> textControllers;
   final EditController historyEditController = Get.put(EditController());
+  final SaveClassController saveClassController = Get.put(SaveClassController());
 
   @override
   void initState() {
     super.initState();
-    _parseHtmlContent(widget.chat['content']);
+    _parseHtmlContent(widget.content);
     _initializeTextControllers();
   }
 
@@ -282,10 +288,15 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                     onTap: () async {
                       /*final htmlContent = _generateHTMLContent();
                       historyEditController.addEditChat(widget.chat['chat'], htmlContent);*/
-                      showDialog(
-                        context: context,
-                        builder: (context) => FolderSelectionDialog(editId: widget.editId,),
-                      );
+                      if(widget.isPinned){
+                        await saveClassController.unpinChat(widget.editId,widget.folderId!);
+                      }
+                      if(!widget.isPinned){
+                        showDialog(
+                          context: context,
+                          builder: (context) => FolderSelectionDialog(editId: widget.editId,),
+                        );
+                      }
                     },
                     child: SvgPicture.asset(
                         'assets/images/history/pin_icon.svg'),
@@ -320,7 +331,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                   onTap: () async {
                     textEditorController.currentEditingIndex.value = -1;
                     final htmlContent = _generateHTMLContent();
-                    historyEditController.addEditChat(widget.chat['chat'], htmlContent);
+                    historyEditController.updateEditChat(widget.editId, htmlContent);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Saved successfully!")),
                     );

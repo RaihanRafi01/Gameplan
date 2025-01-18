@@ -607,6 +607,31 @@ class ApiService {
     );
   }
 
+  Future<http.Response> updateEditChat(int ChatId,String content) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/update_edited_conversation/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "content": content
+    };
+
+    // Make the POST request
+    return await http.patch(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
   Future<http.Response> pinEditChat(int ChatId, DateTime pinDate) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/pin_edited_chat/$ChatId/');
 
@@ -632,8 +657,8 @@ class ApiService {
     );
   }
 
-  Future<http.Response> unpinEditChat(int ChatId) async {
-    final Uri url = Uri.parse('${baseUrl}chat_app/unpin_edited_chat/$ChatId/');
+  Future<http.Response> unpinEditChat(int editId,int folderID) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/unpin_an_edited_chat_to_a_folder/$editId/$folderID/');
 
     // Retrieve the stored access token
     String? accessToken = await _storage.read(key: 'access_token');
@@ -711,6 +736,47 @@ class ApiService {
     return await http.post(
       url,
       headers: headers,
+    );
+  }
+
+  Future<http.Response> getEditChatList() async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/get_all_edited_chat/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Make the GET request
+    return await http.get(url, headers: headers);
+  }
+
+  Future<http.Response> updateEditChatTitle(int ChatId, String title) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/rename_edited_chat/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "chat_name": title
+    };
+
+    // Make the POST request
+    return await http.patch(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
     );
   }
 

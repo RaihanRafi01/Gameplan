@@ -103,13 +103,48 @@ class SaveClassController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Add the new class to the local list
-
-
+        fetchClassList();
         Get.snackbar('Success', 'Class pinned successfully');
       } else {
         Get.snackbar('Error', 'Failed to pinned class');
       }
     } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> unpinChat(int editId,int folderId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.unpinEditChat(editId,folderId);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        Get.snackbar('Unpinned', 'Edit Unpinned successfully');
+        await fetchClassList();
+
+        // Find and remove the event corresponding to the chatId
+        /*final eventToRemove = calendarController.events.firstWhere(
+                (event) => event.ChatId == chatId // Return null if no matching event is found
+        );
+
+        if (eventToRemove != null) {
+          // Remove the event from the calendarController events list
+          calendarController.events.remove(eventToRemove);
+
+          // Optionally refresh the calendar view if needed
+          // calendarController.events.refresh();
+        }
+        fetchData();*/
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to unpin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
       Get.snackbar('Error', 'Something went wrong: $e');
     }
   }

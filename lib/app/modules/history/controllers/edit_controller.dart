@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../../../data/services/api_services.dart';
+import 'edit_history_controller.dart';
 
 class EditController extends GetxController {
   final ApiService _service = ApiService();
@@ -13,25 +14,6 @@ class EditController extends GetxController {
   // Reactive grouped list for chat content
   var groupedChatHistory = <String, List<Chat>>{}.obs;
 
-  // Update the filter and fetch data accordingly
-  void updateFilter(String filter) {
-    selectedFilter.value = filter;
-
-    switch (filter) {
-      case 'All':
-        fetchAllChatList();
-        break;
-      case 'Pin':
-        fetchPinChatList();
-        break;
-      case 'Save':
-        fetchSaveChatList();
-        break;
-      default:
-        Get.snackbar('Error', 'Unknown filter selected');
-    }
-  }
-
   // Fetch all chat content list from API
   Future<void> fetchAllChatList() async {
     try {
@@ -41,62 +23,6 @@ class EditController extends GetxController {
         setChatHistory(apiResponse);
       } else {
         Get.snackbar('Error', 'Failed to load chat list');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Something went wrong: $e');
-    }
-  }
-
-  // Fetch pinned chat content list from API
-  Future<void> fetchPinChatList() async {
-    try {
-      // Make the API call to get the pinned chat list
-      final http.Response response = await _service.getPinChatList();
-
-      if (response.statusCode == 200) {
-        // Decode the API response into a list of maps
-        List<dynamic> apiResponse = jsonDecode(response.body);
-
-        // Parse the API response and update the chat history
-        setChatHistory(apiResponse);
-
-        // Perform additional actions for pinned chats
-        for (var chatData in apiResponse) {
-          final Chat chat = Chat.fromJson(chatData);
-
-          // Only process pinned chats
-          if (chat.isPinned && chat.pinDate != null) {
-            final pinDate = chat.pinDate!;
-
-            // Example of additional action: Print event info
-            print(
-                'Pinned Chat: Content=${chat.content}, Date=${DateTime(pinDate.year, pinDate.month, pinDate.day)}, Time=${DateFormat('hh:mm a').format(pinDate)}');
-
-            // Add your specific logic here (e.g., update a calendar, notify other components)
-            // Example: Add to calendar or another list
-            // calendarController.addEvent(chat);
-          }
-        }
-      } else {
-        // Handle unsuccessful response
-        Get.snackbar('Error', 'Failed to load pinned chats');
-      }
-    } catch (e) {
-      // Handle any exceptions during the API call
-      Get.snackbar('Error', 'Something went wrong: $e');
-    }
-  }
-
-
-  // Fetch saved chat content list from API
-  Future<void> fetchSaveChatList() async {
-    try {
-      final http.Response response = await _service.getSaveChatList();
-      if (response.statusCode == 200) {
-        List<dynamic> apiResponse = jsonDecode(response.body);
-        setChatHistory(apiResponse);
-      } else {
-        Get.snackbar('Error', 'Failed to load saved chats');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
@@ -167,6 +93,7 @@ class EditController extends GetxController {
     try {
       final http.Response response = await _service.addEditChat(chatId, content);
       if (response.statusCode == 200) {
+        await fetchAllChatList();
         final responseData = jsonDecode(response.body);
         editId.value = responseData['edit_id']; // Update reactive variable
         print('Edit ID saved: ${editId.value}');
@@ -176,6 +103,21 @@ class EditController extends GetxController {
         Get.snackbar('Error', 'Failed to add content');
       }
     } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> updateEditChat(int chatId, String content) async {
+    try {
+      final http.Response response = await _service.updateEditChat(chatId, content);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        await fetchAllChatList();
+        Get.snackbar('Success', 'Successfully updated the edit message');
+      } else {
+        Get.snackbar('Error', 'Failed to update content');
+      }
+    } catch (e) {
+      print('Error ::::::::::::::::::::::::::::::$e');
       Get.snackbar('Error', 'Something went wrong: $e');
     }
   }
@@ -215,33 +157,27 @@ class EditController extends GetxController {
     }
   }
 
-  Future<void> unpinChat(int chatId) async {
+
+
+  Future<void> updateChatTitle(int chatId, String title) async {
     try {
+
+
       // Make the API call to get chat list
-      final http.Response response = await _service.unpinEditChat(chatId);
+      final http.Response verificationResponse = await _service.updateEditChatTitle(chatId,title);
 
-      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
-      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+      print('hit update chat ::::::::::::::::::::::::::chatId:::::::::::::::::$chatId');
+      print('hit update chat ::::::::::::::::::::::::::::title:::::::::::::::$title');
 
-      if (response.statusCode == 200) {
+      print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.statusCode}');
+      print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.body}');
+
+      if (verificationResponse.statusCode == 200) {
         // Decode the API response into a list of maps
-        Get.snackbar('Unpinned', 'Plan Unpinned successfully');
-        // Find and remove the event corresponding to the chatId
-        /*final eventToRemove = calendarController.events.firstWhere(
-                (event) => event.ChatId == chatId // Return null if no matching event is found
-        );
-
-        if (eventToRemove != null) {
-          // Remove the event from the calendarController events list
-          calendarController.events.remove(eventToRemove);
-
-          // Optionally refresh the calendar view if needed
-          // calendarController.events.refresh();
-        }
-        fetchData();*/
+        fetchAllChatList();
       } else {
         // Handle unsuccessful response
-        Get.snackbar('Error', 'Failed to unpin');
+        Get.snackbar('Error', 'Failed to load chat list');
       }
     } catch (e) {
       // Handle any exceptions during the API call
@@ -254,6 +190,8 @@ class EditController extends GetxController {
 class Chat {
   final int id;
   final int chatId;
+  final int folderId;
+  final String chatName;
   final int ownerUser;
   final String content;
   final bool isPinned;
@@ -263,6 +201,8 @@ class Chat {
   Chat({
     required this.id,
     required this.chatId,
+    required this.folderId,
+    required this.chatName,
     required this.ownerUser,
     required this.content,
     required this.isPinned,
@@ -274,6 +214,8 @@ class Chat {
     return Chat(
       id: json['id'],
       chatId: json['chat'],
+      folderId: json['folder_id'],
+      chatName: json['chat_name'],
       ownerUser: json['owner_user'],
       content: json['content'],
       isPinned: json['is_pinned'],
@@ -281,4 +223,5 @@ class Chat {
       pinDate: json['pin_date'] != null ? DateTime.parse(json['pin_date']) : null,
     );
   }
+
 }

@@ -8,6 +8,9 @@ import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../home/views/chat_screen_view.dart';
+import '../../save_class/views/chatContentScreen.dart';
+import '../controllers/edit_controller.dart';
+import '../controllers/edit_history_controller.dart';
 import '../controllers/history_controller.dart';
 
 class HistoryView extends GetView<HistoryController> {
@@ -16,7 +19,9 @@ class HistoryView extends GetView<HistoryController> {
   @override
   Widget build(BuildContext context) {
     Get.put(HistoryController());
+    final EditController editHistoryController = Get.put(EditController());
     Get.find<HistoryController>().fetchAllChatList();
+    Get.find<EditController>().fetchAllChatList();
     final HomeController homeController = Get.put(HomeController());
     final bool isFree = homeController.isFree.value;
 
@@ -37,7 +42,7 @@ class HistoryView extends GetView<HistoryController> {
               if (isFree)
                 Obx(() {
                   final ThemeController themeController =
-                  Get.find<ThemeController>();
+                      Get.find<ThemeController>();
 
                   return CustomButton(
                     height: 30,
@@ -51,7 +56,7 @@ class HistoryView extends GetView<HistoryController> {
                         builder: (BuildContext context) {
                           return const SubscriptionPopup(
                               isManage:
-                              true); // Use the SubscriptionPopup widget
+                                  true); // Use the SubscriptionPopup widget
                         },
                       );
                     },
@@ -95,10 +100,7 @@ class HistoryView extends GetView<HistoryController> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
                           'Recent Plan',
-                          style: h2.copyWith(
-                            fontSize: 24,
-                            color: Colors.white
-                          ),
+                          style: h2.copyWith(fontSize: 24, color: Colors.white),
                         ),
                       ),
                       Card(
@@ -200,7 +202,8 @@ class HistoryView extends GetView<HistoryController> {
                           children: [
                             // Date group header
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
                                 groupKey,
                                 style: h3.copyWith(
@@ -222,7 +225,8 @@ class HistoryView extends GetView<HistoryController> {
                                               chatId: chat.id,
                                               chatName: chat.chatName,
                                             ))
-                                        ?.then((value) => controller.fetchData());
+                                        ?.then(
+                                            (value) => controller.fetchData());
                                   },
                                   child: Text(
                                     chat.chatName,
@@ -253,10 +257,10 @@ class HistoryView extends GetView<HistoryController> {
                                         break;
                                       case 1:
                                         _showEditDialog(
-                                            context, chat.id, chat.chatName);
+                                            context, chat.id, chat.chatName,false);
                                         break;
                                       case 2:
-                                        _showDeleteDialog(context, chat.id);
+                                        _showDeleteDialog(context, chat.id,false);
                                         break;
                                     }
                                   },
@@ -378,7 +382,7 @@ class HistoryView extends GetView<HistoryController> {
               const SizedBox(height: 10),
               Expanded(
                 child: Obx(() {
-                  final groupedChats = controller.groupedChatHistory;
+                  final groupedChats = editHistoryController.groupedChatHistory;
 
                   if (groupedChats.isEmpty) {
                     return Center(
@@ -422,12 +426,7 @@ class HistoryView extends GetView<HistoryController> {
                             return ListTile(
                               title: GestureDetector(
                                 onTap: () {
-                                  Get.to(() => ChatScreen(
-                                            chat: chat.chatContents,
-                                            chatId: chat.id,
-                                            chatName: chat.chatName,
-                                          ))
-                                      ?.then((value) => controller.fetchData());
+                                  Get.to(ChatContentScreen(content:chat.content,chatId:chat.chatId,editId: chat.id,isPinned: chat.isPinned));
                                 },
                                 child: Text(
                                   chat.chatName,
@@ -439,6 +438,81 @@ class HistoryView extends GetView<HistoryController> {
                                             .textHistory, // Dynamic text color
                                   ),
                                 ),
+                              ),
+                              trailing: PopupMenuButton<int>(
+                                icon: Icon(
+                                  Icons.more_horiz_rounded,
+                                  color: themeController.isDarkTheme.value
+                                      ? Colors.white
+                                      : Colors.black, // Dynamic icon color
+                                ),
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 1:
+                                      _showEditDialog(
+                                          context, chat.id, chat.chatName,true);
+                                      break;
+                                    case 2:
+                                      _showDeleteDialog(context, chat.id,true);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/history/edit_icon.svg',
+                                          color: themeController
+                                              .isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors
+                                              .black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          'Edit',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController
+                                                .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                .black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 2,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/history/delete_icon.svg',
+                                          color: themeController
+                                              .isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors
+                                              .black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          'Delete',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController
+                                                .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                .black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           }).toList(),
@@ -487,9 +561,9 @@ class HistoryView extends GetView<HistoryController> {
     }
   }
 
-  void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
-    final TextEditingController textController =
-        TextEditingController(text: currentTitle);
+  void _showEditDialog(BuildContext context, int chatId, String currentTitle,bool isEdit) {
+    final TextEditingController textController = TextEditingController(text: currentTitle);
+    final EditController editHistoryController = Get.put(EditController());
 
     showDialog(
       context: context,
@@ -512,7 +586,12 @@ class HistoryView extends GetView<HistoryController> {
               onPressed: () {
                 final newTitle = textController.text.trim();
                 if (newTitle.isNotEmpty) {
-                  controller.updateChatTitle(chatId, newTitle);
+                  if(isEdit){
+                    editHistoryController.updateChatTitle(chatId, newTitle);
+                  }
+                  if(!isEdit){
+                    controller.updateChatTitle(chatId, newTitle);
+                  }
                 }
                 Navigator.pop(context);
               },
@@ -524,7 +603,8 @@ class HistoryView extends GetView<HistoryController> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, int chatId) {
+  void _showDeleteDialog(BuildContext context, int chatId,bool isEdit) {
+    final EditController editHistoryController = Get.put(EditController());
     showDialog(
       context: context,
       builder: (context) {
@@ -538,7 +618,12 @@ class HistoryView extends GetView<HistoryController> {
             ),
             TextButton(
               onPressed: () {
-                controller.deleteChat(chatId);
+                if(isEdit){
+                  editHistoryController.deleteChat(chatId);
+                }
+                if(!isEdit){
+                  controller.deleteChat(chatId);
+                }
                 Navigator.pop(context);
               },
               child: Text('Delete', style: h3.copyWith(color: Colors.red)),

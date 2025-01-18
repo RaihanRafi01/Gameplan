@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import '../../../../common/appColors.dart';
 import '../../../../common/widgets/customAppBar.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../dashboard/controllers/theme_controller.dart';
+import '../../dashboard/views/widgets/subscriptionPopup.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/save_class_controller.dart';
 import 'chatContentScreen.dart';
 
@@ -15,9 +20,56 @@ class SaveClassView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.put(HomeController());
+    final bool isFree = homeController.isFree.value;
+
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Save Classes',
+      appBar: AppBar(
+        centerTitle: true,
+        title: Obx(() {
+          final ThemeController themeController = Get.find<ThemeController>();
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/images/auth/app_logo.svg',
+                color: themeController.isDarkTheme.value
+                    ? Colors.white // White in dark mode
+                    : null, // Black in light mode
+              ),
+              if (isFree)
+                Obx(() {
+                  final ThemeController themeController =
+                  Get.find<ThemeController>();
+
+                  return CustomButton(
+                    height: 30,
+                    textSize: 12,
+                    text: 'Upgrade To Pro',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        // Prevent closing the dialog by tapping outside
+                        builder: (BuildContext context) {
+                          return const SubscriptionPopup(
+                              isManage:
+                              true); // Use the SubscriptionPopup widget
+                        },
+                      );
+                    },
+                    width: 150,
+                    backgroundGradientColor: AppColors.transparent,
+                    borderGradientColor: AppColors.cardGradient,
+                    isEditPage: true,
+                    textColor: themeController.isDarkTheme.value
+                        ? Colors.white
+                        : AppColors.appColor, // Dynamic text color
+                  );
+                }),
+            ],
+          );
+        }),
       ),
       body: Obx(() {
         // If no folder is selected
@@ -127,7 +179,7 @@ class SaveClassView extends StatelessWidget {
                     text: chat['chat_name'] ?? 'Unnamed Chat',
                     onPressed: () {
                       print(':::::::::::::::::::::::CHAT: $chat');
-                      Get.to(() => ChatContentScreen(chat: chat,editId: chat['id'],));
+                      Get.to(() => ChatContentScreen(content: chat['content'],chatId: chat['chat'],editId: chat['id'],isPinned: chat['is_pinned'],folderId: chat['folder_id'],));
                     },
                   ),
                 );
