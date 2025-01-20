@@ -179,7 +179,7 @@ class SaveClassView extends StatelessWidget {
                     text: chat['chat_name'] ?? 'Unnamed Chat',
                     onPressed: () {
                       print(':::::::::::::::::::::::CHAT: $chat');
-                      Get.to(() => ChatContentScreen(content: chat['content'],chatId: chat['chat'],editId: chat['id'],isPinned: chat['is_pinned'],folderId: chat['folder_id'],));
+                      Get.to(() => ChatContentScreen(content: chat['content'],chatId: chat['chat'],editId: chat['id'],isPinned: chat['is_pinned'], isSaved: chat['is_saved'],folderId: chat['folder_id'],title: chat['chat_name'],));
                     },
                   ),
                 );

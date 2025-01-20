@@ -99,7 +99,7 @@ class HistoryView extends GetView<HistoryController> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Text(
-                          'Recent Plan',
+                          'Recent Plans',
                           style: h2.copyWith(fontSize: 24, color: Colors.white),
                         ),
                       ),
@@ -256,11 +256,21 @@ class HistoryView extends GetView<HistoryController> {
                                         }
                                         break;
                                       case 1:
-                                        _showEditDialog(
-                                            context, chat.id, chat.chatName,false);
+                                        _showEditDialog(context, chat.id,
+                                            chat.chatName, false);
                                         break;
                                       case 2:
-                                        _showDeleteDialog(context, chat.id,false);
+                                        _showDeleteDialog(
+                                            context, chat.id, false);
+                                        break;
+                                      case 3:
+                                        Get.to(() => ChatScreen(
+                                          chat: chat.chatContents,
+                                          chatId: chat.id,
+                                          chatName: chat.chatName,
+                                        ))
+                                            ?.then(
+                                                (value) => controller.fetchData());
                                         break;
                                     }
                                   },
@@ -295,11 +305,38 @@ class HistoryView extends GetView<HistoryController> {
                                       ),
                                     ),
                                     PopupMenuItem(
-                                      value: 1,
+                                      value: 3,
                                       child: Row(
                                         children: [
                                           SvgPicture.asset(
                                             'assets/images/history/edit_icon.svg',
+                                            color: themeController
+                                                .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                .black, // Dynamic icon color
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Edit',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                  .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                  .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/rename_icon.svg',
                                             color: themeController
                                                     .isDarkTheme.value
                                                 ? Colors.white
@@ -308,7 +345,7 @@ class HistoryView extends GetView<HistoryController> {
                                           ),
                                           const SizedBox(width: 10),
                                           Text(
-                                            'Edit',
+                                            'Rename',
                                             style: h3.copyWith(
                                               fontSize: 16,
                                               color: themeController
@@ -371,7 +408,7 @@ class HistoryView extends GetView<HistoryController> {
                 ),
                 child: Center(
                   child: Text(
-                    'Save Class',
+                    'Edited plans',
                     style: h3.copyWith(
                       fontSize: 24,
                       color: Colors.white,
@@ -426,7 +463,15 @@ class HistoryView extends GetView<HistoryController> {
                             return ListTile(
                               title: GestureDetector(
                                 onTap: () {
-                                  Get.to(ChatContentScreen(content:chat.content,chatId:chat.chatId,editId: chat.id,isPinned: chat.isPinned));
+                                  Get.to(ChatContentScreen(
+                                    content: chat.content,
+                                    chatId: chat.chatId,
+                                    editId: chat.id,
+                                    isPinned: chat.isPinned,
+                                    isSaved: chat.isSaved,
+                                    folderId: chat.folderId,
+                                    title: chat.chatName,
+                                  ));
                                 },
                                 child: Text(
                                   chat.chatName,
@@ -449,17 +494,28 @@ class HistoryView extends GetView<HistoryController> {
                                 onSelected: (value) {
                                   switch (value) {
                                     case 1:
-                                      _showEditDialog(
-                                          context, chat.id, chat.chatName,true);
+                                      _showEditDialog(context, chat.id,
+                                          chat.chatName, true);
                                       break;
                                     case 2:
-                                      _showDeleteDialog(context, chat.id,true);
+                                      _showDeleteDialog(context, chat.id, true);
+                                      break;
+                                    case 3:
+                                      Get.to(ChatContentScreen(
+                                        content: chat.content,
+                                        chatId: chat.chatId,
+                                        editId: chat.id,
+                                        isPinned: chat.isPinned,
+                                        isSaved: chat.isSaved,
+                                        folderId: chat.folderId,
+                                        title: chat.chatName,
+                                      ));
                                       break;
                                   }
                                 },
                                 itemBuilder: (context) => [
                                   PopupMenuItem(
-                                    value: 1,
+                                    value: 3,
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(
@@ -486,16 +542,43 @@ class HistoryView extends GetView<HistoryController> {
                                     ),
                                   ),
                                   PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/images/history/rename_icon.svg',
+                                          color: themeController
+                                                  .isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors
+                                                  .black, // Dynamic icon color
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          'Rename',
+                                          style: h3.copyWith(
+                                            fontSize: 16,
+                                            color: themeController
+                                                    .isDarkTheme.value
+                                                ? Colors.white
+                                                : Colors
+                                                    .black, // Dynamic text color
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
                                     value: 2,
                                     child: Row(
                                       children: [
                                         SvgPicture.asset(
                                           'assets/images/history/delete_icon.svg',
                                           color: themeController
-                                              .isDarkTheme.value
+                                                  .isDarkTheme.value
                                               ? Colors.white
                                               : Colors
-                                              .black, // Dynamic icon color
+                                                  .black, // Dynamic icon color
                                         ),
                                         const SizedBox(width: 10),
                                         Text(
@@ -503,10 +586,10 @@ class HistoryView extends GetView<HistoryController> {
                                           style: h3.copyWith(
                                             fontSize: 16,
                                             color: themeController
-                                                .isDarkTheme.value
+                                                    .isDarkTheme.value
                                                 ? Colors.white
                                                 : Colors
-                                                .black, // Dynamic text color
+                                                    .black, // Dynamic text color
                                           ),
                                         ),
                                       ],
@@ -561,8 +644,10 @@ class HistoryView extends GetView<HistoryController> {
     }
   }
 
-  void _showEditDialog(BuildContext context, int chatId, String currentTitle,bool isEdit) {
-    final TextEditingController textController = TextEditingController(text: currentTitle);
+  void _showEditDialog(
+      BuildContext context, int chatId, String currentTitle, bool isEdit) {
+    final TextEditingController textController =
+        TextEditingController(text: currentTitle);
     final EditController editHistoryController = Get.put(EditController());
 
     showDialog(
@@ -586,10 +671,10 @@ class HistoryView extends GetView<HistoryController> {
               onPressed: () {
                 final newTitle = textController.text.trim();
                 if (newTitle.isNotEmpty) {
-                  if(isEdit){
+                  if (isEdit) {
                     editHistoryController.updateChatTitle(chatId, newTitle);
                   }
-                  if(!isEdit){
+                  if (!isEdit) {
                     controller.updateChatTitle(chatId, newTitle);
                   }
                 }
@@ -603,7 +688,7 @@ class HistoryView extends GetView<HistoryController> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, int chatId,bool isEdit) {
+  void _showDeleteDialog(BuildContext context, int chatId, bool isEdit) {
     final EditController editHistoryController = Get.put(EditController());
     showDialog(
       context: context,
@@ -618,10 +703,10 @@ class HistoryView extends GetView<HistoryController> {
             ),
             TextButton(
               onPressed: () {
-                if(isEdit){
+                if (isEdit) {
                   editHistoryController.deleteChat(chatId);
                 }
-                if(!isEdit){
+                if (!isEdit) {
                   controller.deleteChat(chatId);
                 }
                 Navigator.pop(context);

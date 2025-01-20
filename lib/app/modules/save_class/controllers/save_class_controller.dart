@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../data/services/api_services.dart';
+import '../../history/controllers/edit_controller.dart';
 
 class SaveClassController extends GetxController {
   final ApiService _service = ApiService();
-
+  final EditController editHistoryController = Get.put(EditController());
   // Observables to manage data and state
   var classList = <Map<String, dynamic>>[].obs; // List of classes with their data
   var selectedClass = ''.obs; // Currently selected class name
@@ -52,6 +53,7 @@ class SaveClassController extends GetxController {
 
   /// Fetch the list of classes from the API
   Future<void> fetchClassList() async {
+    await editHistoryController.fetchAllChatList();
     try {
       final http.Response response = await _service.getClassList();
 
@@ -80,7 +82,7 @@ class SaveClassController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Add the new class to the local list
-        fetchClassList(); // Refresh the folder list
+        await fetchClassList();
         classList.add({
           'id': DateTime.now().millisecondsSinceEpoch, // Temporary ID
           'owner_user': null, // Replace with actual owner ID if available
@@ -103,7 +105,7 @@ class SaveClassController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Add the new class to the local list
-        fetchClassList();
+        await fetchClassList();
         Get.snackbar('Success', 'Class pinned successfully');
       } else {
         Get.snackbar('Error', 'Failed to pinned class');
@@ -113,10 +115,10 @@ class SaveClassController extends GetxController {
     }
   }
 
-  Future<void> unpinChat(int editId,int folderId) async {
+  Future<void> unSaveEditedChat(int editId,int folderId) async {
     try {
       // Make the API call to get chat list
-      final http.Response response = await _service.unpinEditChat(editId,folderId);
+      final http.Response response = await _service.unSaveEditChat(editId,folderId);
 
       print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
       print('::::::::::::::::::::::::CODE::::::${response.toString()}');
@@ -125,7 +127,6 @@ class SaveClassController extends GetxController {
         // Decode the API response into a list of maps
         Get.snackbar('Unpinned', 'Edit Unpinned successfully');
         await fetchClassList();
-
         // Find and remove the event corresponding to the chatId
         /*final eventToRemove = calendarController.events.firstWhere(
                 (event) => event.ChatId == chatId // Return null if no matching event is found

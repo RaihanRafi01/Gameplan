@@ -128,7 +128,7 @@ class EditController extends GetxController {
     try {
       final http.Response response = await _service.deleteEditChat(chatId);
       if (response.statusCode == 200) {
-        fetchAllChatList();
+        await fetchAllChatList();
       } else {
         Get.snackbar('Error', 'Failed to delete content');
       }
@@ -137,7 +137,7 @@ class EditController extends GetxController {
     }
   }
 
-  Future<void> pinChat(int chatId, DateTime pinDate) async {
+ /* Future<void> pinChat(int chatId, DateTime pinDate) async {
     try {
       // Make the API call to get chat list
       final http.Response response = await _service.pinEditChat(chatId,pinDate);
@@ -155,7 +155,7 @@ class EditController extends GetxController {
       // Handle any exceptions during the API call
       Get.snackbar('Error', 'Something went wrong: $e');
     }
-  }
+  }*/
 
 
 
@@ -195,6 +195,7 @@ class Chat {
   final int ownerUser;
   final String content;
   final bool isPinned;
+  final bool isSaved;
   final DateTime timestamp;
   final DateTime? pinDate;
 
@@ -206,6 +207,7 @@ class Chat {
     required this.ownerUser,
     required this.content,
     required this.isPinned,
+    required this.isSaved,
     required this.timestamp,
     this.pinDate,
   });
@@ -219,6 +221,7 @@ class Chat {
       ownerUser: json['owner_user'],
       content: json['content'],
       isPinned: json['is_pinned'],
+      isSaved: json['is_saved'],
       timestamp: DateTime.parse(json['timestamp']),
       pinDate: json['pin_date'] != null ? DateTime.parse(json['pin_date']) : null,
     );

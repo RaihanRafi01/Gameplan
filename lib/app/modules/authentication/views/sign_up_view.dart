@@ -90,7 +90,7 @@ class _SignUpViewState extends State<SignUpView> {
                   const SizedBox(height: 30),
                   CustomTextField(
                     label: 'User Name',
-                    hint: 'Enter UserName',
+                    hint: 'Enter User Name',
                     prefixIcon: Icons.person_outline_rounded,
                     controller: _usernameController,
                   ),

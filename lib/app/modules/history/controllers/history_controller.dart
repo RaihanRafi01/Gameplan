@@ -91,36 +91,26 @@ class HistoryController extends GetxController {
 
       if (response.statusCode == 200) {
         // Decode the API response into a list of maps
-        List<dynamic> apiResponse = jsonDecode(response.body);
+        final Map<String, dynamic> apiResponse = jsonDecode(response.body);
 
         // Parse the API response and update the chat history
-        setChatHistory(apiResponse);
+        setChatHistory(apiResponse['normal_chats']);
 
-        // Add events for pinned chats to the CalendarController
-        for (var chatData in apiResponse) {
+        // Decode and process normal chats
+        List<dynamic> normalChats = apiResponse['normal_chats'];
+        for (var chatData in normalChats) {
           final Chat chat = Chat.fromJson(chatData);
-
-          // Only process pinned chats
           if (chat.isPinned && chat.pinDate != null) {
-            final pinDate = chat.pinDate!;
+            _addEvent(chat.pinDate!, chat.chatName, chat.id, 1,chat.isPinned, false, false,'');
+          }
+        }
 
-            // Check if an event with the same title, date, and time already exists
-            bool isDuplicate = calendarController.events.any((event) =>
-            event.ChatId == chat.id);
-
-            if (!isDuplicate) {
-              print(
-                  'Adding Event: Title=${chat.chatName}, Date=${DateTime(pinDate.year, pinDate.month, pinDate.day)}, Time=${DateFormat('hh:mm a').format(pinDate)}');
-
-              calendarController.events.add(
-                Event(
-                  date: DateTime(pinDate.year, pinDate.month, pinDate.day, pinDate.hour, pinDate.minute),
-                  title: chat.chatName,
-                  ChatId: chat.id,
-                ),
-              );
-              //calendarController.events.refresh();
-            }
+        // Decode and process edited chats
+        List<dynamic> editedChats = apiResponse['edited_chats'];
+        for (var chatData in editedChats) {
+          final EditedChat editedChat = EditedChat.fromJson(chatData);
+          if (editedChat.isPinned && editedChat.pinDate != null) {
+            _addEvent(editedChat.pinDate!, editedChat.chatName, editedChat.chatId, editedChat.id , editedChat.isPinned, editedChat.isSaved, true,editedChat.content);
           }
         }
       } else {
@@ -132,6 +122,27 @@ class HistoryController extends GetxController {
       Get.snackbar('Error', 'Something went wrong: $e');
     }
 
+  }
+
+  void _addEvent(DateTime pinDate, String title, int chatId,int editId,bool isPinned,bool isSaved, bool isEditedChat, String content) {
+    // Check for duplicate events
+    bool isDuplicate = calendarController.events.any((event) =>
+    event.chatId == chatId && event.isEditedChat == isEditedChat);
+
+    if (!isDuplicate) {
+      calendarController.events.add(Event(
+        date: pinDate,
+        title: title,
+        chatId: chatId,
+        editId: editId,
+        isPinned: isPinned,
+        isSaved: isSaved,
+        isEditedChat: isEditedChat,
+        content: content,
+      ));
+      print(
+          'Adding Event: Title=$title, Date=${pinDate.toIso8601String()}, IsEditedChat=$isEditedChat');
+    }
   }
 
 
@@ -204,6 +215,28 @@ class HistoryController extends GetxController {
     }
   }
 
+  Future<void> pinEditChat(int chatId, DateTime pinDate) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.pinEditChat(chatId,pinDate);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        Get.snackbar('Pinned', 'Plan pinned successfully');
+        fetchPinChatList();
+        //fetchData();
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to pin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
   Future<void> unpinChat(int chatId) async {
     try {
       // Make the API call to get chat list
@@ -217,7 +250,41 @@ class HistoryController extends GetxController {
         Get.snackbar('Unpinned', 'Plan Unpinned successfully');
         // Find and remove the event corresponding to the chatId
         final eventToRemove = calendarController.events.firstWhere(
-              (event) => event.ChatId == chatId // Return null if no matching event is found
+              (event) => event.chatId == chatId // Return null if no matching event is found
+        );
+
+        if (eventToRemove != null) {
+          // Remove the event from the calendarController events list
+          calendarController.events.remove(eventToRemove);
+
+          // Optionally refresh the calendar view if needed
+          // calendarController.events.refresh();
+        }
+        fetchData();
+      } else {
+        // Handle unsuccessful response
+        Get.snackbar('Error', 'Failed to unpin');
+      }
+    } catch (e) {
+      // Handle any exceptions during the API call
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> unpinEditChat(int editId) async {
+    try {
+      // Make the API call to get chat list
+      final http.Response response = await _service.unpinEditChat(editId);
+
+      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
+      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+
+      if (response.statusCode == 200) {
+        // Decode the API response into a list of maps
+        Get.snackbar('Unpinned', 'Plan Unpinned successfully');
+        // Find and remove the event corresponding to the chatId
+        final eventToRemove = calendarController.events.firstWhere(
+                (event) => event.editId == editId // Return null if no matching event is found
         );
 
         if (eventToRemove != null) {
@@ -408,6 +475,39 @@ class ChatContent {
       sentBy: json['sent_by'],
       textContent: json['text_content'],
       timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+}
+
+
+class EditedChat {
+  final int id;
+  final int chatId;
+  final String chatName;
+  final String content;
+  final bool isPinned;
+  final bool isSaved;
+  final DateTime? pinDate;
+
+  EditedChat({
+    required this.id,
+    required this.chatId,
+    required this.chatName,
+    required this.content,
+    required this.isPinned,
+    required this.isSaved,
+    this.pinDate,
+  });
+
+  factory EditedChat.fromJson(Map<String, dynamic> json) {
+    return EditedChat(
+      id: json['id'],
+      chatId: json['chat'],
+      chatName: json['chat_name'],
+      content: json['content'],
+      isPinned: json['is_pinned'],
+      isSaved: json['is_saved'],
+      pinDate: json['pin_date'] != null ? DateTime.parse(json['pin_date']) : null,
     );
   }
 }

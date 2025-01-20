@@ -12,6 +12,7 @@ import '../../../../common/widgets/custom_button.dart';
 import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../home/views/chat_screen_view.dart';
+import '../../save_class/views/chatContentScreen.dart';
 import '../controllers/calender_controller.dart';
 
 class CalenderView extends GetView<CalenderController> {
@@ -158,20 +159,27 @@ class CalenderView extends GetView<CalenderController> {
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: InkWell(
                         onTap: () {
-                          // Fetch the chat and navigate to ChatScreen
-                          final chat = historyController.getChatById(event.ChatId);
-                          if (chat != null) {
-                            Get.to(() => ChatScreen(
-                              chat: chat.chatContents,
-                              chatId: chat.id,
-                              chatName: chat.chatName,
-                            ))?.then((value) => historyController.fetchData());
-                          } else {
-                            Get.snackbar(
-                              'Error',
-                              'Chat not found',
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
+                          if(event.isEditedChat){
+                            print('::::::::::::::::::::::::::::::::::::::::Edited clicked');
+                            Get.to(ChatContentScreen(editId: event.editId, chatId: event.chatId, content: event.content, isPinned: event.isPinned, isSaved: event.isSaved,title: event.title,));
+                          }
+                          if(!event.isEditedChat){
+                            // Fetch the chat and navigate to ChatScreen
+                            final chat = historyController.getChatById(event.chatId);
+                            if (chat != null) {
+                              print('::::::::::::::::::::::::::::::::::::::::Chat clicked');
+                              Get.to(() => ChatScreen(
+                                chat: chat.chatContents,
+                                chatId: chat.id,
+                                chatName: chat.chatName,
+                              ))?.then((value) => historyController.fetchData());
+                            } else {
+                              Get.snackbar(
+                                'Error',
+                                'Chat not found',
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            }
                           }
                         },
                         child: Row(

@@ -46,8 +46,8 @@ class ForgotPasswordView extends GetView {
                   const SizedBox(height: 30),
                   CustomTextField(
                     controller: usernameController, // Add the controller
-                    label: "Your UserName",
-                    hint: "Enter UserName",
+                    label: "Your User Name",
+                    hint: "Enter User Name",
                     prefixIcon: Icons.person_outline,
                   ),
                   const SizedBox(height: 20),
@@ -57,7 +57,7 @@ class ForgotPasswordView extends GetView {
                       if (usernameController.text.trim().isEmpty) {
                         Get.snackbar(
                           "Error",
-                          "Please enter your username",
+                          "Please enter your user name",
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.red,
                           colorText: Colors.white,

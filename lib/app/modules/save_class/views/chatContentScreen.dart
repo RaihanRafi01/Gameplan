@@ -4,8 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
 
+import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
 import '../../history/controllers/edit_controller.dart';
+import '../../history/controllers/history_controller.dart';
 import '../../home/controllers/textEditorController.dart';
 import '../controllers/save_class_controller.dart';
 
@@ -15,9 +18,19 @@ class ChatContentScreen extends StatefulWidget {
   final int chatId;
   final int editId;
   final bool isPinned;
+  final bool isSaved;
   final int? folderId;
+  final String title;
 
-  const ChatContentScreen({super.key,required this.editId,required this.chatId,required this.content,required this.isPinned,this.folderId});
+  const ChatContentScreen(
+      {super.key,
+      required this.editId,
+      required this.chatId,
+      required this.content,
+      required this.isPinned,
+      this.folderId,
+      required this.isSaved,
+      required this.title});
 
   @override
   _ChatContentScreenState createState() => _ChatContentScreenState();
@@ -25,14 +38,19 @@ class ChatContentScreen extends StatefulWidget {
 
 class _ChatContentScreenState extends State<ChatContentScreen> {
   final textEditorController = TextEditorController();
+  final HistoryController historyController = Get.put(HistoryController());
   final messages = <Map<String, dynamic>>[].obs; // Reactive list for messages
   late List<TextEditingController> textControllers;
   final EditController historyEditController = Get.put(EditController());
-  final SaveClassController saveClassController = Get.put(SaveClassController());
+  final SaveClassController saveClassController =
+      Get.put(SaveClassController());
+  final RxString title = ''.obs;
+  final RxBool isEditMode = false.obs;
 
   @override
   void initState() {
     super.initState();
+    title.value = widget.title;
     _parseHtmlContent(widget.content);
     _initializeTextControllers();
   }
@@ -43,6 +61,290 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Obx(() => Text(title.value)),
+        actions: [
+          PopupMenuButton<int>(
+            color: Colors.white,
+            icon: Icon(Icons.menu, color: Colors.black),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            offset: Offset(0, 50),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child: SizedBox(
+                  width: 130,
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit),
+                      SizedBox(width: 8),
+                      Text("Rename", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 0,
+                child: SizedBox(
+                  width: 130,
+                  child: Row(
+                    children: [
+                      Icon(Icons.edit_calendar_outlined),
+                      SizedBox(width: 8),
+                      Obx(() => Text(
+                        isEditMode.value ? "View Mode" : "Edit",
+                        style: TextStyle(color: Colors.black),
+                      )),
+                    ],
+                  ),
+                ),
+              ),
+
+                PopupMenuItem(
+                  value: 2,
+                  child: SizedBox(
+                    width: 130, // Ensure the same width for all items
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/pin_icon.svg',
+                          width: 23,
+                          height: 23,
+                          color: Colors.black, // Adjust color based on theme
+                        ),
+                        SizedBox(width: 8),
+                        Text("Pin"),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 3,
+                  child: SizedBox(
+                    width: 130,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/save_icon.svg',
+                          width: 23,
+                          height: 23,
+                          color: Colors.black, // Adjust color based on theme
+                        ),
+                        SizedBox(width: 8),
+                        Text("Save To Class",
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 4,
+                  child: SizedBox(
+                    width: 80,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/delete_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: Colors.black, // Adjust color based on theme
+                        ),
+                        SizedBox(width: 8),
+                        Text("Delete", style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                ),
+              PopupMenuItem(
+                value: 5,
+                child: SizedBox(
+                  width: 80,
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/history/export_icon.svg',
+                        width: 24,
+                        height: 24,
+                        color: Colors.black, // Adjust color based on theme
+                      ),
+                      SizedBox(width: 8),
+                      Text("Export", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: 6,
+                child: SizedBox(
+                  width: 80,
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/images/history/save_icon.svg',
+                        width: 24,
+                        height: 24,
+                        color: Colors.black, // Adjust color based on theme
+                      ),
+                      SizedBox(width: 8),
+                      Text("Save", style: TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+            onSelected: (value) async {
+              if (value == 1) {
+                _showEditDialog(context, widget.editId,widget.title);
+              }
+              else if (value == 0) {
+                // enable or disable edit
+
+                isEditMode.value = !isEditMode.value;
+                // Toggle currentEditingIndex between 0 and -1
+                textEditorController.currentEditingIndex.value =
+                textEditorController.currentEditingIndex.value == -1 ? 0 : -1;
+
+              }
+              else if (value == 2) {
+                // pin
+                if (widget.isPinned) {
+                  await historyController.unpinEditChat(widget.editId);
+                }
+                if (!widget.isPinned) {
+                  _showDatePicker(context, widget.editId);
+                }
+              } else if (value == 3) {
+                // save to class
+
+                if (widget.isSaved) {
+                  await saveClassController.unSaveEditedChat(
+                      widget.editId, widget.folderId!);
+                }
+                if (!widget.isSaved) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => FolderSelectionDialog(
+                      editId: widget.editId,
+                    ),
+                  );
+                }
+              } else if (value == 4) {
+                _showDeleteDialog(context,widget.editId);
+              } else if (value == 5) {
+                // export
+              } else if (value == 6) {
+                textEditorController.currentEditingIndex.value = -1;
+                final htmlContent = _generateHTMLContent();
+                historyEditController.updateEditChat(
+                    widget.editId, htmlContent);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("Saved successfully!")),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Obx(() => textEditorController.currentEditingIndex.value != -1
+                ? _buildToolbar()
+                : const SizedBox.shrink()),
+            Expanded(
+              child: Obx(() => ListView.builder(
+                itemCount: messages.length,
+                itemBuilder: (context, index) {
+                  return Obx(() {
+                    final isEditing =
+                        textEditorController.currentEditingIndex.value == index;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            "${messages[index]['sender']}: ",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                            ),
+                          ),
+                          Expanded(
+                            child: isEditing
+                                ? TextField(
+                              controller: textControllers[index],
+                              style:
+                              textEditorController.textStyles[index],
+                              textAlign: textEditorController
+                                  .textAlignments[index],
+                              onChanged: (value) {
+                                messages[index]['content'] = value;
+                              },
+                              onSubmitted: (value) {
+                                // Exit edit mode after submission
+                                textEditorController
+                                    .currentEditingIndex.value = -1;
+                              },
+                              autofocus: true,
+                              maxLines: null, // Allow multi-line input
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                              ),
+                            )
+                                : GestureDetector(
+                              onTap: () {
+                                // Allow editing only if index is valid
+                                if (textEditorController
+                                    .currentEditingIndex.value ==
+                                    -1) return;
+
+                                textEditorController.currentEditingIndex
+                                    .value = index;
+
+                                // Retain cursor position after tapping
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback(
+                                      (_) => textControllers[index].selection =
+                                      TextSelection.fromPosition(
+                                        TextPosition(
+                                          offset: textControllers[index]
+                                              .text
+                                              .length,
+                                        ),
+                                      ),
+                                );
+                              },
+                              child: Text(
+                                messages[index]['content'],
+                                style: textEditorController
+                                    .textStyles[index],
+                                textAlign: textEditorController
+                                    .textAlignments[index],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  });
+                },
+              )),
+            ),
+          ],
+        ),
+      )
+    );
   }
 
   void _parseHtmlContent(String htmlContent) {
@@ -56,7 +358,8 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       final sender = strongTag?.text.replaceAll(':', '') ?? 'unknown';
 
       // Remove the sender prefix (e.g., "User:" or "Bot:") from the content
-      final content = paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
+      final content =
+      paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
       parsedMessages.add({
         'sender': sender,
         'content': content,
@@ -65,11 +368,9 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       });
     }
 
-
     messages.value = parsedMessages;
     textEditorController.initializeStyles(parsedMessages.length);
   }
-
 
   TextStyle _parseInlineStyles(String style) {
     final fontSizeRegex = RegExp(r'font-size:\s*([\d.]+)px;');
@@ -77,7 +378,8 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
     final fontSize = double.tryParse(
       fontSizeRegex.firstMatch(style)?.group(1) ?? '16.0',
-    ) ?? 16.0;
+    ) ??
+        16.0;
 
     final color = _parseColor(
       colorRegex.firstMatch(style)?.group(1) ?? 'black',
@@ -107,7 +409,6 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     }
   }
 
-
   void _initializeTextControllers() {
     textControllers = List.generate(
       messages.length,
@@ -120,26 +421,24 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          Obx(() =>
-              DropdownButton<double>(
-                value: textEditorController.fontSize.value,
-                items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
-                    .map((size) =>
-                    DropdownMenuItem(
-                      value: size,
-                      child: Text(size.toString()),
-                    ))
-                    .toList(),
-                onChanged: (value) {
-                  if (textEditorController.currentEditingIndex.value != -1) {
-                    textEditorController.fontSize.value = value!;
-                    textEditorController.updateTextStyle(
-                      index: textEditorController.currentEditingIndex.value,
-                      fontSize: value,
-                    );
-                  }
-                },
-              )),
+          Obx(() => DropdownButton<double>(
+            value: textEditorController.fontSize.value,
+            items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
+                .map((size) => DropdownMenuItem(
+              value: size,
+              child: Text(size.toString()),
+            ))
+                .toList(),
+            onChanged: (value) {
+              if (textEditorController.currentEditingIndex.value != -1) {
+                textEditorController.fontSize.value = value!;
+                textEditorController.updateTextStyle(
+                  index: textEditorController.currentEditingIndex.value,
+                  fontSize: value,
+                );
+              }
+            },
+          )),
           _buildIconButton(
             icon: Icons.format_bold,
             isActive: (index) =>
@@ -238,12 +537,9 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       // Generate inline styles
       final style = '''
         font-size: ${textEditorController.textStyles[index].fontSize}px;
-        font-weight: ${textEditorController.textStyles[index].fontWeight ==
-          FontWeight.bold ? 'bold' : 'normal'};
-        font-style: ${textEditorController.textStyles[index].fontStyle ==
-          FontStyle.italic ? 'italic' : 'normal'};
-        text-decoration: ${textEditorController.textStyles[index].decoration ==
-          TextDecoration.underline ? 'underline' : 'none'};
+        font-weight: ${textEditorController.textStyles[index].fontWeight == FontWeight.bold ? 'bold' : 'normal'};
+        font-style: ${textEditorController.textStyles[index].fontStyle == FontStyle.italic ? 'italic' : 'normal'};
+        text-decoration: ${textEditorController.textStyles[index].decoration == TextDecoration.underline ? 'underline' : 'none'};
         text-align: $alignment;
         color: ${sender == 'User' ? 'black' : 'purple'};
       ''';
@@ -257,169 +553,103 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     return htmlContent.toString();
   }
 
+  void _showDatePicker(BuildContext context, int editId) async {
+    // Step 1: Show Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Chat Editor"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (textEditorController.currentEditingIndex.value == -1) ...[
-                  GestureDetector(
-                    onTap: () {
-                      if (textEditorController.currentEditingIndex.value != -1) {
-                        textEditorController.currentEditingIndex.value = -1;
-                      } else {
-                        textEditorController.currentEditingIndex.value = 0; // Default to first message
-                      }
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/edit_icon.svg'),
-                  ),
-                  SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () async {
-                      /*final htmlContent = _generateHTMLContent();
-                      historyEditController.addEditChat(widget.chat['chat'], htmlContent);*/
-                      if(widget.isPinned){
-                        await saveClassController.unpinChat(widget.editId,widget.folderId!);
-                      }
-                      if(!widget.isPinned){
-                        showDialog(
-                          context: context,
-                          builder: (context) => FolderSelectionDialog(editId: widget.editId,),
-                        );
-                      }
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/pin_icon.svg'),
-                  ),
-                  SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () {
-                      // Delete functionality
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/delete_icon.svg'),
-                  ),
-                  SizedBox(width: 16),
-                ],
-                GestureDetector(
-                  onTap: () async {
-                    textEditorController.currentEditingIndex.value = -1;
-                    /*final filePath = await _promptAndSavePDF();
-                    if (filePath != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("PDF saved to: $filePath")),
-                      );
-                      _showPDF(filePath);
-                      editController.disableEditing();
-                    }*/
-                  },
-                  child: SvgPicture.asset(
-                      'assets/images/history/export_icon.svg'),
-                ),
-                SizedBox(width: 16),
-                GestureDetector(
-                  onTap: () async {
-                    textEditorController.currentEditingIndex.value = -1;
-                    final htmlContent = _generateHTMLContent();
-                    historyEditController.updateEditChat(widget.editId, htmlContent);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Saved successfully!")),
-                    );
-                    //editController.disableEditing(); // Disable editing after saving
-                  },
-                  child: SvgPicture.asset(
-                      'assets/images/history/save_icon.svg'),
-                ),
-              ],
-            )),
-            Obx(() => textEditorController.currentEditingIndex.value != -1
-                ? _buildToolbar()
-                : const SizedBox.shrink()),
-            Expanded(
-              child: Obx(() => ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return Obx(() {
-                    final isEditing =
-                        textEditorController.currentEditingIndex.value == index;
+    if (selectedDate != null) {
+      // Step 2: Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            "${messages[index]['sender']}: ",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                          Expanded(
-                            child: isEditing
-                                ? TextField(
-                              controller: textControllers[index],
-                              style: textEditorController.textStyles[index],
-                              textAlign:
-                              textEditorController.textAlignments[index],
-                              onChanged: (value) {
-                                messages[index]['content'] = value;
-                              },
-                              onSubmitted: (value) {
-                                textEditorController.currentEditingIndex.value =
-                                -1;
-                              },
-                              autofocus: true,
-                              maxLines: null, // Allow multi-line input
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                              ),
-                            )
-                                : GestureDetector(
-                              onTap: () {
-                                textEditorController.currentEditingIndex.value =
-                                    index;
+      if (selectedTime != null) {
+        // Combine the selected date and time into a single DateTime object
+        final DateTime finalDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
 
-                                // Retain cursor position after tapping
-                                WidgetsBinding.instance.addPostFrameCallback(
-                                      (_) => textControllers[index].selection =
-                                      TextSelection.fromPosition(
-                                        TextPosition(
-                                          offset: textControllers[index]
-                                              .text
-                                              .length,
-                                        ),
-                                      ),
-                                );
-                              },
-                              child: Text(
-                                messages[index]['content'],
-                                style:
-                                textEditorController.textStyles[index],
-                                textAlign:
-                                textEditorController.textAlignments[index],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-                },
-              )),
+        // Call the controller to save the chat with the date and time
+        historyController.pinEditChat(editId, finalDateTime);
+      }
+    }
+  }
+
+  void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
+    final TextEditingController textController =
+    TextEditingController(text: currentTitle);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Edit Chat Title', style: h3),
+          content: TextField(
+            controller: textController,
+            decoration: InputDecoration(
+              labelText: 'Chat Title',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: h3.copyWith(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () {
+                final newTitle = textController.text.trim();
+                if (newTitle.isNotEmpty) {
+                  // Update the reactive title
+                  title.value = newTitle;
+
+                  // Update the title in the controller (if needed)
+                  historyEditController.updateChatTitle(chatId, newTitle);
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Save', style: h3.copyWith(color: Colors.green)),
             ),
           ],
-        ),
-      ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, int chatId) {
+    final EditController editHistoryController = Get.put(EditController());
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Do you want to Delete this chat?', style: h3),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel',
+                  style: h3.copyWith(color: AppColors.textColor)),
+            ),
+            TextButton(
+              onPressed: () async {
+                await editHistoryController.deleteChat(chatId);
+                Navigator.pop(context);
+                Get.back();
+              },
+              child: Text('Delete', style: h3.copyWith(color: Colors.red)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -81,8 +81,8 @@ class AuthenticationView extends GetView<AuthenticationController> {
                       children: [
                         const SizedBox(height: 30),
                         CustomTextField(
-                          label: "Your UserName",
-                          hint: "Enter UserName",
+                          label: "Your User Name",
+                          hint: "Enter User Name",
                           prefixIcon: Icons.person_outline,
                           controller: _usernameController,
                         ),

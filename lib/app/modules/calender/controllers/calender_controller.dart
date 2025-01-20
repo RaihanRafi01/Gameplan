@@ -22,10 +22,32 @@ class CalenderController extends GetxController {
 
 }
 
-class Event {
+/*class Event {
   final int ChatId;
   final DateTime date;
   final String title;
   Event({required this.date, required this.title,required this.ChatId});
+}*/
+
+class Event {
+  final DateTime date;
+  final String title;
+  final int chatId;
+  final int editId;
+  final bool isPinned;
+  final bool isSaved;
+  final bool isEditedChat;
+  final String content;
+
+  Event({
+    required this.date,
+    required this.title,
+    required this.chatId,
+    required this.editId,
+    required this.isPinned,
+    required this.isSaved,
+    required this.isEditedChat,
+    required this.content,
+  });
 }
 

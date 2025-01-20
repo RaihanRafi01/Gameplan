@@ -82,7 +82,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem(
                 value: 1,
                 child: SizedBox(
-                  width: 135,
+                  width: 80,
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -100,7 +100,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem(
                 value: 2,
                 child: SizedBox(
-                  width: 135, // Ensure the same width for all items
+                  width: 80, // Ensure the same width for all items
                   child: Row(
                     children: [
                       Image.asset(
@@ -108,7 +108,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         scale: 3,
                       ),
                       SizedBox(width: 8),
-                      Text("Save To Class"),
+                      Text("Save"),
                     ],
                   ),
                 ),
@@ -116,7 +116,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               PopupMenuItem(
                 value: 3,
                 child: SizedBox(
-                  width: 135,
+                  width: 80,
                   child: Row(
                     children: [
                       SvgPicture.asset(
@@ -126,7 +126,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                         color: isDarkTheme ? Colors.white : Colors.black, // Adjust color based on theme
                       ),
                       SizedBox(width: 8),
-                      Text("Pin To Calendar", style: TextStyle(color: isDarkTheme ? Colors.white : Colors.black)),
+                      Text("Pin", style: TextStyle(color: isDarkTheme ? Colors.white : Colors.black)),
                     ],
                   ),
                 ),

@@ -439,6 +439,31 @@ class ApiService {
     );
   }
 
+  Future<http.Response> pinEditChat(int ChatId, DateTime pinDate) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/pin_edited_chat/$ChatId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+    // Request body
+    final Map<String, String> body = {
+      "pin_date": pinDate.toIso8601String()
+    };
+
+    // Make the POST request
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
   Future<http.Response> unpinChat(int ChatId) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/unpin_a_chat/$ChatId/');
 
@@ -456,6 +481,26 @@ class ApiService {
     return await http.post(
       url,
       headers: headers
+    );
+  }
+
+  Future<http.Response> unpinEditChat(int editId) async {
+    final Uri url = Uri.parse('${baseUrl}chat_app/unpin_edited_chat/$editId/');
+
+    // Retrieve the stored access token
+    String? accessToken = await _storage.read(key: 'access_token');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $accessToken", // Add the Bearer token
+    };
+
+
+    // Make the POST request
+    return await http.post(
+        url,
+        headers: headers
     );
   }
 
@@ -632,7 +677,7 @@ class ApiService {
     );
   }
 
-  Future<http.Response> pinEditChat(int ChatId, DateTime pinDate) async {
+  /*Future<http.Response> pinEditChat(int ChatId, DateTime pinDate) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/pin_edited_chat/$ChatId/');
 
     // Retrieve the stored access token
@@ -655,9 +700,9 @@ class ApiService {
       headers: headers,
       body: jsonEncode(body),
     );
-  }
+  }*/
 
-  Future<http.Response> unpinEditChat(int editId,int folderID) async {
+  Future<http.Response> unSaveEditChat(int editId,int folderID) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/unpin_an_edited_chat_to_a_folder/$editId/$folderID/');
 
     // Retrieve the stored access token
