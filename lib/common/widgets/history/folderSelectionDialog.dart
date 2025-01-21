@@ -1,6 +1,7 @@
 import 'package:agcourt/app/modules/home/controllers/chat_edit_controller.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../app/modules/history/controllers/edit_controller.dart';
@@ -33,7 +34,7 @@ class FolderSelectionDialog extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Create Folder',
+                  'Create Class',
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
@@ -41,13 +42,13 @@ class FolderSelectionDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 8.0),
                 // Create Folder Button
-                CustomButton(text: 'Create Folder', onPressed: ()async {
+                CustomButton(text: 'Create Class', onPressed: ()async {
                   final folderName = folderNameController.text.trim();
                   if (folderName.isNotEmpty) {
                     await controller.addClass(folderName);
                     folderNameController.clear(); // Clear the input field
                   } else {
-                    Get.snackbar('Error', 'Folder name cannot be empty');
+                    Get.snackbar('Error', 'Class name cannot be empty');
                   }
                 }),
                 const SizedBox(height: 16.0),
@@ -60,7 +61,7 @@ class FolderSelectionDialog extends StatelessWidget {
             children: [
               // Title
               Text(
-                'Select or Create Folder',
+                'Select or Create Class',
                 style: TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -72,7 +73,7 @@ class FolderSelectionDialog extends StatelessWidget {
               TextField(
                 controller: folderNameController,
                 decoration: InputDecoration(
-                  labelText: 'Enter folder name',
+                  labelText: 'Enter class name',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -81,13 +82,13 @@ class FolderSelectionDialog extends StatelessWidget {
               const SizedBox(height: 8.0),
 
               // Create Folder Button
-              CustomButton(text: 'Create Folder', onPressed: ()async {
+              CustomButton(text: 'Create Class', onPressed: ()async {
                 final folderName = folderNameController.text.trim();
                 if (folderName.isNotEmpty) {
                   await controller.addClass(folderName);
                   folderNameController.clear(); // Clear the input field
                 } else {
-                  Get.snackbar('Error', 'Folder name cannot be empty');
+                  Get.snackbar('Error', 'Class name cannot be empty');
                 }
               }),
               const SizedBox(height: 16.0),
@@ -96,7 +97,7 @@ class FolderSelectionDialog extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Available Folders:',
+                  'Available Classes:',
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -113,7 +114,7 @@ class FolderSelectionDialog extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final folder = controller.classList[index];
                     return ListTile(
-                      leading: Icon(Icons.folder, color: Colors.amber),
+                      leading: SvgPicture.asset('assets/images/home/class_icon.svg'),
                       title: Text(folder['folder_name'] ?? 'Unnamed Folder'),
                       onTap: () async {
                         int folderId = folder['id'];

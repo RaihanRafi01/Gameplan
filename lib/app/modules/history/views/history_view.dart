@@ -33,42 +33,36 @@ class HistoryView extends GetView<HistoryController> {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
+              !isFree? SvgPicture.asset(
                 'assets/images/auth/app_logo.svg',
                 color: themeController.isDarkTheme.value
                     ? Colors.white // White in dark mode
                     : null, // Black in light mode
-              ),
-              if (isFree)
-                Obx(() {
-                  final ThemeController themeController =
-                      Get.find<ThemeController>();
-
-                  return CustomButton(
-                    height: 30,
-                    textSize: 12,
-                    text: 'Upgrade To Pro',
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        // Prevent closing the dialog by tapping outside
-                        builder: (BuildContext context) {
-                          return const SubscriptionPopup(
-                              isManage:
-                                  true); // Use the SubscriptionPopup widget
-                        },
-                      );
+              ) :
+              CustomButton(
+                height: 30,
+                textSize: 12,
+                text: 'Upgrade To Pro',
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    // Prevent closing the dialog by tapping outside
+                    builder: (BuildContext context) {
+                      return const SubscriptionPopup(
+                          isManage:
+                          true); // Use the SubscriptionPopup widget
                     },
-                    width: 150,
-                    backgroundGradientColor: AppColors.transparent,
-                    borderGradientColor: AppColors.cardGradient,
-                    isEditPage: true,
-                    textColor: themeController.isDarkTheme.value
-                        ? Colors.white
-                        : AppColors.appColor, // Dynamic text color
                   );
-                }),
+                },
+                width: 150,
+                backgroundGradientColor: AppColors.transparent,
+                borderGradientColor: AppColors.cardGradient,
+                isEditPage: true,
+                textColor: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor, // Dynamic text color
+              )
             ],
           );
         }),

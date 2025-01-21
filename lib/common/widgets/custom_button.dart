@@ -32,7 +32,7 @@ class CustomButton extends StatelessWidget {
     this.isEditPage = false,
     this.width = double.maxFinite,
     this.height = 45,
-    this.svgAsset = 'assets/images/profile/gem.svg', // Default empty, no SVG displayed
+    this.svgAsset = 'assets/images/home/class_icon.svg', // Default empty, no SVG displayed
   });
 
   @override
@@ -88,24 +88,26 @@ class CustomButton extends StatelessWidget {
   // Helper method to return the text with an optional SVG icon
   Widget textWithIcon() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isGem && svgAsset.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(right: 3),
+            padding: const EdgeInsets.only(left: 8), // Add padding to the right of the image
             child: SvgPicture.asset(
               svgAsset, // SVG asset path
-              width: 20.0, // Adjust the size as needed
-              height: 20.0, // Adjust the size as needed
+              width: 25.0, // Adjust the size as needed
+              height: 25.0,
+              color: Colors.white,// Adjust the size as needed
             ),
           ),
-        Text(
-          text,
-          textAlign: TextAlign.center,
-          style: h4.copyWith(
-            fontSize: textSize,
-            color: textColor,
-            fontWeight: FontWeight.bold,
+        Expanded(
+          child: Text(
+            text,
+            textAlign: TextAlign.center, // Center the text horizontally
+            style: h4.copyWith(
+              fontSize: textSize,
+              color: textColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],

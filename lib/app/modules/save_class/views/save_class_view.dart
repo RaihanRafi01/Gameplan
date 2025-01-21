@@ -101,6 +101,8 @@ class SaveClassView extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: CustomButton(
+                            isGem: true,
+                            svgAsset: 'assets/images/home/class_icon.svg',
                             text: classData['folder_name'] ?? 'Unnamed Class',
                             onPressed: () {
                               controller.selectClass(classData['folder_name']);
