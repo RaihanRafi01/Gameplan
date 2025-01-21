@@ -7,6 +7,7 @@ import 'package:html/parser.dart' as html_parser;
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../history/controllers/edit_controller.dart';
 import '../../history/controllers/history_controller.dart';
 import '../../home/controllers/textEditorController.dart';
@@ -46,11 +47,15 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       Get.put(SaveClassController());
   final RxString title = ''.obs;
   final RxBool isEditMode = false.obs;
+  final RxBool isPinMode = false.obs;
+  final RxBool isSaveMode = false.obs;
 
   @override
   void initState() {
     super.initState();
     title.value = widget.title;
+    isPinMode.value = widget.isPinned;
+    isSaveMode.value = widget.isSaved;
     _parseHtmlContent(widget.content);
     _initializeTextControllers();
   }
@@ -69,192 +74,255 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text(title.value)),
-        actions: [
-          PopupMenuButton<int>(
-            color: Colors.white,
-            icon: Icon(Icons.menu, color: Colors.black),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        title: Obx(() {
+          final ThemeController themeController = Get.find<ThemeController>();
+          return Text(
+            title.value,
+            style: TextStyle(
+              color: themeController.isDarkTheme.value
+                  ? Colors.white // White in dark mode
+                  : Colors.black, // Black in light mode
             ),
-            offset: Offset(0, 50),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 1,
-                child: SizedBox(
-                  width: 130,
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit),
-                      SizedBox(width: 8),
-                      Text("Rename", style: TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ),
-              ),
-              PopupMenuItem(
-                value: 0,
-                child: SizedBox(
-                  width: 130,
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit_calendar_outlined),
-                      SizedBox(width: 8),
-                      Obx(() => Text(
-                        isEditMode.value ? "View Mode" : "Edit",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                    ],
-                  ),
-                ),
-              ),
+          );
+        }),
+        actions: [
+          Obx(() {
+            final ThemeController themeController = Get.find<ThemeController>();
+            final popupMenuColor = themeController.isDarkTheme.value
+                ? Colors.grey[850] // Dark background in dark mode
+                : Colors.white; // Light background in light mode
 
-                PopupMenuItem(
-                  value: 2,
-                  child: SizedBox(
-                    width: 130, // Ensure the same width for all items
+            return PopupMenuButton<int>(
+              color: popupMenuColor,
+              icon: Icon(
+                Icons.menu,
+                color: themeController.isDarkTheme.value
+                    ? Colors.white // White in dark mode
+                    : Colors.black, // Black in light mode
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              offset: Offset(0, 50),
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Rename",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 0,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/edit_icon.svg',
+                          width: 23,
+                          height: 23,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Obx(() => Text(
+                          isEditMode.value ? "View Mode" : "Edit",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
                     child: Row(
                       children: [
                         SvgPicture.asset(
                           'assets/images/history/pin_icon.svg',
                           width: 23,
                           height: 23,
-                          color: Colors.black, // Adjust color based on theme
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                         SizedBox(width: 8),
-                        Text("Pin"),
+                        Obx(() => Text(
+                          isPinMode.value ? "UnPin" : "Pin",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        )),
                       ],
                     ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 3,
-                  child: SizedBox(
-                    width: 130,
+                  PopupMenuItem(
+                    value: 3,
                     child: Row(
                       children: [
                         SvgPicture.asset(
                           'assets/images/history/save_icon.svg',
                           width: 23,
                           height: 23,
-                          color: Colors.black, // Adjust color based on theme
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                         SizedBox(width: 8),
-                        Text("Save To Class",
-                            style: TextStyle(color: Colors.black)),
+                        Obx(() => Text(
+                          isSaveMode.value
+                              ? "UnSave To Class"
+                              : "Save To Class",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        )),
                       ],
                     ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 4,
-                  child: SizedBox(
-                    width: 80,
+                  PopupMenuItem(
+                    value: 4,
                     child: Row(
                       children: [
                         SvgPicture.asset(
                           'assets/images/history/delete_icon.svg',
                           width: 24,
                           height: 24,
-                          color: Colors.black, // Adjust color based on theme
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                         SizedBox(width: 8),
-                        Text("Delete", style: TextStyle(color: Colors.black)),
+                        Text(
+                          "Delete",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-              PopupMenuItem(
-                value: 5,
-                child: SizedBox(
-                  width: 80,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/history/export_icon.svg',
-                        width: 24,
-                        height: 24,
-                        color: Colors.black, // Adjust color based on theme
-                      ),
-                      SizedBox(width: 8),
-                      Text("Export", style: TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ),
-              ),
-              PopupMenuItem(
-                value: 6,
-                child: SizedBox(
-                  width: 80,
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/history/save_icon.svg',
-                        width: 24,
-                        height: 24,
-                        color: Colors.black, // Adjust color based on theme
-                      ),
-                      SizedBox(width: 8),
-                      Text("Save", style: TextStyle(color: Colors.black)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            onSelected: (value) async {
-              if (value == 1) {
-                _showEditDialog(context, widget.editId,widget.title);
-              }
-              else if (value == 0) {
-                // enable or disable edit
-
-                isEditMode.value = !isEditMode.value;
-                // Toggle currentEditingIndex between 0 and -1
-                textEditorController.currentEditingIndex.value =
-                textEditorController.currentEditingIndex.value == -1 ? 0 : -1;
-
-              }
-              else if (value == 2) {
-                // pin
-                if (widget.isPinned) {
-                  await historyController.unpinEditChat(widget.editId);
-                }
-                if (!widget.isPinned) {
-                  _showDatePicker(context, widget.editId);
-                }
-              } else if (value == 3) {
-                // save to class
-
-                if (widget.isSaved) {
-                  await saveClassController.unSaveEditedChat(
-                      widget.editId, widget.folderId!);
-                }
-                if (!widget.isSaved) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => FolderSelectionDialog(
-                      editId: widget.editId,
+                  PopupMenuItem(
+                    value: 5,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/export_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Export",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  PopupMenuItem(
+                    value: 6,
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/images/history/save_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Update",
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ];
+              },
+              onSelected: (value) async {
+                if (value == 1) {
+                  _showEditDialog(context, widget.editId, widget.title);
+                } else if (value == 0) {
+                  isEditMode.value = !isEditMode.value;
+                  textEditorController.currentEditingIndex.value =
+                  textEditorController.currentEditingIndex.value == -1 ? 0 : -1;
+                } else if (value == 2) {
+                  if (isPinMode.value) {
+                    await historyController.unpinEditChat(widget.editId);
+                    isPinMode.value = false;
+                  } else {
+                    _showDatePicker(context, widget.editId);
+                    isPinMode.value = true;
+                  }
+                } else if (value == 3) {
+                  if (isSaveMode.value) {
+                    await saveClassController.unSaveEditedChat(
+                        widget.editId, widget.folderId!);
+                    isSaveMode.value = false;
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FolderSelectionDialog(
+                        editId: widget.editId,
+                      ),
+                    );
+                    isSaveMode.value = true;
+                  }
+                } else if (value == 4) {
+                  _showDeleteDialog(context, widget.editId);
+                } else if (value == 5) {
+                  // export logic
+                } else if (value == 6) {
+                  textEditorController.currentEditingIndex.value = -1;
+                  final htmlContent = _generateHTMLContent();
+                  historyEditController.updateEditChat(widget.editId, htmlContent);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Saved successfully!")),
                   );
                 }
-              } else if (value == 4) {
-                _showDeleteDialog(context,widget.editId);
-              } else if (value == 5) {
-                // export
-              } else if (value == 6) {
-                textEditorController.currentEditingIndex.value = -1;
-                final htmlContent = _generateHTMLContent();
-                historyEditController.updateEditChat(
-                    widget.editId, htmlContent);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Saved successfully!")),
-                );
-              }
-            },
-          ),
+              },
+            );
+          }),
         ],
       ),
-      body: Padding(
+        body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
