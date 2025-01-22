@@ -88,15 +88,20 @@ class _EditProfileViewState extends State<EditProfileView> {
                   children: [
                     CircleAvatar(
                       radius: 50,
+                      backgroundColor: Colors.transparent, // Optional for a clean design
                       backgroundImage: _pickedImage != null
-                          ? FileImage(File(_pickedImage!.path))
+                          ? FileImage(File(_pickedImage!.path)) as ImageProvider
                           : homeController.profilePicUrl.value.isNotEmpty
-
-                          ? NetworkImage(
-                        // https://agcourt.pythonanywhere.com         //  https://apparently-intense-toad.ngrok-free.app
-
-                          '$baseUrl${homeController.profilePicUrl.value}')
-                          : const AssetImage('assets/images/profile/profile_avatar.png') as ImageProvider,
+                          ? NetworkImage('$baseUrl${homeController.profilePicUrl.value}')
+                          : null, // No backgroundImage when fallback is SVG
+                      child: (_pickedImage == null && homeController.profilePicUrl.value.isEmpty)
+                          ? SvgPicture.asset(
+                        'assets/images/home/user_image.svg',
+                        fit: BoxFit.cover,
+                        width: 100, // Match CircleAvatar diameter
+                        height: 100,
+                      )
+                          : null, // No child when using FileImage or NetworkImage
                     ),
                     Positioned(
                       bottom: 0,

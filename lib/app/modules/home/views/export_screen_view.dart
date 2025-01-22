@@ -163,13 +163,13 @@ class _ExportScreenState extends State<ExportScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
+                        /*Text(
                           sender,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14.0,
                           ),
-                        ),
+                        ),*/
                         SizedBox(width: 8),
                         Expanded(
                           child: Focus(
@@ -183,7 +183,13 @@ class _ExportScreenState extends State<ExportScreen> {
                                   text: widget.messages[index]['message']),
                               maxLines: null,
                               textAlign: textEditorController.textAlignments[index],
-                              style: textEditorController.textStyles[index],
+                                style: textEditorController.textStyles[index].merge(
+                                  TextStyle(
+                                    fontWeight: isSentByUser
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),),
+                              /*style: textEditorController.textStyles[index],*/
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: isSentByUser

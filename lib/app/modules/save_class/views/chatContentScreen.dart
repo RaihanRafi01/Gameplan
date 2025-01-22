@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
-
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
@@ -68,351 +67,369 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Obx(() {
-          final ThemeController themeController = Get.find<ThemeController>();
-          return Text(
-            title.value,
-            style: TextStyle(
-              color: themeController.isDarkTheme.value
-                  ? Colors.white // White in dark mode
-                  : Colors.black, // Black in light mode
-            ),
-          );
-        }),
-        actions: [
-          Obx(() {
+        appBar: AppBar(
+          title: Obx(() {
             final ThemeController themeController = Get.find<ThemeController>();
-            final popupMenuColor = themeController.isDarkTheme.value
-                ? Colors.grey[850] // Dark background in dark mode
-                : Colors.white; // Light background in light mode
-
-            return PopupMenuButton<int>(
-              color: popupMenuColor,
-              icon: Icon(
-                Icons.menu,
+            return Text(
+              title.value,
+              style: TextStyle(
                 color: themeController.isDarkTheme.value
                     ? Colors.white // White in dark mode
                     : Colors.black, // Black in light mode
               ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              offset: Offset(0, 50),
-              itemBuilder: (context) {
-                return [
-                  PopupMenuItem(
-                    value: 1,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.edit,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Rename",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 0,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/edit_icon.svg',
-                          width: 23,
-                          height: 23,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Obx(() => Text(
-                          isEditMode.value ? "View Mode" : "Edit",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 2,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/pin_icon.svg',
-                          width: 23,
-                          height: 23,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Obx(() => Text(
-                          isPinMode.value ? "UnPin" : "Pin",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 3,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/save_icon.svg',
-                          width: 23,
-                          height: 23,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Obx(() => Text(
-                          isSaveMode.value
-                              ? "UnSave To Class"
-                              : "Save To Class",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        )),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 4,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/delete_icon.svg',
-                          width: 24,
-                          height: 24,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Delete",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 5,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/export_icon.svg',
-                          width: 24,
-                          height: 24,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Export",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 6,
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/images/history/save_icon.svg',
-                          width: 24,
-                          height: 24,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Update",
-                          style: TextStyle(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ];
-              },
-              onSelected: (value) async {
-                if (value == 1) {
-                  _showEditDialog(context, widget.editId, widget.title);
-                } else if (value == 0) {
-                  isEditMode.value = !isEditMode.value;
-                  textEditorController.currentEditingIndex.value =
-                  textEditorController.currentEditingIndex.value == -1 ? 0 : -1;
-                } else if (value == 2) {
-                  if (isPinMode.value) {
-                    await historyController.unpinEditChat(widget.editId);
-                    isPinMode.value = false;
-                  } else {
-                    _showDatePicker(context, widget.editId);
-                    isPinMode.value = true;
-                  }
-                } else if (value == 3) {
-                  if (isSaveMode.value) {
-                    await saveClassController.unSaveEditedChat(
-                        widget.editId, widget.folderId!);
-                    isSaveMode.value = false;
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => FolderSelectionDialog(
-                        editId: widget.editId,
-                      ),
-                    );
-                    isSaveMode.value = true;
-                  }
-                } else if (value == 4) {
-                  _showDeleteDialog(context, widget.editId);
-                } else if (value == 5) {
-                  // export logic
-                } else if (value == 6) {
-                  textEditorController.currentEditingIndex.value = -1;
-                  final htmlContent = _generateHTMLContent();
-                  historyEditController.updateEditChat(widget.editId, htmlContent);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Saved successfully!")),
-                  );
-                }
-              },
             );
           }),
-        ],
-      ),
-        body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Obx(() => textEditorController.currentEditingIndex.value != -1
-                ? _buildToolbar()
-                : const SizedBox.shrink()),
-            Expanded(
-              child: Obx(() => ListView.builder(
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  return Obx(() {
-                    final isEditing =
-                        textEditorController.currentEditingIndex.value == index;
+          actions: [
+            Obx(() {
+              final ThemeController themeController =
+                  Get.find<ThemeController>();
+              final popupMenuColor = themeController.isDarkTheme.value
+                  ? Colors.grey[850] // Dark background in dark mode
+                  : Colors.white; // Light background in light mode
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+              return PopupMenuButton<int>(
+                color: popupMenuColor,
+                icon: Icon(
+                  Icons.menu,
+                  color: themeController.isDarkTheme.value
+                      ? Colors.white // White in dark mode
+                      : Colors.black, // Black in light mode
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                offset: Offset(0, 50),
+                itemBuilder: (context) {
+                  return [
+                    PopupMenuItem(
+                      value: 1,
                       child: Row(
                         children: [
+                          Icon(
+                            Icons.edit,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
                           Text(
+                            "Rename",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 0,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/edit_icon.svg',
+                            width: 23,
+                            height: 23,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Obx(() => Text(
+                                isEditMode.value ? "View Mode" : "Edit",
+                                style: TextStyle(
+                                  color: themeController.isDarkTheme.value
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 2,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/pin_icon.svg',
+                            width: 23,
+                            height: 23,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Obx(() => Text(
+                                isPinMode.value ? "UnPin" : "Pin",
+                                style: TextStyle(
+                                  color: themeController.isDarkTheme.value
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 3,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/save_icon.svg',
+                            width: 23,
+                            height: 23,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Obx(() => Text(
+                                isSaveMode.value
+                                    ? "UnSave To Class"
+                                    : "Save To Class",
+                                style: TextStyle(
+                                  color: themeController.isDarkTheme.value
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 4,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/delete_icon.svg',
+                            width: 24,
+                            height: 24,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Delete",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 5,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/export_icon.svg',
+                            width: 24,
+                            height: 24,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Export",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 6,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/save_icon.svg',
+                            width: 24,
+                            height: 24,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Update",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ];
+                },
+                onSelected: (value) async {
+                  if (value == 1) {
+                    _showEditDialog(context, widget.editId, widget.title);
+                  } else if (value == 0) {
+                    isEditMode.value = !isEditMode.value;
+                    textEditorController.currentEditingIndex.value =
+                        textEditorController.currentEditingIndex.value == -1
+                            ? 0
+                            : -1;
+                  } else if (value == 2) {
+                    if (isPinMode.value) {
+                      await historyController.unpinEditChat(widget.editId);
+                      isPinMode.value = false;
+                    } else {
+                      _showDatePicker(context, widget.editId);
+                      isPinMode.value = true;
+                    }
+                  } else if (value == 3) {
+                    if (isSaveMode.value) {
+                      await saveClassController.unSaveEditedChat(
+                          widget.editId, widget.folderId!);
+                      isSaveMode.value = false;
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => FolderSelectionDialog(
+                          editId: widget.editId,
+                        ),
+                      );
+                      isSaveMode.value = true;
+                    }
+                  } else if (value == 4) {
+                    _showDeleteDialog(context, widget.editId);
+                  } else if (value == 5) {
+                    // export logic
+                    //await generateAndShowDocx();
+                  } else if (value == 6) {
+                    textEditorController.currentEditingIndex.value = -1;
+                    final htmlContent = _generateHTMLContent();
+                    historyEditController.updateEditChat(
+                        widget.editId, htmlContent);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Saved successfully!")),
+                    );
+                  }
+                },
+              );
+            }),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Obx(() => textEditorController.currentEditingIndex.value != -1
+                  ? _buildToolbar()
+                  : const SizedBox.shrink()),
+              Expanded(
+                child: Obx(() => ListView.builder(
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        return Obx(() {
+                          final isEditing =
+                              textEditorController.currentEditingIndex.value ==
+                                  index;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Row(
+                              children: [
+                                /*Text(
                             "${messages[index]['sender']}: ",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14.0,
                             ),
-                          ),
-                          Expanded(
-                            child: isEditing
-                                ? TextField(
-                              controller: textControllers[index],
-                              style:
-                              textEditorController.textStyles[index],
-                              textAlign: textEditorController
-                                  .textAlignments[index],
-                              onChanged: (value) {
-                                messages[index]['content'] = value;
-                              },
-                              onSubmitted: (value) {
-                                // Exit edit mode after submission
-                                textEditorController
-                                    .currentEditingIndex.value = -1;
-                              },
-                              autofocus: true,
-                              maxLines: null, // Allow multi-line input
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                              ),
-                            )
-                                : GestureDetector(
-                              onTap: () {
-                                // Allow editing only if index is valid
-                                if (textEditorController
-                                    .currentEditingIndex.value ==
-                                    -1) return;
+                          ),*/
+                                Expanded(
+                                  child: isEditing
+                                      ? TextField(
+                                          controller: textControllers[index],
+                                          style: textEditorController
+                                              .textStyles[index],
+                                          textAlign: textEditorController
+                                              .textAlignments[index],
+                                          onChanged: (value) {
+                                            messages[index]['content'] = value;
+                                          },
+                                          onSubmitted: (value) {
+                                            // Exit edit mode after submission
+                                            textEditorController
+                                                .currentEditingIndex.value = -1;
+                                          },
+                                          autofocus: true,
+                                          maxLines: null,
+                                          // Allow multi-line input
+                                          decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                          ),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () {
+                                            // Allow editing only if index is valid
+                                            if (textEditorController
+                                                    .currentEditingIndex
+                                                    .value ==
+                                                -1) return;
 
-                                textEditorController.currentEditingIndex
-                                    .value = index;
+                                            textEditorController
+                                                .currentEditingIndex
+                                                .value = index;
 
-                                // Retain cursor position after tapping
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback(
-                                      (_) => textControllers[index].selection =
-                                      TextSelection.fromPosition(
-                                        TextPosition(
-                                          offset: textControllers[index]
-                                              .text
-                                              .length,
+                                            // Retain cursor position after tapping
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback(
+                                              (_) => textControllers[index]
+                                                      .selection =
+                                                  TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset: textControllers[index]
+                                                      .text
+                                                      .length,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(
+                                            messages[index]['content'],
+                                            style: textEditorController
+                                                .textStyles[index]
+                                                .merge(
+                                              TextStyle(
+                                                fontWeight: messages[index]
+                                                            ['sender'] ==
+                                                        'User'
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                              ),
+                                            ),
+                                            /*style: textEditorController
+                                    .textStyles[index],*/
+                                            textAlign: textEditorController
+                                                .textAlignments[index],
+                                          ),
                                         ),
-                                      ),
-                                );
-                              },
-                              child: Text(
-                                messages[index]['content'],
-                                style: textEditorController
-                                    .textStyles[index],
-                                textAlign: textEditorController
-                                    .textAlignments[index],
-                              ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-                },
-              )),
-            ),
-          ],
-        ),
-      )
-    );
+                          );
+                        });
+                      },
+                    )),
+              ),
+            ],
+          ),
+        ));
   }
 
   void _parseHtmlContent(String htmlContent) {
@@ -427,7 +444,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
       // Remove the sender prefix (e.g., "User:" or "Bot:") from the content
       final content =
-      paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
+          paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
       parsedMessages.add({
         'sender': sender,
         'content': content,
@@ -445,8 +462,8 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     final colorRegex = RegExp(r'color:\s*([^;]+);');
 
     final fontSize = double.tryParse(
-      fontSizeRegex.firstMatch(style)?.group(1) ?? '16.0',
-    ) ??
+          fontSizeRegex.firstMatch(style)?.group(1) ?? '16.0',
+        ) ??
         16.0;
 
     final color = _parseColor(
@@ -480,7 +497,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   void _initializeTextControllers() {
     textControllers = List.generate(
       messages.length,
-          (index) => TextEditingController(text: messages[index]['content']),
+      (index) => TextEditingController(text: messages[index]['content']),
     );
   }
 
@@ -490,27 +507,27 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       child: Row(
         children: [
           Obx(() => DropdownButton<double>(
-            value: textEditorController.fontSize.value,
-            items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
-                .map((size) => DropdownMenuItem(
-              value: size,
-              child: Text(size.toString()),
-            ))
-                .toList(),
-            onChanged: (value) {
-              if (textEditorController.currentEditingIndex.value != -1) {
-                textEditorController.fontSize.value = value!;
-                textEditorController.updateTextStyle(
-                  index: textEditorController.currentEditingIndex.value,
-                  fontSize: value,
-                );
-              }
-            },
-          )),
+                value: textEditorController.fontSize.value,
+                items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
+                    .map((size) => DropdownMenuItem(
+                          value: size,
+                          child: Text(size.toString()),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (textEditorController.currentEditingIndex.value != -1) {
+                    textEditorController.fontSize.value = value!;
+                    textEditorController.updateTextStyle(
+                      index: textEditorController.currentEditingIndex.value,
+                      fontSize: value,
+                    );
+                  }
+                },
+              )),
           _buildIconButton(
             icon: Icons.format_bold,
             isActive: (index) =>
-            textEditorController.textStyles[index].fontWeight ==
+                textEditorController.textStyles[index].fontWeight ==
                 FontWeight.bold,
             onPressed: (index) {
               final isBold =
@@ -525,7 +542,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
           _buildIconButton(
             icon: Icons.format_italic,
             isActive: (index) =>
-            textEditorController.textStyles[index].fontStyle ==
+                textEditorController.textStyles[index].fontStyle ==
                 FontStyle.italic,
             onPressed: (index) {
               final isItalic =
@@ -540,7 +557,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
           _buildIconButton(
             icon: Icons.format_align_left,
             isActive: (index) =>
-            textEditorController.textAlignments[index] == TextAlign.left,
+                textEditorController.textAlignments[index] == TextAlign.left,
             onPressed: (index) {
               textEditorController.updateTextAlignment(index, TextAlign.left);
             },
@@ -548,7 +565,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
           _buildIconButton(
             icon: Icons.format_align_center,
             isActive: (index) =>
-            textEditorController.textAlignments[index] == TextAlign.center,
+                textEditorController.textAlignments[index] == TextAlign.center,
             onPressed: (index) {
               textEditorController.updateTextAlignment(index, TextAlign.center);
             },
@@ -556,7 +573,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
           _buildIconButton(
             icon: Icons.format_align_right,
             isActive: (index) =>
-            textEditorController.textAlignments[index] == TextAlign.right,
+                textEditorController.textAlignments[index] == TextAlign.right,
             onPressed: (index) {
               textEditorController.updateTextAlignment(index, TextAlign.right);
             },
@@ -655,7 +672,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
   void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
     final TextEditingController textController =
-    TextEditingController(text: currentTitle);
+        TextEditingController(text: currentTitle);
 
     showDialog(
       context: context,
@@ -720,4 +737,50 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       },
     );
   }
+
+  /*Future<void> generateAndShowDocx() async {
+    try {
+      // Load the template file from assets
+      var data = await rootBundle.load('assets/images/template.docx');
+      final bytes = data.buffer.asUint8List();
+
+      // Load the template
+      final docx = await DocxTemplate.fromBytes(bytes);
+
+
+
+
+      // Replace placeholders with your content
+      Content c = Content();
+      c.add(TextContent("title", "Generated Document"));
+
+
+      // Add content to the document
+      for (final message in messages) {
+        final content = message['content'];
+        c.add(TextContent("body", content));
+      }
+
+      // Render the document
+      final d = await docx.generate(c);
+
+      if (d != null) {
+        // Save the generated file
+        final outputDir = await getTemporaryDirectory();
+        final filePath = "${outputDir.path}/generated_document.docx";
+        final file = File(filePath);
+
+        await file.writeAsBytes(d);
+
+        // Open the file
+        OpenFile.open(filePath);
+      } else {
+        print("Failed to generate the document");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+*/
+
 }

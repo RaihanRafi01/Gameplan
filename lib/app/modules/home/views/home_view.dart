@@ -72,13 +72,49 @@ class HomeView extends GetView<HomeController> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 50), // Add some spacing at the top
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
+                    child: Obx(() {
+                      final ThemeController themeController = Get.find<ThemeController>();
+
+                      return Container(
+                        constraints: BoxConstraints(
+                          maxWidth: double.maxFinite, // Set maximum width for the container
+                        ),
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        // Add inner padding
+                        decoration: BoxDecoration(
+                          color: Colors.transparent, // Transparent background
+                          borderRadius: BorderRadius.circular(10), // Rounded border
+                          border: Border.all(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white // Border color in dark mode
+                                : Colors.black, // Border color in light mode
+                            width: 1, // Border width
+                          ),
+                        ),
+                        child: Text(
+                          "What should I tell the AI to get the best session plan?",
+                          style: TextStyle(
+                            fontSize: 16, // Font size
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white // Text color in dark mode
+                                : Colors.black, // Text color in light mode
+                          ),
+                          textAlign: TextAlign.center, // Center-align the text
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
               Obx(() {
                 //final ThemeController themeController = Get.find<ThemeController>();
                 final bool isFree = homeController.isFree.value;
                 return CustomMessageInputField(
-                  color: themeController.isDarkTheme.value
-                      ? Colors.white // Border color in dark mode
-                      : Colors.black,
                   textController: textController,
                   onSend: () async {
                     // Store the current text in a variable
@@ -142,45 +178,6 @@ class HomeView extends GetView<HomeController> {
                 );
               }),
              // const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
-                    child: Obx(() {
-                      final ThemeController themeController = Get.find<ThemeController>();
-
-                      return Container(
-                        constraints: BoxConstraints(
-                          maxWidth: double.maxFinite, // Set maximum width for the container
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        // Add inner padding
-                        decoration: BoxDecoration(
-                          color: Colors.transparent, // Transparent background
-                          borderRadius: BorderRadius.circular(25), // Rounded border
-                          border: Border.all(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white // Border color in dark mode
-                                : Colors.black, // Border color in light mode
-                            width: 1, // Border width
-                          ),
-                        ),
-                        child: Text(
-                          "What should I tell the AI to get the best session plan?",
-                          style: TextStyle(
-                            fontSize: 16, // Font size
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white // Text color in dark mode
-                                : Colors.black, // Text color in light mode
-                          ),
-                          textAlign: TextAlign.center, // Center-align the text
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

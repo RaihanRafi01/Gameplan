@@ -12,12 +12,14 @@ class SubscriptionPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthenticationController _controller = Get.put(AuthenticationController());
+    final SubscriptionController controller = Get.put(SubscriptionController());
+
 
     // List of features
     final List<String> features = [
-      'Unlimited Ai plan',
-      'Unlimited Calendar use',
-      '24/7 Customer support',
+      'Unlimited use of AI planner',
+      'Unlimited use of the full suite of\ntools, including calendar and editor',
+      'Priority Support',
       'Cancel Anytime',
     ];
 
@@ -39,21 +41,25 @@ class SubscriptionPopup extends StatelessWidget {
                 SvgPicture.asset('assets/images/auth/app_logo.svg'),
                 const SizedBox(height: 20),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: features.map((feature) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5), // Adds spacing between rows
-                    child: Row(
-                      children: [
-                        Icon(Icons.check_circle, color: AppColors.appColor2),
-                        const SizedBox(width: 10),
-                        Text(
-                          feature,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Icon(Icons.check_circle, color: AppColors.appColor2),
+                          const SizedBox(width: 10),
+                          Text(
+                            feature,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 }).toList(),
@@ -64,27 +70,31 @@ class SubscriptionPopup extends StatelessWidget {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SubscriptionOptionCard(
-                        title: "Monthly",
-                        price: "\$10.50",
-                        weeklyRate: "\$0.7/week",
-                        isBestValue: false,
-                        onTap: () {
-                          print("Monthly card tapped");
-                        },
+                      Obx(
+                            () => SubscriptionOptionCard(
+                          title: "Yearly",
+                          price: "\$8.30 / Per Month",
+                          description: "Just \$8.30 Per Month\nBilled As \$99.6 Annually",
+                          isBestValue: true,
+                          isSelected: controller.selectedPlan.value == "Yearly",
+                          onTap: () {
+                            controller.selectPlan("Yearly");
+                          },
+                        ),
                       ),
-                      const SizedBox(width: 10), // Add some spacing between cards
-                      SubscriptionOptionCard(
-                        title: "Yearly",
-                        price: "\$40.50",
-                        weeklyRate: "\$0.7/week",
-                        isBestValue: true,
-                        onTap: () {
-                          print("Yearly card tapped");
-                          _controller.checkPayment();
-                        },
+                      const SizedBox(width: 10),
+                      Obx(
+                            () => SubscriptionOptionCard(
+                          title: "Monthly",
+                          price: "\$12.99 / Per Month",
+                          description: "Billed Monthly",
+                          isBestValue: false,
+                          isSelected: controller.selectedPlan.value == "Monthly",
+                          onTap: () {
+                            controller.selectPlan("Monthly");
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -105,5 +115,15 @@ class SubscriptionPopup extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SubscriptionController extends GetxController {
+  // Observables for selected plan
+  var selectedPlan = "Yearly".obs;
+
+  // Method to update the selected plan
+  void selectPlan(String plan) {
+    selectedPlan.value = plan;
   }
 }

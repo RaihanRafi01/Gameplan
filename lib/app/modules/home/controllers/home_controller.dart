@@ -99,7 +99,7 @@ class HomeController extends GetxController {
 
       // TODO make this == before deployment
 
-      isFree.value = subscriptionStatus.value == 'not_subscribed';
+      isFree.value = subscriptionStatus.value != 'not_subscribed';
 
 
       /*if (isVerified) {

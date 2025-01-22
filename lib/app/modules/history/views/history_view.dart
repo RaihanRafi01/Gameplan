@@ -203,7 +203,7 @@ class HistoryView extends GetView<HistoryController> {
                                   const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
                                 groupKey,
-                                style: h3.copyWith(
+                                style: h1.copyWith(
                                   fontSize: 22,
                                   color: themeController.isDarkTheme.value
                                       ? Colors.white
@@ -419,166 +419,169 @@ class HistoryView extends GetView<HistoryController> {
                       final groupKey = groupedChats.keys.elementAt(groupIndex);
                       final chats = groupedChats[groupKey]!;
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Date group header
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text(
-                              groupKey,
-                              style: h3.copyWith(
-                                fontSize: 22,
-                                color: themeController.isDarkTheme.value
-                                    ? Colors.white
-                                    : AppColors
-                                        .textHistory, // Dynamic text color
-                              ),
-                            ),
-                          ),
-                          // Chat list for the date group
-                          ...chats.map((chat) {
-                            return ListTile(
-                              title: GestureDetector(
-                                onTap: () {
-                                  Get.to(ChatContentScreen(
-                                    content: chat.content,
-                                    chatId: chat.chatId,
-                                    editId: chat.id,
-                                    isPinned: chat.isPinned,
-                                    isSaved: chat.isSaved,
-                                    folderId: chat.folderId,
-                                    title: chat.chatName,
-                                  ));
-                                },
-                                child: Text(
-                                  chat.chatName,
-                                  style: h3.copyWith(
-                                    fontSize: 18,
-                                    color: themeController.isDarkTheme.value
-                                        ? Colors.white
-                                        : AppColors
-                                            .textHistory, // Dynamic text color
-                                  ),
-                                ),
-                              ),
-                              trailing: PopupMenuButton<int>(
-                                color: popupMenuColor,
-                                icon: Icon(
-                                  Icons.more_horiz_rounded,
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Date group header
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text(
+                                groupKey,
+                                style: h1.copyWith(
+                                  fontSize: 22,
                                   color: themeController.isDarkTheme.value
                                       ? Colors.white
-                                      : Colors.black, // Dynamic icon color
+                                      : AppColors
+                                          .textHistory, // Dynamic text color
                                 ),
-                                onSelected: (value) {
-                                  switch (value) {
-                                    case 1:
-                                      _showEditDialog(context, chat.id,
-                                          chat.chatName, true);
-                                      break;
-                                    case 2:
-                                      _showDeleteDialog(context, chat.id, true);
-                                      break;
-                                    case 3:
-                                      Get.to(ChatContentScreen(
-                                        content: chat.content,
-                                        chatId: chat.chatId,
-                                        editId: chat.id,
-                                        isPinned: chat.isPinned,
-                                        isSaved: chat.isSaved,
-                                        folderId: chat.folderId,
-                                        title: chat.chatName,
-                                      ));
-                                      break;
-                                  }
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 3,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/history/edit_icon.svg',
-                                          color: themeController
-                                              .isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors
-                                              .black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Edit',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
+                              ),
+                            ),
+                            // Chat list for the date group
+                            ...chats.map((chat) {
+                              return ListTile(
+                                title: GestureDetector(
+                                  onTap: () {
+                                    Get.to(ChatContentScreen(
+                                      content: chat.content,
+                                      chatId: chat.chatId,
+                                      editId: chat.id,
+                                      isPinned: chat.isPinned,
+                                      isSaved: chat.isSaved,
+                                      folderId: chat.folderId,
+                                      title: chat.chatName,
+                                    ));
+                                  },
+                                  child: Text(
+                                    chat.chatName,
+                                    style: h3.copyWith(
+                                      fontSize: 18,
+                                      color: themeController.isDarkTheme.value
+                                          ? Colors.white
+                                          : AppColors
+                                              .textHistory, // Dynamic text color
+                                    ),
+                                  ),
+                                ),
+                                trailing: PopupMenuButton<int>(
+                                  color: popupMenuColor,
+                                  icon: Icon(
+                                    Icons.more_horiz_rounded,
+                                    color: themeController.isDarkTheme.value
+                                        ? Colors.white
+                                        : Colors.black, // Dynamic icon color
+                                  ),
+                                  onSelected: (value) {
+                                    switch (value) {
+                                      case 1:
+                                        _showEditDialog(context, chat.id,
+                                            chat.chatName, true);
+                                        break;
+                                      case 2:
+                                        _showDeleteDialog(context, chat.id, true);
+                                        break;
+                                      case 3:
+                                        Get.to(ChatContentScreen(
+                                          content: chat.content,
+                                          chatId: chat.chatId,
+                                          editId: chat.id,
+                                          isPinned: chat.isPinned,
+                                          isSaved: chat.isSaved,
+                                          folderId: chat.folderId,
+                                          title: chat.chatName,
+                                        ));
+                                        break;
+                                    }
+                                  },
+                                  itemBuilder: (context) => [
+                                    PopupMenuItem(
+                                      value: 3,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/edit_icon.svg',
                                             color: themeController
                                                 .isDarkTheme.value
                                                 ? Colors.white
                                                 : Colors
-                                                .black, // Dynamic text color
+                                                .black, // Dynamic icon color
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 1,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/history/rename_icon.svg',
-                                          color: themeController
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Edit',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
                                                   .isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors
-                                                  .black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Rename',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
+                                                  ? Colors.white
+                                                  : Colors
+                                                  .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/rename_icon.svg',
                                             color: themeController
                                                     .isDarkTheme.value
                                                 ? Colors.white
                                                 : Colors
-                                                    .black, // Dynamic text color
+                                                    .black, // Dynamic icon color
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Rename',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                      .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 2,
-                                    child: Row(
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/history/delete_icon.svg',
-                                          color: themeController
-                                                  .isDarkTheme.value
-                                              ? Colors.white
-                                              : Colors
-                                                  .black, // Dynamic icon color
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          'Delete',
-                                          style: h3.copyWith(
-                                            fontSize: 16,
+                                    PopupMenuItem(
+                                      value: 2,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/history/delete_icon.svg',
                                             color: themeController
                                                     .isDarkTheme.value
                                                 ? Colors.white
                                                 : Colors
-                                                    .black, // Dynamic text color
+                                                    .black, // Dynamic icon color
                                           ),
-                                        ),
-                                      ],
+                                          const SizedBox(width: 10),
+                                          Text(
+                                            'Delete',
+                                            style: h3.copyWith(
+                                              fontSize: 16,
+                                              color: themeController
+                                                      .isDarkTheme.value
+                                                  ? Colors.white
+                                                  : Colors
+                                                      .black, // Dynamic text color
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ],
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       );
                     },
                   );

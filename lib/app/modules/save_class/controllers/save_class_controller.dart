@@ -8,31 +8,28 @@ import '../../history/controllers/edit_controller.dart';
 class SaveClassController extends GetxController {
   final ApiService _service = ApiService();
   final EditController editHistoryController = Get.put(EditController());
-  // Observables to manage data and state
+
   var classList = <Map<String, dynamic>>[].obs; // List of classes with their data
   var selectedClass = ''.obs; // Currently selected class name
   var selectedClassContents = <Map<String, dynamic>>[].obs; // Contents of the selected class
+  var isLoading = false.obs; // Observable for loading state
 
   /// Select a class and update its contents
   void selectClass(String className) {
     selectedClass.value = className;
 
-    // Find the selected class from the classList
     final selected = classList.firstWhere(
           (element) => element['folder_name'] == className,
       orElse: () => {}, // Return an empty map
     );
 
-    // Update contents of the selected class if it exists
     if (selected.isNotEmpty) {
       final contents = selected['folder_contents'] as List<dynamic>;
 
-      // Ensure the contents are properly typed
       selectedClassContents.assignAll(
         contents.map((item) => item as Map<String, dynamic>).toList(),
       );
 
-      // Print the folder contents for debugging
       print('Contents of $className:');
       for (var content in selectedClassContents) {
         print(content);
@@ -43,8 +40,6 @@ class SaveClassController extends GetxController {
     }
   }
 
-
-
   /// Clear the current class selection
   void clearSelection() {
     selectedClass.value = '';
@@ -53,6 +48,7 @@ class SaveClassController extends GetxController {
 
   /// Fetch the list of classes from the API
   Future<void> fetchClassList() async {
+    isLoading.value = true; // Start loading
     await editHistoryController.fetchAllChatList();
     try {
       final http.Response response = await _service.getClassList();
@@ -60,13 +56,14 @@ class SaveClassController extends GetxController {
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
 
-        // Update the class list with the fetched data
         classList.assignAll(data.map((item) => item as Map<String, dynamic>).toList());
       } else {
         Get.snackbar('Error', 'Failed to load class list');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
+    } finally {
+      isLoading.value = false; // End loading
     }
   }
 
@@ -77,78 +74,56 @@ class SaveClassController extends GetxController {
       return;
     }
 
+    isLoading.value = true; // Start loading
     try {
       final http.Response response = await _service.createClass(className);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Add the new class to the local list
         await fetchClassList();
-        classList.add({
-          'id': DateTime.now().millisecondsSinceEpoch, // Temporary ID
-          'owner_user': null, // Replace with actual owner ID if available
-          'folder_name': className,
-          'folder_contents': [],
-        });
-
         Get.snackbar('Success', 'Class added successfully');
       } else {
         Get.snackbar('Error', 'Failed to add class');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
+    } finally {
+      isLoading.value = false; // End loading
     }
   }
 
-  Future<void> pinToClass(int editID,int folderID) async {
+  Future<void> pinToClass(int editID, int folderID) async {
+    isLoading.value = true; // Start loading
     try {
-      final http.Response response = await _service.pinToClass(editID,folderID);
+      final http.Response response = await _service.pinToClass(editID, folderID);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Add the new class to the local list
         await fetchClassList();
         Get.snackbar('Success', 'Class pinned successfully');
       } else {
-        Get.snackbar('Error', 'Failed to pinned class');
+        Get.snackbar('Error', 'Failed to pin class');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
+    } finally {
+      isLoading.value = false; // End loading
     }
   }
 
-  Future<void> unSaveEditedChat(int editId,int folderId) async {
+  Future<void> unSaveEditedChat(int editId, int folderId) async {
+    isLoading.value = true; // Start loading
     try {
-      // Make the API call to get chat list
-      final http.Response response = await _service.unSaveEditChat(editId,folderId);
-
-      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
-      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+      final http.Response response = await _service.unSaveEditChat(editId, folderId);
 
       if (response.statusCode == 200) {
-        // Decode the API response into a list of maps
-        Get.snackbar('Unpinned', 'Edit Unpinned successfully');
+        Get.snackbar('Unpinned', 'Edit unpinned successfully');
         await fetchClassList();
-        // Find and remove the event corresponding to the chatId
-        /*final eventToRemove = calendarController.events.firstWhere(
-                (event) => event.ChatId == chatId // Return null if no matching event is found
-        );
-
-        if (eventToRemove != null) {
-          // Remove the event from the calendarController events list
-          calendarController.events.remove(eventToRemove);
-
-          // Optionally refresh the calendar view if needed
-          // calendarController.events.refresh();
-        }
-        fetchData();*/
       } else {
-        // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to unpin');
       }
     } catch (e) {
-      // Handle any exceptions during the API call
       Get.snackbar('Error', 'Something went wrong: $e');
+    } finally {
+      isLoading.value = false; // End loading
     }
   }
 }
-
-

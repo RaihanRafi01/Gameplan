@@ -14,7 +14,7 @@ class CustomMessageInputField extends StatelessWidget {
     required this.onSend,
     this.color = Colors.black,
     this.padding = 10.0,
-    this.hintText = 'type your text',
+    this.hintText = 'Type your text...',
   });
 
   @override
@@ -24,44 +24,33 @@ class CustomMessageInputField extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: textController,
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: h4.copyWith(color: color),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: const BorderSide(color: Colors.grey),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: const BorderSide(color: Colors.grey),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(color: Colors.black),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: onSend,
-                        child: Icon(Icons.send, size: 24,color: color,),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFFF4F4F4),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: textController,
+                      style: h4.copyWith(color: color),
+                      decoration: InputDecoration(
+                        hintText: hintText,
+                        hintStyle: h4.copyWith(color: Color(0xFF5D5D5D)),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
                       ),
-                      /*const SizedBox(width: 6),
-                      GestureDetector(
-                        onTap: () {
-                          // Action for second button (if needed)
-                        },
-                        child: const Icon(Icons.add, size: 24),
-                      ),*/
-                    ],
+                    ),
                   ),
-                ),
+                  IconButton(
+                    onPressed: onSend,
+                    icon: Icon(Icons.send, color: color),
+                  ),
+                ],
               ),
             ),
           ),

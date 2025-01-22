@@ -35,7 +35,7 @@ class MessageBubble extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8.0),
             child: CircleAvatar(
               radius: 16,
-              backgroundImage: AssetImage('assets/images/home/bot_image.jpg'),
+              backgroundImage: AssetImage('assets/images/home/bot_image.png'),
             ),
           ),
         Padding(
@@ -65,14 +65,35 @@ class MessageBubble extends StatelessWidget {
         ),
         if (isSentByUser) // Avatar on the right for bot's messages
           Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Obx(() =>
-                CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(
-                      '$baseUrl${controller.profilePicUrl.value}'),
-                )),
-          ),
+            padding: const EdgeInsets.only(left: 6.0),
+            child: Obx(
+                  () {
+                final String profilePicUrl = controller.profilePicUrl.value;
+
+                // Check if the profile picture URL is valid
+                if (profilePicUrl.isNotEmpty) {
+                  return CircleAvatar(
+                    radius: 18,
+                    backgroundImage: NetworkImage('$baseUrl$profilePicUrl'),
+                  );
+                } else {
+                  // Fallback to default SVG picture
+                  return CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.transparent, // Optional
+                    child: ClipOval(
+                      child: SvgPicture.asset(
+                        'assets/images/home/user_image.svg',
+                        width: 42, // Diameter
+                        height: 42,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          )
       ],
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/appColors.dart';
-import '../../../../common/widgets/customAppBar.dart';
+import '../../../../common/customFont.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
@@ -31,92 +31,50 @@ class SaveClassView extends StatelessWidget {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SvgPicture.asset(
+              !isFree
+                  ? SvgPicture.asset(
                 'assets/images/auth/app_logo.svg',
                 color: themeController.isDarkTheme.value
-                    ? Colors.white // White in dark mode
-                    : null, // Black in light mode
-              ),
-              if (isFree)
-                Obx(() {
-                  final ThemeController themeController =
-                  Get.find<ThemeController>();
-
-                  return CustomButton(
-                    height: 30,
-                    textSize: 12,
-                    text: 'Upgrade To Pro',
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        // Prevent closing the dialog by tapping outside
-                        builder: (BuildContext context) {
-                          return const SubscriptionPopup(
-                              isManage:
-                              true); // Use the SubscriptionPopup widget
-                        },
-                      );
+                    ? Colors.white
+                    : null,
+              )
+                  : CustomButton(
+                height: 30,
+                textSize: 12,
+                text: 'Upgrade To Pro',
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return const SubscriptionPopup(isManage: true);
                     },
-                    width: 150,
-                    backgroundGradientColor: AppColors.transparent,
-                    borderGradientColor: AppColors.cardGradient,
-                    isEditPage: true,
-                    textColor: themeController.isDarkTheme.value
-                        ? Colors.white
-                        : AppColors.appColor, // Dynamic text color
                   );
-                }),
+                },
+                width: 150,
+                backgroundGradientColor: AppColors.transparent,
+                borderGradientColor: AppColors.cardGradient,
+                isEditPage: true,
+                textColor: themeController.isDarkTheme.value
+                    ? Colors.white
+                    : AppColors.appColor,
+              )
             ],
           );
         }),
       ),
       body: Obx(() {
-        // If no folder is selected
+        if (controller.isLoading.value) {
+          // Show loading spinner while data is being fetched
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
         if (controller.selectedClass.value.isEmpty) {
-          // Show folder list if classList is not empty
           if (controller.classList.isNotEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: CustomButton(
-                      width: 180,
-                      height: 32,
-                      textSize: 16,
-                      text: 'Create New Class',
-                      onPressed: () {
-                        _showAddClassDialog(context);
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: controller.classList.length,
-                      itemBuilder: (context, index) {
-                        final classData = controller.classList[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: CustomButton(
-                            isGem: true,
-                            svgAsset: 'assets/images/home/class_icon.svg',
-                            text: classData['folder_name'] ?? 'Unnamed Class',
-                            onPressed: () {
-                              controller.selectClass(classData['folder_name']);
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return _buildClassList();
           } else {
-            // If classList is empty, show "Create a Class" button
             return Center(
               child: CustomButton(
                 height: 60,
@@ -129,10 +87,90 @@ class SaveClassView extends StatelessWidget {
             );
           }
         } else {
-          // If a folder is selected, show its chat names
           return _buildSelectedClassView();
         }
       }),
+    );
+  }
+
+  Widget _buildClassList() {
+    return Column(
+      children: [
+        Container(
+          height: 70,
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: AppColors.cardGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              'My Classes',
+              style: h3.copyWith(
+                fontSize: 24,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: AppColors.cardGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    print('Button Pressed!');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 26,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: controller.classList.length,
+            itemBuilder: (context, index) {
+              final classData = controller.classList[index];
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CustomButton(
+                  isGem: true,
+                  svgAsset: 'assets/images/home/class_icon.svg',
+                  text: classData['folder_name'] ?? 'Unnamed Class',
+                  onPressed: () {
+                    controller.selectClass(classData['folder_name']);
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -147,7 +185,7 @@ class SaveClassView extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () {
-                  controller.clearSelection(); // Go back to folder list
+                  controller.clearSelection();
                 },
               ),
               Text(
@@ -176,12 +214,19 @@ class SaveClassView extends StatelessWidget {
               itemBuilder: (context, index) {
                 final chat = controller.selectedClassContents[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: CustomButton(
                     text: chat['chat_name'] ?? 'Unnamed Chat',
                     onPressed: () {
-                      print(':::::::::::::::::::::::CHAT: $chat');
-                      Get.to(() => ChatContentScreen(content: chat['content'],chatId: chat['chat'],editId: chat['id'],isPinned: chat['is_pinned'], isSaved: chat['is_saved'],folderId: chat['folder_id'],title: chat['chat_name'],));
+                      Get.to(() => ChatContentScreen(
+                        content: chat['content'],
+                        chatId: chat['chat'],
+                        editId: chat['id'],
+                        isPinned: chat['is_pinned'],
+                        isSaved: chat['is_saved'],
+                        folderId: chat['folder_id'],
+                        title: chat['chat_name'],
+                      ));
                     },
                   ),
                 );
@@ -192,7 +237,6 @@ class SaveClassView extends StatelessWidget {
       ],
     );
   }
-
 
   void _showAddClassDialog(BuildContext context) {
     TextEditingController classNameController = TextEditingController();

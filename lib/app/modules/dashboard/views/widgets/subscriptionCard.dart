@@ -1,88 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../../common/appColors.dart';
-import '../../../../../common/customFont.dart';
 
 class SubscriptionOptionCard extends StatelessWidget {
   final String title;
   final String price;
-  final String weeklyRate;
+  final String description;
   final bool isBestValue;
-  final VoidCallback? onTap; // Callback function for tap event
+  final bool isSelected;
+  final VoidCallback? onTap;
 
   const SubscriptionOptionCard({
     Key? key,
     required this.title,
     required this.price,
-    required this.weeklyRate,
+    required this.description,
     this.isBestValue = false,
-    this.onTap, // Pass the callback function
+    this.isSelected = false,
+    this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Handle the tap event here
-      child: Stack(
-        clipBehavior: Clip.none, // Ensures the image can overflow the card
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: AppColors.cardGradient,
+      onTap: onTap,
+      child: Container(
+        // Wrap the Stack in a parent Container to avoid clipping
+        margin: const EdgeInsets.only(top: 20), // Avoid clipping the top label
+        child: Stack(
+          clipBehavior: Clip.none, // Allow overflow
+          children: [
+            Container(
+              width: 180, // Adjust width to match your design
+              height: 224,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected ? AppColors.appColor : Colors.grey.shade300,
+                  width: isSelected ? 2 : 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 20), // Add space for the "BEST DEAL" label
                   Text(
                     title,
-                    style: h4.copyWith(
-                      fontSize: 16,
-                      color: Colors.white,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     price,
-                    style: h4.copyWith(
-                      color: Colors.white,
-                      fontSize: 24,
+                    style: const TextStyle(
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    weeklyRate,
-                    style: h4.copyWith(fontSize: 14, color: Colors.white),
-                  ),
-                  const SizedBox(height: 10),
-                  // New "Choose" button with rounded white background
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white, // White background
-                      borderRadius: BorderRadius.circular(20), // Rounded corners
-                    ),
-                    child: Text(
-                      'Choose',
-                      style: h4.copyWith(
-                        fontSize: 14,
-                        color: AppColors.appColor, // Adjust color if you have a primary theme color
-                        fontWeight: FontWeight.bold,
-                      ),
+                    description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            // Position "BEST DEAL" label
+            if (isBestValue)
+              Positioned(
+                top: -12, // Adjust to overlap the card
+                left: 45, // Center alignment
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.appColor, // Use your gradient colors
+                        AppColors.appColor2,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'BEST DEAL',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: CircleAvatar(
+                radius: 12,
+                backgroundColor: isSelected ? AppColors.appColor : Colors.grey.shade300,
+                child: Icon(
+                  isSelected ? Icons.check : Icons.circle_outlined,
+                  color: Colors.white,
+                  size: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

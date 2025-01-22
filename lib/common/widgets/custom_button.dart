@@ -27,7 +27,7 @@ class CustomButton extends StatelessWidget {
     this.backgroundGradientColor = AppColors.cardGradient,
     this.borderGradientColor = AppColors.transparent,
     this.textColor = Colors.white,
-    this.borderRadius = 20.0,
+    this.borderRadius = 10.0,
     this.padding = const EdgeInsets.symmetric(vertical: 5),
     this.isEditPage = false,
     this.width = double.maxFinite,
@@ -91,11 +91,11 @@ class CustomButton extends StatelessWidget {
       children: [
         if (isGem && svgAsset.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(left: 8), // Add padding to the right of the image
+            padding: const EdgeInsets.only(left: 15), // Add padding to the right of the image
             child: SvgPicture.asset(
               svgAsset, // SVG asset path
-              width: 25.0, // Adjust the size as needed
-              height: 25.0,
+              width: 15.0, // Adjust the size as needed
+              height: 15.0,
               color: Colors.white,// Adjust the size as needed
             ),
           ),
