@@ -132,6 +132,10 @@ class ChatScreen extends StatelessWidget {
     }
   }
 
+  /// You have reached your free search limit
+
+  /// Limit Reached
+
   void _copyAllMessages(BuildContext context) {
     final allMessages = chatController.messages
         .map((message) => message['message'])

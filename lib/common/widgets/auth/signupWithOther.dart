@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../app/modules/authentication/views/sign_up_view.dart';
+import '../../appColors.dart';
 import '../../customFont.dart';
 import 'social_button.dart';
 class SignupWithOther extends StatelessWidget {
@@ -14,18 +15,7 @@ class SignupWithOther extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("Don't Have An Account?",style: h4),
-          TextButton(
-            onPressed: () => Get.to(()=> SignUpView()),
-            child: Text("Sign Up",style: h4),
-          ),
-
-        ],
-      ),
-
+      Text("Need An Account?",style: h3.copyWith(color: AppColors.textHint)),
       const SizedBox(height: 10),
       SvgPicture.asset('assets/images/auth/orLoginWith.svg'),
       const SizedBox(height: 20),

@@ -179,8 +179,8 @@ class ChatController extends GetxController {
         // Handle non-200/201 responses
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
         Get.snackbar(
-            'Limit Crossed',
-            'You already reached your limit!',
+            'Limit Reached',
+            'You have reached your free search limit',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
             colorText: Colors.white

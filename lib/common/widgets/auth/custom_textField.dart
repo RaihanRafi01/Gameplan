@@ -16,6 +16,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final Function()? onTap;
   final double radius;
+  final bool isLogin;
 
   const CustomTextField({
     super.key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatefulWidget {
     required this.hint,
     this.isPassword = false,
     this.readOnly = false,
+    this.isLogin = false,
     this.controller,
     this.prefixIcon,
     this.suffixIcon,
@@ -64,16 +66,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
           style: h4.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: themeController.isDarkTheme.value
-                ? Colors.white
-                : Colors.black, // Dynamic text color
+            color: widget.isLogin
+                ? AppColors.blurtext // Gray color if isLogin is true
+                : (themeController.isDarkTheme.value ? Colors.white : Colors.black), // Dynamic text color
           ),
         )),
         const SizedBox(height: 8),
         Obx(() => TextField(
-          cursorColor: themeController.isDarkTheme.value
-              ? Colors.white
-              : AppColors.appColor, // Dynamic cursor color
+          cursorColor: widget.isLogin
+              ? Colors.black38 // Gray color if isLogin is true
+              : (themeController.isDarkTheme.value ? Colors.white : AppColors.appColor), // Dynamic cursor color
           controller: widget.controller,
           onChanged: widget.onChanged,
           obscureText: widget.isPassword ? _obscureText : false,
@@ -81,11 +83,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           keyboardType: widget.keyboardType,
           onTap: widget.onTap,
           decoration: InputDecoration(
+            filled: widget.isLogin,
+            fillColor: widget.isLogin? Colors.white : Colors.transparent,
             hintText: widget.hint,
             hintStyle: h4.copyWith(
-              color: themeController.isDarkTheme.value
-                  ? Colors.white54
-                  : AppColors.appColor, // Dynamic hint color
+              color: widget.isLogin
+                  ? AppColors.textColor2 // Gray color if isLogin is true
+                  : (themeController.isDarkTheme.value ? Colors.white54 : AppColors.appColor) , // Dynamic hint color
             ),
             prefixIcon: widget.prefixIcon != null
                 ? Icon(

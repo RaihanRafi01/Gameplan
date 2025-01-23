@@ -1,6 +1,7 @@
 import 'package:agcourt/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:agcourt/common/appColors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/auth/custom_HeaderText.dart';
@@ -11,6 +12,7 @@ import '../../dashboard/controllers/theme_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/authentication_controller.dart';
 import 'forgot_password_view.dart';
+import 'sign_up_view.dart';
 
 class AuthenticationView extends GetView<AuthenticationController> {
   AuthenticationView({Key? key}) : super(key: key);
@@ -48,93 +50,76 @@ class AuthenticationView extends GetView<AuthenticationController> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/auth/background.jpg'),
-                fit: BoxFit.cover,
+          // Background SVG
+          // Top SVG Background
+          Align(
+            alignment: Alignment.topCenter,
+            child: SvgPicture.asset(
+              'assets/images/auth/login_background.svg', // Replace with your SVG file path
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+          // Foreground Content
+          Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Login Header
+                  const SizedBox(height: 90),
+                  SvgPicture.asset(
+                    'assets/images/auth/app_logo.svg', // Replace with your SVG file path
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 50),
+                  CustomTextField(
+                    isLogin: true,
+                    label: "Your User Name",
+                    hint: "Enter User Name",
+                    prefixIcon: Icons.person_outline,
+                    controller: _usernameController,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomTextField(
+                    isLogin: true,
+                    label: "Password",
+                    hint: "Enter Password",
+                    prefixIcon: Icons.lock_outline_rounded,
+                    isPassword: true,
+                    controller: _passwordController,
+                  ),
+                  const SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () => Get.to(() => ForgotPasswordView()),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Forgot Password?',
+                        style: h4.copyWith(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    text: "Login",
+                    onPressed: () {
+                      _handleLogin();
+                    },
+                  ),
+                  const SizedBox(height: 140),
+                  SignupWithOther(),
+                  const SizedBox(height: 50),
+                  CustomButton(
+                    text: "Sign Up",
+                    onPressed: () => Get.to(()=> SignUpView()),
+                  ),
+                ],
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SingleChildScrollView(
-              child: Obx(() {
-                final ThemeController themeController = Get.find<ThemeController>();
-                return Card(
-                  color: themeController.isDarkTheme.value
-                      ? AppColors.appDarkColor // Text color in dark mode
-                      : Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(30),
-                      topLeft: Radius.circular(30),
-                    ),
-                  ),
-                  elevation: 8.0,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 30),
-                        CustomTextField(
-                          label: "Your User Name",
-                          hint: "Enter User Name",
-                          prefixIcon: Icons.person_outline,
-                          controller: _usernameController,
-                        ),
-                        const SizedBox(height: 10),
-                        CustomTextField(
-                          label: "Password",
-                          hint: "Enter Password",
-                          prefixIcon: Icons.lock_outline_rounded,
-                          isPassword: true,
-                          controller: _passwordController,
-                        ),
-                        const SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: () => Get.to(() => ForgotPasswordView()),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Forgot Password?',
-                              style: h4.copyWith(color: Colors.red),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 30),
-                        CustomButton(
-                          text: "Login",
-                          onPressed: () {
-                            _handleLogin();
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        SignupWithOther(),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-          // Loading Indicator
-          Obx(() {
-            return _controller.isLoading.value
-                ? Container(
-                    color: Colors.black45,
-                    child: const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.appColor2,
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink();
-          }),
         ],
       ),
     );

@@ -8,6 +8,7 @@ class AppColors {
   static const Color textColorLink = Color(0xFF4568AC);
   static const Color textHint = Color(0xFF575757);
   static const Color textHistory = Color(0xFF434343);
+  static const Color textColor2 = Color(0xFF283C63);
   static const List<Color> borderGradient = [Color(0xFF00B6FD), Color(0xFF5C7DFB),Color(0xFF8C3AFD)];
   static const List<Color> cardGradient = [Color(0xFF051960), Color(0xFF591DA9)];
   static const List<Color> transparent = [Colors.transparent,Colors.transparent];

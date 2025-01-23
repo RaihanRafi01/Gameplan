@@ -1,8 +1,14 @@
 // chatContentScreen.dart
+import 'dart:io';
+
+import 'package:docx_template/docx_template.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
@@ -309,7 +315,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                     _showDeleteDialog(context, widget.editId);
                   } else if (value == 5) {
                     // export logic
-                    //await generateAndShowDocx();
+                    generateAndShowDocx();
                   } else if (value == 6) {
                     textEditorController.currentEditingIndex.value = -1;
                     final htmlContent = _generateHTMLContent();
@@ -738,10 +744,10 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     );
   }
 
-  /*Future<void> generateAndShowDocx() async {
+  Future<void> generateAndShowDocx() async {
     try {
       // Load the template file from assets
-      var data = await rootBundle.load('assets/images/template.docx');
+      var data = await rootBundle.load('assets/images/home/template.docx');
       final bytes = data.buffer.asUint8List();
 
       // Load the template
@@ -749,19 +755,20 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
 
 
-
       // Replace placeholders with your content
       Content c = Content();
-      c.add(TextContent("title", "Generated Document"));
+      /*c.add(TextContent("title", "Generated Document"));
 
-
-      // Add content to the document
+      // Prepare dynamic content for messages
+      List<Content> bodyContents = [];
       for (final message in messages) {
         final content = message['content'];
-        c.add(TextContent("body", content));
+        bodyContents.add(TextContent("body_item", content)); // Match `${body_item}`
       }
+      c.add(ListContent("body", bodyContents)); // Match `${body}` in the template*/
+      c.add(TextContent("main", 'okay tis is working'));
 
-      // Render the document
+      // Generate the document
       final d = await docx.generate(c);
 
       if (d != null) {
@@ -781,6 +788,8 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       print("Error: $e");
     }
   }
-*/
+
+
+
 
 }
