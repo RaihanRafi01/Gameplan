@@ -32,13 +32,13 @@ class SubscriptionOptionCard extends StatelessWidget {
           children: [
             Container(
               width: 180, // Adjust width to match your design
-              height: 224,
+              height: 200,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isSelected ? AppColors.appColor : Colors.grey.shade300,
+                  color: isSelected ? AppColors.appColor3 : Colors.grey.shade300,
                   width: isSelected ? 2 : 1,
                 ),
                 boxShadow: [
@@ -62,14 +62,24 @@ class SubscriptionOptionCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                  Row(children: [
+                    Text(
+                      price,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
+                    Text(
+                      '/ Per Month',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],),
                   const SizedBox(height: 10),
                   Text(
                     description,
@@ -90,10 +100,7 @@ class SubscriptionOptionCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        AppColors.appColor, // Use your gradient colors
-                        AppColors.appColor2,
-                      ],
+                      colors: AppColors.cardGradient,
                     ),
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -112,7 +119,7 @@ class SubscriptionOptionCard extends StatelessWidget {
               right: 10,
               child: CircleAvatar(
                 radius: 12,
-                backgroundColor: isSelected ? AppColors.appColor : Colors.grey.shade300,
+                backgroundColor: isSelected ? AppColors.appColor3 : Colors.grey.shade300,
                 child: Icon(
                   isSelected ? Icons.check : Icons.circle_outlined,
                   color: Colors.white,

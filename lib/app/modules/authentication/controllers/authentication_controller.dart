@@ -324,23 +324,7 @@ class AuthenticationController extends GetxController {
   }*/
 
 
-  Future<void> checkPayment() async {
 
-    // Check if the account is verified
-    final http.Response paymentResponse = await _service.paymentRequest();
-
-    if (paymentResponse.statusCode == 200) {
-      final responseBody = jsonDecode(paymentResponse.body);
-
-      final checkout_url = responseBody['checkout_url'];
-
-      Get.off(() => WebViewScreen(url: checkout_url,
-        onUrlMatched: () { Get.offAll(()=>HomeView()); },));
-
-    } else {
-      Get.snackbar('Error', 'Verification status check failed');
-    }
-  }
 
 
 }

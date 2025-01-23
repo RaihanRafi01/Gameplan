@@ -37,9 +37,9 @@ class FaqWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     question,
-                    style: h3,
+                    style: h1,
                     overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                    maxLines: 2,
                   ),
                 ),
                 Obx(() {
@@ -51,9 +51,10 @@ class FaqWidget extends StatelessWidget {
             ),
 
         ),
+        SizedBox(height: 16,),
         Obx(() {
           return controller.selectedFAQIndex.value == index
-              ? Text('Ans: $answer', style: h3)
+              ? Text(answer, style: h3)
               : const SizedBox.shrink(); // Hide the answer if not selected
         }),
         const Divider(),

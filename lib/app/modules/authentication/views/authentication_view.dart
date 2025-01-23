@@ -98,7 +98,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         'Forgot Password?',
-                        style: h4.copyWith(color: Colors.red),
+                        style: h4.copyWith(color: Colors.white),
                       ),
                     ),
                   ),
@@ -110,12 +110,16 @@ class AuthenticationView extends GetView<AuthenticationController> {
                     },
                   ),
                   const SizedBox(height: 140),
-                  SignupWithOther(),
-                  const SizedBox(height: 50),
+                  Text("Need An Account?",style: h3.copyWith(color: AppColors.textHint)),
+                  const SizedBox(height: 20),
                   CustomButton(
                     text: "Sign Up",
                     onPressed: () => Get.to(()=> SignUpView()),
                   ),
+                  const SizedBox(height: 20),
+                  SignupWithOther(),
+                  const SizedBox(height: 50),
+
                 ],
               ),
             ),

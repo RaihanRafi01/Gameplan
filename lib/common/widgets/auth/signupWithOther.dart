@@ -15,7 +15,6 @@ class SignupWithOther extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Text("Need An Account?",style: h3.copyWith(color: AppColors.textHint)),
       const SizedBox(height: 10),
       SvgPicture.asset('assets/images/auth/orLoginWith.svg'),
       const SizedBox(height: 20),

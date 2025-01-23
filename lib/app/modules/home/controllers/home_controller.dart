@@ -16,6 +16,7 @@ class HomeController extends GetxController {
   var name = ''.obs;
   var aboutYou = ''.obs;
   var subscriptionExpireDate = ''.obs;
+  var package_name = ''.obs;
   var subscriptionStatus = ''.obs;
   RxBool isExpired = false.obs;
   RxBool isFree = false.obs;
@@ -77,6 +78,7 @@ class HomeController extends GetxController {
       final responseData = jsonDecode(verificationResponse.body);
       String? _subscriptionStatus = responseData['subscription_status'];
       String? _subscriptionExpireDate = responseData['subscription_expires_on'];
+      String? _package_name = responseData['package_name'];
       bool? _isExpired = responseData['is_expired'];
 
       String? _profilePicture = responseData['profile_picture'];
@@ -92,6 +94,7 @@ class HomeController extends GetxController {
       profilePicUrl.value = _profilePicture ?? '';
       subscriptionStatus.value = _subscriptionStatus ?? '';
       subscriptionExpireDate.value = _subscriptionExpireDate ?? '';
+      package_name.value = _package_name ?? '';
       isExpired.value = _isExpired ?? false;
 
       print('::::::::::::::::::::subscriptionStatus:::::::::::::::::::::::::::$subscriptionStatus');

@@ -5,13 +5,15 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class ApiService {
-
-  final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
+  final FlutterSecureStorage _storage =
+      FlutterSecureStorage(); // For secure storage
   // Base URL for the API
-  final String baseUrl = 'http://192.168.20.201:4040/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
+  final String baseUrl =
+      'http://192.168.20.201:4040/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
 
   // Sign-up method
-  Future<http.Response> signUp(String email, String password, String username) async {
+  Future<http.Response> signUp(
+      String email, String password, String username) async {
     // Construct the endpoint URL
     final Uri url = Uri.parse('${baseUrl}authentication_app/signup/');
 
@@ -85,7 +87,8 @@ class ApiService {
 
   Future<http.Response> verifyForgotOTP(String username, String otp) async {
     // Construct the endpoint URL
-    final Uri url = Uri.parse('${baseUrl}authentication_app/verify_forget_password_otp/');
+    final Uri url =
+        Uri.parse('${baseUrl}authentication_app/verify_forget_password_otp/');
 
     // Headers for the HTTP request
     final Map<String, String> headers = {
@@ -119,14 +122,9 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
-
     // Make the POST request
-    return await http.post(
-      url,
-      headers: headers
-    );
+    return await http.post(url, headers: headers);
   }
-
 
   Future<http.Response> sendResetOTP(String username) async {
     // Construct the endpoint URL
@@ -138,9 +136,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "username": username
-    };
+    final Map<String, String> body = {"username": username};
 
     // Make the POST request
     return await http.post(
@@ -149,8 +145,6 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-
-
 
   // Method to check verification status with Bearer token
   Future<http.Response> getProfileInformation() async {
@@ -169,8 +163,8 @@ class ApiService {
     return await http.get(url, headers: headers);
   }
 
-
-  Future<http.Response> updateProfile(String? name, String? aboutYou, File? profilePic) async {
+  Future<http.Response> updateProfile(
+      String? name, String? aboutYou, File? profilePic) async {
     print(':::::::::::::::::::::NAME:::::::::::$name');
     print(':::::::::::::::::::::aboutYou:::::::::::$aboutYou');
     String? accessToken = await _storage.read(key: 'access_token');
@@ -194,7 +188,8 @@ class ApiService {
         var picLength = await profilePic.length();
 
         // Determine the file extension and set the content type accordingly
-        String extension = profilePic.uri.pathSegments.last.split('.').last.toLowerCase();
+        String extension =
+            profilePic.uri.pathSegments.last.split('.').last.toLowerCase();
         String contentType;
 
         switch (extension) {
@@ -206,7 +201,8 @@ class ApiService {
             contentType = 'image/jpeg';
             break;
           default:
-            contentType = 'application/octet-stream'; // Default if type is unknown
+            contentType =
+                'application/octet-stream'; // Default if type is unknown
             break;
         }
 
@@ -243,11 +239,9 @@ class ApiService {
     }
   }
 
-
-
-
-  Future<http.Response> paymentRequest() async {
-    final Uri url = Uri.parse('${baseUrl}subscription_app/buy_subscription_on_app/');
+  Future<http.Response> paymentRequest(String type) async {
+    final Uri url =
+        Uri.parse('${baseUrl}subscription_app/buy_subscription_on_app/');
 
     // Retrieve the stored access token
     String? accessToken = await _storage.read(key: 'access_token');
@@ -258,8 +252,15 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
+    // Request body
+    final Map<String, String> body = {"subscription_plan": type};
+
     // Make the GET request
-    return await http.post(url, headers: headers);
+    return await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
   }
 
   Future<http.Response> createFreeChat(String text_content) async {
@@ -275,9 +276,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "text_content": text_content
-    };
+    final Map<String, String> body = {"text_content": text_content};
 
     // Make the POST request
     return await http.post(
@@ -286,8 +285,6 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-
-
 
   Future<http.Response> createChat(String text_content) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/create_chat/');
@@ -302,9 +299,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "text_content": text_content
-    };
+    final Map<String, String> body = {"text_content": text_content};
 
     // Make the POST request
     return await http.post(
@@ -314,7 +309,7 @@ class ApiService {
     );
   }
 
-  Future<http.Response> chat(String text_content,int id) async {
+  Future<http.Response> chat(String text_content, int id) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/add_message_to_chat/$id/');
 
     // Retrieve the stored access token
@@ -327,9 +322,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "text_content": text_content
-    };
+    final Map<String, String> body = {"text_content": text_content};
 
     // Make the POST request
     return await http.post(
@@ -338,7 +331,6 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-
 
   Future<http.Response> getChatList() async {
     final Uri url = Uri.parse('${baseUrl}chat_app/get_all_chat_list_of_user/');
@@ -388,7 +380,6 @@ class ApiService {
     return await http.get(url, headers: headers);
   }
 
-
   Future<http.Response> updateChatTitle(int ChatId, String title) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/update_chat_title/$ChatId/');
 
@@ -402,9 +393,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "chat_title": title
-    };
+    final Map<String, String> body = {"chat_title": title};
 
     // Make the POST request
     return await http.post(
@@ -427,9 +416,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "pin_date": pinDate.toIso8601String()
-    };
+    final Map<String, String> body = {"pin_date": pinDate.toIso8601String()};
 
     // Make the POST request
     return await http.post(
@@ -452,9 +439,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "pin_date": pinDate.toIso8601String()
-    };
+    final Map<String, String> body = {"pin_date": pinDate.toIso8601String()};
 
     // Make the POST request
     return await http.post(
@@ -476,12 +461,8 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
-
     // Make the POST request
-    return await http.post(
-      url,
-      headers: headers
-    );
+    return await http.post(url, headers: headers);
   }
 
   Future<http.Response> unpinEditChat(int editId) async {
@@ -496,12 +477,8 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
-
     // Make the POST request
-    return await http.post(
-        url,
-        headers: headers
-    );
+    return await http.post(url, headers: headers);
   }
 
   Future<http.Response> saveChat(int ChatId) async {
@@ -516,12 +493,8 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
-
     // Make the POST request
-    return await http.post(
-        url,
-        headers: headers
-    );
+    return await http.post(url, headers: headers);
   }
 
   Future<http.Response> deleteChat(int ChatId) async {
@@ -556,9 +529,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "text_content": textContent
-    };
+    final Map<String, String> body = {"text_content": textContent};
 
     // Make the POST request
     return await http.post(
@@ -568,7 +539,7 @@ class ApiService {
     );
   }
 
-  Future<http.Response> resetPassword(String userName,String password) async {
+  Future<http.Response> resetPassword(String userName, String password) async {
     final Uri url = Uri.parse('${baseUrl}authentication_app/reset_password/');
 
     // Headers for the HTTP request with Bearer token
@@ -590,7 +561,6 @@ class ApiService {
     );
   }
 
-
   Future<http.Response> getEditedChatList() async {
     final Uri url = Uri.parse('${baseUrl}chat_app/get_all_edited_chat/');
 
@@ -606,7 +576,6 @@ class ApiService {
     // Make the GET request
     return await http.get(url, headers: headers);
   }
-
 
   Future<http.Response> deleteEditChat(int ChatId) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/delete_edited_chat/$ChatId/');
@@ -627,7 +596,7 @@ class ApiService {
     );
   }
 
-  Future<http.Response> addEditChat(int ChatId,String content) async {
+  Future<http.Response> addEditChat(int ChatId, String content) async {
     final Uri url = Uri.parse('${baseUrl}chat_app/edit_conversation/$ChatId/');
 
     // Retrieve the stored access token
@@ -640,9 +609,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "content": content
-    };
+    final Map<String, String> body = {"content": content};
 
     // Make the POST request
     return await http.post(
@@ -652,8 +619,9 @@ class ApiService {
     );
   }
 
-  Future<http.Response> updateEditChat(int ChatId,String content) async {
-    final Uri url = Uri.parse('${baseUrl}chat_app/update_edited_conversation/$ChatId/');
+  Future<http.Response> updateEditChat(int ChatId, String content) async {
+    final Uri url =
+        Uri.parse('${baseUrl}chat_app/update_edited_conversation/$ChatId/');
 
     // Retrieve the stored access token
     String? accessToken = await _storage.read(key: 'access_token');
@@ -665,9 +633,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "content": content
-    };
+    final Map<String, String> body = {"content": content};
 
     // Make the POST request
     return await http.patch(
@@ -702,8 +668,9 @@ class ApiService {
     );
   }*/
 
-  Future<http.Response> unSaveEditChat(int editId,int folderID) async {
-    final Uri url = Uri.parse('${baseUrl}chat_app/unpin_an_edited_chat_to_a_folder/$editId/$folderID/');
+  Future<http.Response> unSaveEditChat(int editId, int folderID) async {
+    final Uri url = Uri.parse(
+        '${baseUrl}chat_app/unpin_an_edited_chat_to_a_folder/$editId/$folderID/');
 
     // Retrieve the stored access token
     String? accessToken = await _storage.read(key: 'access_token');
@@ -714,12 +681,8 @@ class ApiService {
       "Authorization": "Bearer $accessToken", // Add the Bearer token
     };
 
-
     // Make the POST request
-    return await http.post(
-        url,
-        headers: headers
-    );
+    return await http.post(url, headers: headers);
   }
 
   Future<http.Response> createClass(String className) async {
@@ -735,9 +698,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "folder_name": className
-    };
+    final Map<String, String> body = {"folder_name": className};
 
     // Make the POST request
     return await http.post(
@@ -764,7 +725,8 @@ class ApiService {
   }
 
   Future<http.Response> pinToClass(int editId, int folderId) async {
-    final Uri url = Uri.parse('${baseUrl}chat_app/pin_an_edited_chat_to_a_folder/$editId/$folderId/');
+    final Uri url = Uri.parse(
+        '${baseUrl}chat_app/pin_an_edited_chat_to_a_folder/$editId/$folderId/');
 
     // Retrieve the stored access token
     String? accessToken = await _storage.read(key: 'access_token');
@@ -813,9 +775,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "chat_name": title
-    };
+    final Map<String, String> body = {"chat_name": title};
 
     // Make the POST request
     return await http.patch(
@@ -824,5 +784,4 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-
 }

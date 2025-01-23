@@ -11,13 +11,14 @@ class SettingsView extends GetView {
   final HomeController homeController = Get.put(HomeController());
   // Dummy data to simulate API response
   final String title = "Standard";
-  final String price = "80\$";
   String expiryDate = '';
+  String package_name = '';
 
 
   @override
   Widget build(BuildContext context) {
     expiryDate = homeController.subscriptionExpireDate.value;
+    package_name = homeController.package_name.value;
     return Scaffold(
       appBar: AppBar(
         title: Text('Manage Subscription',style: h1,),
@@ -35,6 +36,16 @@ class SettingsView extends GetView {
             Obx(() {
               final themeController = Get.find<ThemeController>();
               final isDarkTheme = themeController.isDarkTheme.value;
+
+              // Dynamically set the price based on the package_name
+              String price = '';
+              if (homeController.package_name.value == "Yearly") {
+                price = "8.30\$/Per Month"; // Yearly price
+              } else if (homeController.package_name.value == "Monthly") {
+                price = "12.99\$/Per Month"; // Monthly price
+              } else {
+                price = "Unknown"; // Default value if package_name doesn't match
+              }
 
               return Container(
                 width: double.maxFinite,
@@ -60,7 +71,7 @@ class SettingsView extends GetView {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          title,
+                          package_name,
                           style: h4.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -104,7 +115,7 @@ class SettingsView extends GetView {
               },backgroundGradientColor: AppColors.cardGradient,),
               SizedBox(height: 16),
               CustomButton(text: 'Cancel', onPressed: (){
-                // do the cancel logic to stripe
+
               },backgroundGradientColor: AppColors.colorBlack,),
             ],
           ),

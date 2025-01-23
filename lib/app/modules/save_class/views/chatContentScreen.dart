@@ -757,7 +757,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
       // Replace placeholders with your content
       Content c = Content();
-      /*c.add(TextContent("title", "Generated Document"));
+      //c.add(TextContent("title", "Generated Document"));
 
       // Prepare dynamic content for messages
       List<Content> bodyContents = [];
@@ -765,8 +765,8 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
         final content = message['content'];
         bodyContents.add(TextContent("body_item", content)); // Match `${body_item}`
       }
-      c.add(ListContent("body", bodyContents)); // Match `${body}` in the template*/
-      c.add(TextContent("main", 'okay tis is working'));
+      //c.add(ListContent("body", bodyContents)); // Match `${body}` in the template
+      //c.add(TextContent("main", 'okay tis is working'));
 
       // Generate the document
       final d = await docx.generate(c);

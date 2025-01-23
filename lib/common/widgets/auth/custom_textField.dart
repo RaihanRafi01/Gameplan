@@ -61,7 +61,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Obx(() => Text(
+         Text(
           widget.label,
           style: h4.copyWith(
             fontSize: 16,
@@ -70,7 +70,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ? AppColors.blurtext // Gray color if isLogin is true
                 : (themeController.isDarkTheme.value ? Colors.white : Colors.black), // Dynamic text color
           ),
-        )),
+        ),
         const SizedBox(height: 8),
         Obx(() => TextField(
           cursorColor: widget.isLogin
