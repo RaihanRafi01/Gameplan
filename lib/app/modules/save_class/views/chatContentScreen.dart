@@ -2,13 +2,17 @@
 import 'dart:io';
 
 import 'package:docx_template/docx_template.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
+import 'package:pdf/widgets.dart' as pw;
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
@@ -16,6 +20,7 @@ import '../../dashboard/controllers/theme_controller.dart';
 import '../../history/controllers/edit_controller.dart';
 import '../../history/controllers/history_controller.dart';
 import '../../home/controllers/textEditorController.dart';
+import '../../home/views/export_screen_view.dart';
 import '../controllers/save_class_controller.dart';
 
 class ChatContentScreen extends StatefulWidget {
@@ -315,7 +320,14 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                     _showDeleteDialog(context, widget.editId);
                   } else if (value == 5) {
                     // export logic
-                    generateAndShowDocx();
+                    final filePath = await _promptAndSavePDF();
+                    if (filePath != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("PDF saved to: $filePath")),
+                      );
+                      _showPDF(filePath);
+                      //editController.disableEditing();
+                    }
                   } else if (value == 6) {
                     textEditorController.currentEditingIndex.value = -1;
                     final htmlContent = _generateHTMLContent();
@@ -744,10 +756,10 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     );
   }
 
-  Future<void> generateAndShowDocx() async {
+  /*Future<void> generateAndShowDocx() async {
     try {
       // Load the template file from assets
-      var data = await rootBundle.load('assets/images/home/template.docx');
+      var data = await rootBundle.load('assets/template/template.docx');
       final bytes = data.buffer.asUint8List();
 
       // Load the template
@@ -760,12 +772,14 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       //c.add(TextContent("title", "Generated Document"));
 
       // Prepare dynamic content for messages
-      List<Content> bodyContents = [];
-      for (final message in messages) {
+      //List<Content> bodyContents = [];
+      *//*for (final message in messages) {
         final content = message['content'];
-        bodyContents.add(TextContent("body_item", content)); // Match `${body_item}`
-      }
-      //c.add(ListContent("body", bodyContents)); // Match `${body}` in the template
+        c.add(TextContent("body", content));
+        //bodyContents.add(TextContent("body_item", content)); // Match `${body_item}`
+      }*//*
+      c.add(TextContent("body", "Simple docname"));
+      //c.add(TextContent("body", bodyContents)); // Match `${body}` in the template
       //c.add(TextContent("main", 'okay tis is working'));
 
       // Generate the document
@@ -787,9 +801,164 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     } catch (e) {
       print("Error: $e");
     }
+  }*/
+
+
+
+  Future<String?> _promptAndSavePDF() async {
+    String? fileName = await _getFileName(context);
+    if (fileName == null || fileName.trim().isEmpty) {
+      return null;
+    }
+
+    // Ensure the file name ends with .pdf
+    if (!fileName.endsWith(".pdf")) {
+      fileName += ".pdf";
+    }
+
+    try {
+      // Get the full save path using the helper function
+      final filePath = await getSavePath(fileName);
+      return await _generateAndSavePDF(filePath);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to determine save path: $e")),
+      );
+      return null;
+    }
   }
 
+  Future<String> getSavePath(String fileName) async {
+    // Get the external storage directory (unique to the app)
+    final directory = await getExternalStorageDirectory();
+    if (directory == null) {
+      throw Exception("Unable to access external storage directory.");
+    }
 
+    // Combine the directory path with the file name
+    final path = "${directory.path}/$fileName";
+    return path;
+  }
+
+  Future<String?> _getFileName(BuildContext context) async {
+    TextEditingController fileNameController = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Set PDF Name"),
+          content: TextField(
+            controller: fileNameController,
+            decoration: InputDecoration(hintText: "Enter file name"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(null);
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(fileNameController.text);
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> requestPermissions() async {
+    if (Platform.isAndroid) {
+      if (!await Permission.storage.isGranted) {
+        await Permission.storage.request();
+      }
+
+      if (await Permission.storage.isDenied) {
+        // Show a message to the user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text("Storage permission is required to save PDFs.")),
+        );
+        return;
+      }
+
+      if (await Permission.storage.isPermanentlyDenied) {
+        // Open app settings
+        openAppSettings();
+      }
+    }
+  }
+
+  Future<String?> _generateAndSavePDF(String filePath) async {
+    requestPermissions();
+    try {
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: List.generate(messages.length, (index) {
+                final isSentByUser = messages[index]['sender'] == 'User';
+                final sender = isSentByUser ? "user:" : "bot:";
+
+                pw.Alignment alignment;
+                switch (textEditorController.textAlignments[index]) {
+                  case TextAlign.center:
+                    alignment = pw.Alignment.center;
+                    break;
+                  case TextAlign.right:
+                    alignment = pw.Alignment.centerRight;
+                    break;
+                  case TextAlign.left:
+                  default:
+                    alignment = pw.Alignment.centerLeft;
+                    break;
+                }
+
+                return pw.Container(
+                  alignment: alignment,
+                  padding: const pw.EdgeInsets.only(bottom: 8),
+                  child: pw.Text(
+                    "$sender ${messages[index]['content']}",
+                    style: pw.TextStyle(
+                      fontSize: textEditorController.textStyles[index].fontSize ?? 14,
+                      color: isSentByUser ? PdfColors.black : PdfColors.purple,
+                    ),
+                  ),
+                );
+              }),
+            );
+          },
+        ),
+      );
+
+      final file = File(filePath);
+      await file.writeAsBytes(await pdf.save());
+
+      return filePath;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to save PDF: $e")),
+      );
+      print('Error: $e');
+      return null;
+    }
+  }
+
+  void _showPDF(String filePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PDFViewerScreen(filePath: filePath),
+      ),
+    );
+  }
 
 
 }

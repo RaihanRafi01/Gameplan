@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/services/api_services.dart';
+import '../../authentication/views/authentication_view.dart';
 import '../../authentication/views/verify_o_t_p_view.dart';
 import '../../dashboard/views/dashboard_view.dart';
 
@@ -118,7 +121,20 @@ class HomeController extends GetxController {
 
       // If profile_picture is null, set a default image URL
      // profilePicUrl.value = _profilePicture ?? 'assets/images/home/default_profile_pic.jpg'; // Default image URL
-    } else {
+    }
+    else if (verificationResponse.statusCode == 401){
+
+      final FlutterSecureStorage _storage = FlutterSecureStorage();
+      await _storage.delete(key: 'access_token');
+      await _storage.delete(key: 'refresh_token');
+
+      // SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', false); // User is logged out
+
+      Get.offAll(() => AuthenticationView());
+    }
+    else {
       Get.snackbar('Error', 'Verification status check failed');
     }
   }
