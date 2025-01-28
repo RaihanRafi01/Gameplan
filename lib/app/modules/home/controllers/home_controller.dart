@@ -123,7 +123,7 @@ class HomeController extends GetxController {
      // profilePicUrl.value = _profilePicture ?? 'assets/images/home/default_profile_pic.jpg'; // Default image URL
     }
     else if (verificationResponse.statusCode == 401){
-
+      Get.snackbar('Session Expired', 'Please Login again to Continue');
       final FlutterSecureStorage _storage = FlutterSecureStorage();
       await _storage.delete(key: 'access_token');
       await _storage.delete(key: 'refresh_token');
