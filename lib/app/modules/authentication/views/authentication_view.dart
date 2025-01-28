@@ -124,7 +124,18 @@ class AuthenticationView extends GetView<AuthenticationController> {
               ),
             ),
           ),
+          Obx(() {
+            return _controller.isLoading.value
+                ? Container(
+              color: Colors.black45,
+              child: const Center(
+                child: CircularProgressIndicator(color: AppColors.appColor2,),
+              ),
+            )
+                : const SizedBox.shrink();
+          }),
         ],
+
       ),
     );
   }

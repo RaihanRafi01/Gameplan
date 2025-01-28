@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase core package
 import 'app/modules/dashboard/controllers/theme_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'common/appColors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp();
 
   // Initialize the ThemeController to load the saved theme
   final ThemeController themeController = Get.put(ThemeController());

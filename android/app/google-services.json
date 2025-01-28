@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "921561902533",
+    "project_id": "ag-court-1f9ea",
+    "storage_bucket": "ag-court-1f9ea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921561902533:android:4250646a0d9c4c74c72fac",
+        "android_client_info": {
+          "package_name": "com.jvai.agcourt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921561902533-q281ugc1ptijktaca888331ph7cmjaqa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jvai.agcourt",
+            "certificate_hash": "8c91cc37d28f190727fb68767855fc509157c68c"
+          }
+        },
+        {
+          "client_id": "921561902533-2i18v85e81n1p4b91nq8be2sfp437tb0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlBGeITOvfbfXDebZQCWgUy4dqPWZncPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921561902533-2i18v85e81n1p4b91nq8be2sfp437tb0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "921561902533-412v4fj8pjdlaiit5dmeblm5odc6fhj8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jvai.agcourt.agcourt"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

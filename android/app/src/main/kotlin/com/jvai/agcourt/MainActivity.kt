@@ -1,4 +1,4 @@
-package com.jvai.agcourt.agcourt
+package com.jvai.agcourt
 
 import io.flutter.embedding.android.FlutterActivity
 

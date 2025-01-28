@@ -56,7 +56,7 @@ class ForgotPasswordView extends GetView {
                     onPressed: () async {
                       if (usernameController.text.trim().isEmpty) {
                         Get.snackbar(
-                          "Error",
+                          "Warning",
                           "Please enter your user name",
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.red,
