@@ -148,6 +148,8 @@ class AuthenticationController extends GetxController {
         final accessToken = responseBody['access'];
         final refreshToken = responseBody['refresh'];
 
+        homeController.usernameOBS.value = username;
+
         // Store the tokens securely
         await storeTokens(accessToken, refreshToken);
 
