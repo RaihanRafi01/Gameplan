@@ -60,6 +60,8 @@ dependencies:
   firebase_core: ^3.10.1
   firebase_auth: ^5.4.1
   change_app_package_name: ^1.4.0
+  archive: ^3.3.0  # For ZIP handling
+  xml: ^6.2.0
 
 dev_dependencies:
   flutter_test:

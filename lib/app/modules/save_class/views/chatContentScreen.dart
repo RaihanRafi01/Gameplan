@@ -1,7 +1,7 @@
 // chatContentScreen.dart
 import 'dart:io';
-
-import 'package:docx_template/docx_template.dart';
+import 'package:archive/archive.dart';
+import 'package:xml/xml.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +13,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:xml/xml.dart';
 import '../../../../common/appColors.dart';
 import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
@@ -328,6 +329,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                       _showPDF(filePath);
                       //editController.disableEditing();
                     }
+                    //await generateDocx('okay working');
                   } else if (value == 6) {
                     textEditorController.currentEditingIndex.value = -1;
                     final htmlContent = _generateHTMLContent();
@@ -958,6 +960,36 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
         builder: (context) => PDFViewerScreen(filePath: filePath),
       ),
     );
+  }
+
+
+  static Future<void> generateDocx(String text) async {
+    // Create minimal DOCX structure (simplified example)
+    final documentXml = XmlDocument([
+      XmlElement(XmlName('document'), [], [
+        XmlElement(XmlName('body'), [], [
+          XmlElement(XmlName('p'), [], [XmlText(text)])
+        ])
+      ])
+    ]);
+
+    // Create a ZIP archive
+    final archive = Archive();
+    archive.addFile(
+      ArchiveFile(
+        'word/document.xml', // File name
+        documentXml.toString().codeUnits.length, // File size (in bytes)
+        documentXml.toString().codeUnits, // File content as List<int>
+      ),
+    );
+
+    // Save the ZIP as a .docx file
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/generated_document.docx';
+    final file = File(path);
+    await file.writeAsBytes(ZipEncoder().encode(archive)!);
+    //OpenFile.open(path);
+    print('Document saved at: $path');
   }
 
 
