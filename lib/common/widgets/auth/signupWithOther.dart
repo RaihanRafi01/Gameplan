@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../app/modules/authentication/controllers/authentication_controller.dart';
 import '../../../app/modules/authentication/views/sign_up_view.dart';
 import '../../appColors.dart';
@@ -31,7 +32,7 @@ class SignupWithOther extends StatelessWidget {
             SocialButton(
               iconPath: 'assets/images/auth/apple_icon.svg',
               onPressed: () {
-                // Implement Apple Sign-In here
+                _signInWithApple();
               },
             ),
             const SizedBox(width: 30),
@@ -84,5 +85,42 @@ class SignupWithOther extends StatelessWidget {
       _controller.isLoading.value = false; // Hide the loading screen
     }
 
+  }
+
+  Future<void> _signInWithApple() async {
+    try {
+      _controller.isLoading.value = true;
+
+      final AuthorizationCredentialAppleID result = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
+      final AuthCredential credential = oAuthProvider.credential(
+        idToken: result.identityToken,
+        accessToken: result.authorizationCode,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        print(':::::::::::::::::::::::::::::::::::::::${user.email}');
+        print(':::::::::::::::::::::::::::::::::::::::${user.displayName}');
+        print(':::::::::::::::::::::::::::::::::::::::${user.uid}');
+
+        await _controller.signUpWithOther(
+          user.displayName ?? 'Apple User', // Fallback in case displayName is null
+          user.email ?? result.email ?? 'apple@example.com', // Fallback in case email is null
+        );
+      }
+    } catch (e) {
+      print("Error signing in with Apple: $e");
+    } finally {
+      _controller.isLoading.value = false; // Hide the loading screen
+    }
   }
 }

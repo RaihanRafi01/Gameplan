@@ -62,6 +62,7 @@ dependencies:
   change_app_package_name: ^1.4.0
   archive: ^3.3.0  # For ZIP handling
   xml: ^6.2.0
+  sign_in_with_apple: ^6.1.4
 
 dev_dependencies:
   flutter_test:
