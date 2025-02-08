@@ -113,8 +113,8 @@ class SignupWithOther extends StatelessWidget {
         print(':::::::::::::::::::::::::::::::::::::::${user.uid}');
 
         await _controller.signUpWithOther(
-          user.displayName ?? 'Apple User', // Fallback in case displayName is null
-          user.email ?? result.email ?? 'apple@example.com', // Fallback in case email is null
+          user.displayName!, // Fallback in case displayName is null
+          user.email ?? result.email!, // Fallback in case email is null
         );
       }
     } catch (e) {
