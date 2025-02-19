@@ -1,3 +1,4 @@
+import 'package:agcourt/app/modules/profile/controllers/profile_controller.dart';
 import 'package:agcourt/common/widgets/custom_button.dart';
 import 'package:agcourt/common/widgets/custom_textField.dart';
 import 'package:flutter/material.dart';
@@ -51,12 +52,12 @@ class HelpSupportView extends GetView {
     );
   }
 
-  void _validateAndSend(BuildContext context, TextEditingController emailController, TextEditingController problemController) {
+  Future<void> _validateAndSend(BuildContext context, TextEditingController emailController, TextEditingController problemController) async {
+    final ProfileController profileController = Get.put(ProfileController());
     final email = emailController.text.trim();
     final problem = problemController.text.trim();
 
     if (email.isEmpty || problem.isEmpty) {
-      // Show a snackbar or dialog if fields are empty
       Get.snackbar(
         'Error',
         'Please fill out all fields',
@@ -65,7 +66,6 @@ class HelpSupportView extends GetView {
         colorText: Colors.white,
       );
     } else if (!_isValidEmail(email)) {
-      // Show an error if email is invalid
       Get.snackbar(
         'Error',
         'Please enter a valid email address',
@@ -74,8 +74,10 @@ class HelpSupportView extends GetView {
         colorText: Colors.white,
       );
     } else {
-      // If validation passes, show the confirmation dialog
-      _showConfirmationDialog(context);
+      final success = await profileController.helpAndSupport(email, problem);
+      if (success == true) {
+        _showConfirmationDialog(context);
+      }
     }
   }
 

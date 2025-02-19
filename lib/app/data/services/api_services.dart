@@ -5,19 +5,18 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class ApiService {
-  final FlutterSecureStorage _storage = FlutterSecureStorage(); // For secure storage
+  final FlutterSecureStorage _storage =
+      FlutterSecureStorage(); // For secure storage
   // Base URL for the API
   final String baseUrl =
       'https://backend.gameplanai.co.uk/'; // https://apparently-intense-toad.ngrok-free.app/     //     https://agcourt.pythonanywhere.com/   // https://charming-willingly-starfish.ngrok-free.app/
 
-
   // signup with other
 
-
-  Future<http.Response> signUpWithOther(
-      String username, String email) async {
+  Future<http.Response> signUpWithOther(String username, String email) async {
     // Construct the endpoint URL
-    final Uri url = Uri.parse('${baseUrl}authentication_app/social_signup_signin/');
+    final Uri url =
+        Uri.parse('${baseUrl}authentication_app/social_signup_signin/');
 
     // Headers for the HTTP request
     final Map<String, String> headers = {
@@ -25,10 +24,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {
-      "username": username,
-      "email": email
-    };
+    final Map<String, String> body = {"username": username, "email": email};
 
     // Make the POST request
     return await http.post(
@@ -37,7 +33,6 @@ class ApiService {
       body: jsonEncode(body),
     );
   }
-
 
   // Sign-up method
   Future<http.Response> signUp(
@@ -807,6 +802,28 @@ class ApiService {
 
     // Make the POST request
     return await http.patch(
+      url,
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  Future<http.Response> helpAndSupport(String email, String query) async {
+    final Uri url = Uri.parse('${baseUrl}help_support/send_feedback/');
+
+    // Headers for the HTTP request with Bearer token
+    final Map<String, String> headers = {
+      "Content-Type": "application/json",
+    };
+
+// Request body
+    final Map<String, String> body = {
+      "email": email,
+      "query": query,
+    };
+
+    // Make the POST request
+    return await http.post(
       url,
       headers: headers,
       body: jsonEncode(body),

@@ -1,10 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:pdf/widgets.dart';
 
+import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
+import '../../../../common/widgets/custom_button.dart';
 import '../../../data/services/api_services.dart';
+import '../../dashboard/controllers/theme_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class ProfileController extends GetxController {
@@ -92,4 +98,23 @@ class ProfileController extends GetxController {
       Get.snackbar('Error', 'An error occurred: $e');
     }
   }
+
+  Future<bool> helpAndSupport(String email, String query) async {
+    try {
+      final http.Response response = await _service.helpAndSupport(email, query);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Return true for success, which will trigger the dialog in the view
+        return true;
+      } else {
+        final error = jsonDecode(response.body)['error'] ?? 'Failed to submit your query';
+        Get.snackbar('Error', error);
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An error occurred: $e');
+      return false;
+    }
+  }
+
 }
