@@ -21,7 +21,7 @@ class VerifyOTPView extends StatefulWidget {
 
 class _VerifyOTPViewState extends State<VerifyOTPView> {
   late Timer _timer;
-  late final String username;
+  late final String email;
   int _remainingSeconds = 30;
   bool _isResendEnabled = false;
   String? _verificationMessage; // To show "Code is Correct" or "Incorrect Code"
@@ -31,7 +31,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
   @override
   void initState() {
     final HomeController homeController = Get.put(HomeController());
-    username = homeController.usernameOBS.value;
+    email = homeController.emailOBS.value;
     super.initState();
     _startTimer();
   }
@@ -124,7 +124,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
                     } else {
                       widget.isForgot
                           ? _controller.verifyForgotOTP(widget.forgotUserName!, otp)
-                          : _controller.verifyOTP(username, otp);
+                          : _controller.verifyOTP(email, otp);
                     }
                   },
                 ),

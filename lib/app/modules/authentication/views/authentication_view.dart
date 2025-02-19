@@ -20,11 +20,11 @@ class AuthenticationView extends GetView<AuthenticationController> {
   final AuthenticationController _controller =
       Get.put(AuthenticationController());
   final HomeController homeController = Get.put(HomeController());
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   void _handleLogin() {
-    if (_usernameController.text.trim().isEmpty ||
+    if (_emailController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
@@ -33,14 +33,14 @@ class AuthenticationView extends GetView<AuthenticationController> {
       );
       return;
     }
-    homeController.usernameOBS.value = _usernameController.text.trim();
+    homeController.emailOBS.value = _emailController.text.trim();
 
     print(
-        ':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS.value}');
+        ':::::::::::::emailOBS:::::::::::::::::${homeController.emailOBS.value}');
 
     // Proceed with login logic if validations pass
     _controller.login(
-      _usernameController.text.trim(),
+      _emailController.text.trim(),
       _passwordController.text.trim(),
     );
   }
@@ -80,7 +80,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
                     label: "Your User Name",
                     hint: "Enter User Name",
                     prefixIcon: Icons.person_outline,
-                    controller: _usernameController,
+                    controller: _emailController,
                   ),
                   const SizedBox(height: 10),
                   CustomTextField(

@@ -77,7 +77,7 @@ class ApiService {
 
     // Request body
     final Map<String, String> body = {
-      "username": username,
+      "email": username,
       "password": password,
     };
 
@@ -101,7 +101,7 @@ class ApiService {
 
     // Request body
     final Map<String, String> body = {
-      "username": username,
+      "email": username,
       "otp": otp,
     };
 

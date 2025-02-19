@@ -56,9 +56,9 @@ class _SignUpViewState extends State<SignUpView> {
       return;
     }
 
-    homeController.usernameOBS.value = _usernameController.text.trim();
+    homeController.emailOBS.value = _emailController.text.trim();
 
-    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.usernameOBS
+    print(':::::::::::::usernameOBS:::::::::::::::::${homeController.emailOBS
         .value}');
 
     // Proceed with sign-up logic if validations pass

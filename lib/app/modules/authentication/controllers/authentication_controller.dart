@@ -127,10 +127,10 @@ class AuthenticationController extends GetxController {
     }
   }
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(String email, String password) async {
     isLoading.value = true; // Show the loading screen
     try {
-      final http.Response response = await _service.login(username, password);
+      final http.Response response = await _service.login(email, password);
 
       print(':::::::::::::::RESPONSE:::::::::::::::::::::${response.body
           .toString()}');
@@ -148,7 +148,7 @@ class AuthenticationController extends GetxController {
         final accessToken = responseBody['access'];
         final refreshToken = responseBody['refresh'];
 
-        homeController.usernameOBS.value = username;
+        homeController.emailOBS.value = email;
 
         // Store the tokens securely
         await storeTokens(accessToken, refreshToken);

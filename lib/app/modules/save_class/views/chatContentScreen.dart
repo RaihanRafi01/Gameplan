@@ -64,6 +64,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   @override
   void initState() {
     super.initState();
+    print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::: content : ${widget.content}');
     title.value = widget.title;
     isPinMode.value = widget.isPinned;
     isSaveMode.value = widget.isSaved;
@@ -457,25 +458,36 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     final paragraphs = document.getElementsByTagName('p');
     final parsedMessages = <Map<String, dynamic>>[];
 
+    textEditorController.textStyles.clear();
+    textEditorController.textAlignments.clear();
+
     for (var paragraph in paragraphs) {
       final style = paragraph.attributes['style'] ?? '';
-      final strongTag = paragraph.getElementsByTagName('strong').first;
+      final strongTag = paragraph.getElementsByTagName('strong').firstOrNull;
       final sender = strongTag?.text.replaceAll(':', '') ?? 'unknown';
 
       // Remove the sender prefix (e.g., "User:" or "Bot:") from the content
-      final content =
-          paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
+      final content = paragraph.text.replaceFirst(RegExp(r'^.*:\s*'), '').trim();
+
+      // Extract text style and alignment
+      final textStyle = _parseInlineStyles(style);
+      final textAlign = _parseAlignmentFromStyle(style);
+
       parsedMessages.add({
         'sender': sender,
         'content': content,
-        'style': _parseInlineStyles(style),
-        'alignment': _parseAlignmentFromStyle(style),
+        'style': textStyle,
+        'alignment': textAlign,
       });
+
+      // Assign extracted styles to textEditorController
+      textEditorController.textStyles.add(textStyle);
+      textEditorController.textAlignments.add(textAlign);
     }
 
-    messages.value = parsedMessages;
-    textEditorController.initializeStyles(parsedMessages.length);
+    messages.assignAll(parsedMessages);
   }
+
 
   TextStyle _parseInlineStyles(String style) {
     final fontSizeRegex = RegExp(r'font-size:\s*([\d.]+)px;');
@@ -486,23 +498,9 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
         ) ??
         16.0;
 
-    final color = _parseColor(
-      colorRegex.firstMatch(style)?.group(1) ?? 'black',
-    );
-
-    return TextStyle(fontSize: fontSize, color: color);
+    return TextStyle(fontSize: fontSize);
   }
 
-  Color _parseColor(String color) {
-    switch (color.toLowerCase()) {
-      case 'black':
-        return Colors.black;
-      case 'purple':
-        return Colors.purple;
-      default:
-        return Colors.black; // Default color fallback
-    }
-  }
 
   TextAlign _parseAlignmentFromStyle(String style) {
     if (style.contains('text-align: center;')) {

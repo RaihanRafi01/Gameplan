@@ -15,7 +15,7 @@ class HomeController extends GetxController {
   var username = ''.obs;
   var isLoading = false.obs;
   var profilePicUrl = ''.obs; // Store the profile picture URL
-  final RxString usernameOBS = ''.obs;
+  final RxString emailOBS = ''.obs;
   var name = ''.obs;
   var aboutYou = ''.obs;
   var subscriptionExpireDate = ''.obs;
