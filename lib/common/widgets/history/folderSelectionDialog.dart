@@ -14,7 +14,7 @@ class FolderSelectionDialog extends StatelessWidget {
 
   final int editId;
 
-  FolderSelectionDialog({super.key,required this.editId});
+  FolderSelectionDialog({super.key, required this.editId});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class FolderSelectionDialog extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         width: MediaQuery.of(context).size.width * 0.8,
         child: Obx(() {
-          if (controller.classList.isEmpty) {
+          /*if (controller.classList.isEmpty) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -55,7 +55,7 @@ class FolderSelectionDialog extends StatelessWidget {
               ],
             );
           }
-
+*/
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -82,15 +82,17 @@ class FolderSelectionDialog extends StatelessWidget {
               const SizedBox(height: 8.0),
 
               // Create Folder Button
-              CustomButton(text: 'Create Class', onPressed: ()async {
-                final folderName = folderNameController.text.trim();
-                if (folderName.isNotEmpty) {
-                  await controller.addClass(folderName);
-                  folderNameController.clear(); // Clear the input field
-                } else {
-                  Get.snackbar('Error', 'Class name cannot be empty');
-                }
-              }),
+              CustomButton(
+                  text: 'Create Class',
+                  onPressed: () async {
+                    final folderName = folderNameController.text.trim();
+                    if (folderName.isNotEmpty) {
+                      await controller.addClass(folderName);
+                      folderNameController.clear(); // Clear the input field
+                    } else {
+                      Get.snackbar('Error', 'Class name cannot be empty');
+                    }
+                  }),
               const SizedBox(height: 16.0),
 
               // Available Folders List
@@ -114,14 +116,16 @@ class FolderSelectionDialog extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final folder = controller.classList[index];
                     return ListTile(
-                      leading: SvgPicture.asset('assets/images/home/class_icon.svg'),
+                      leading:
+                          SvgPicture.asset('assets/images/home/class_icon.svg'),
                       title: Text(folder['folder_name'] ?? 'Unnamed Folder'),
                       onTap: () async {
                         int folderId = folder['id'];
                         //var editId = editId;
                         //controller.selectClass(folder['folder_name']);
-                        print('Selected Folder ID: ${folder['id']}, Name: ${folder['folder_name']} Edit id : $editId');
-                        controller.pinToClass(editId,folderId);
+                        print(
+                            'Selected Folder ID: ${folder['id']}, Name: ${folder['folder_name']} Edit id : $editId');
+                        controller.pinToClass(editId, folderId);
                         Get.back(); // Close the dialog
                       },
                     );
