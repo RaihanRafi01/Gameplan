@@ -69,7 +69,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
 
   void _resendOTP() {
     print("OTP resent");
-    _controller.resendOTP();
+    _controller.resendOTP(widget.forgotUserName!);
     _startTimer();
   }
 

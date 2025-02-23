@@ -41,13 +41,13 @@ class ForgotPasswordView extends GetView {
                 children: [
                   CustomHeadertext(
                     header1: "Forgot Password",
-                    header2: "Please enter your username to reset password.",
+                    header2: "Please enter your email to reset password.",
                   ),
                   const SizedBox(height: 30),
                   CustomTextField(
                     controller: usernameController, // Add the controller
-                    label: "Your User Name",
-                    hint: "Enter User Name",
+                    label: "Your Email",
+                    hint: "Enter Email",
                     prefixIcon: Icons.person_outline,
                   ),
                   const SizedBox(height: 20),

@@ -120,7 +120,7 @@ class ApiService {
 
     // Request body
     final Map<String, String> body = {
-      "username": username,
+      "email": username,
       "otp": otp,
     };
 
@@ -132,7 +132,7 @@ class ApiService {
     );
   }
 
-  Future<http.Response> resendOTP() async {
+  /*Future<http.Response> resendOTP() async {
     // Construct the endpoint URL
     final Uri url = Uri.parse('${baseUrl}authentication_app/resend_otp/');
 
@@ -147,7 +147,7 @@ class ApiService {
 
     // Make the POST request
     return await http.post(url, headers: headers);
-  }
+  }*/
 
   Future<http.Response> sendResetOTP(String username) async {
     // Construct the endpoint URL
@@ -159,7 +159,7 @@ class ApiService {
     };
 
     // Request body
-    final Map<String, String> body = {"username": username};
+    final Map<String, String> body = {"email": username};
 
     // Make the POST request
     return await http.post(
@@ -572,7 +572,7 @@ class ApiService {
 
     // Request body
     final Map<String, String> body = {
-      "username": userName,
+      "email": userName,
       "password": password
     };
 

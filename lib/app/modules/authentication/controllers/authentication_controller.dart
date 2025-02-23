@@ -240,11 +240,11 @@ class AuthenticationController extends GetxController {
     }
   }
 
-  Future<void> resendOTP() async {
+  Future<void> resendOTP(String email) async {
     isLoading.value = true; // Show the loading screen
     try {
-      print(':::::resendOTP:::::::::::::::::');
-      final http.Response response = await _service.resendOTP();
+      print('::::::::USERNAME:::::$email::::');
+      final http.Response response = await _service.sendResetOTP(email);
 
       print(':::::::::::::::RESPONSE:::::::::::::::::::::${response.body
           .toString()}');

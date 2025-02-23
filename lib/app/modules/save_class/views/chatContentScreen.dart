@@ -1,4 +1,5 @@
 // chatContentScreen.dart
+import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:xml/xml.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' as html_parser;
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
@@ -251,7 +253,31 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                           ),
                           SizedBox(width: 8),
                           Text(
-                            "Export",
+                            "Export as PDF",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 7,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/export_icon.svg', // You can replace this with an appropriate .docx icon path or use an Icon
+                            width: 24,
+                            height: 24,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Export as Docx",
                             style: TextStyle(
                               color: themeController.isDarkTheme.value
                                   ? Colors.white
@@ -339,6 +365,9 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Saved successfully!")),
                     );
+                  }else if (value == 7) {
+                    // New logic for generating .docx
+                    await generateAndShowDocx();
                   }
                 },
               );
@@ -961,33 +990,62 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   }
 
 
-  static Future<void> generateDocx(String text) async {
-    // Create minimal DOCX structure (simplified example)
-    final documentXml = XmlDocument([
-      XmlElement(XmlName('document'), [], [
-        XmlElement(XmlName('body'), [], [
-          XmlElement(XmlName('p'), [], [XmlText(text)])
-        ])
-      ])
-    ]);
+  Future<void> generateAndShowDocx() async {
+    try {
+      // Prepare the content for the .docx (using messages from the chat)
+      final bodyContent = messages.map((message) {
+        final sender = message['sender'] == 'User' ? 'User:' : 'Bot:';
+        return '$sender ${message['content']}';
+      }).join('\n');
 
-    // Create a ZIP archive
-    final archive = Archive();
-    archive.addFile(
-      ArchiveFile(
-        'word/document.xml', // File name
-        documentXml.toString().codeUnits.length, // File size (in bytes)
-        documentXml.toString().codeUnits, // File content as List<int>
-      ),
-    );
+      const apiUrl = 'https://backend.gameplanai.co.uk/chat_app/generate_docx_response/';
+      final body = jsonEncode({
+        "text": bodyContent, // Send the concatenated chat content
+      });
 
-    // Save the ZIP as a .docx file
-    final directory = await getApplicationDocumentsDirectory();
-    final path = '${directory.path}/generated_document.docx';
-    final file = File(path);
-    await file.writeAsBytes(ZipEncoder().encode(archive)!);
-    //OpenFile.open(path);
-    print('Document saved at: $path');
+      print('Request URL: $apiUrl');
+      print('Request Body: $body');
+      print('Request Headers: {Content-Type: application/json}');
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Headers: ${response.headers}');
+      print('Response Content-Type: ${response.headers['content-type']}');
+      print('Response Body Length: ${response.bodyBytes.length} bytes');
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+
+        // Save the file locally
+        final directory = await getTemporaryDirectory();
+        final filePath = '${directory.path}/downloaded_chat.docx';
+        final file = File(filePath);
+        await file.writeAsBytes(bytes);
+
+        print('File saved at: $filePath');
+
+        // Open the file
+        final result = await OpenFile.open(filePath);
+        if (result.type != ResultType.done) {
+          throw Exception('Error opening file: ${result.message}');
+        }
+        print('File opened successfully with result: ${result.message}');
+      } else {
+        throw Exception('Failed to load file: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating .docx: $e')),
+      );
+      print('Error: $e');
+    }
   }
 
 

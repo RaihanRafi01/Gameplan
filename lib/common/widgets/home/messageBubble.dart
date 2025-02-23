@@ -33,10 +33,7 @@ class MessageBubble extends StatelessWidget {
         if (!isSentByUser) // Avatar on the left for user's messages
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage('assets/images/home/bot_image.png'),
-            ),
+            child: Image.asset('assets/images/home/bot_image.png',scale: 4,)
           ),
         Padding(
           padding: const EdgeInsets.all(8.0),

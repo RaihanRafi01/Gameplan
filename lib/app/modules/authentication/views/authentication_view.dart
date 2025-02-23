@@ -77,8 +77,8 @@ class AuthenticationView extends GetView<AuthenticationController> {
                   const SizedBox(height: 50),
                   CustomTextField(
                     isLogin: true,
-                    label: "Your User Name",
-                    hint: "Enter User Name",
+                    label: "Your Email",
+                    hint: "Enter Email",
                     prefixIcon: Icons.person_outline,
                     controller: _emailController,
                   ),
