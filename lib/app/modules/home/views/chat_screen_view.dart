@@ -3,7 +3,6 @@ import 'package:agcourt/app/modules/dashboard/views/widgets/myAppBar.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:agcourt/app/modules/home/controllers/home_controller.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -146,7 +145,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _exportToPDF(BuildContext context) async {
+  /*Future<void> _exportToPDF(BuildContext context) async {
     String? outputDir = await FilePicker.platform.getDirectoryPath();
     if (outputDir == null) return;
 
@@ -177,7 +176,7 @@ class ChatScreen extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("PDF saved to: ${file.path}")),
     );
-  }
+  }*/
 
 
 }
