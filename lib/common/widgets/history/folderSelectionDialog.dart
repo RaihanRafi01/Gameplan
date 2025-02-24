@@ -11,7 +11,8 @@ class FolderSelectionDialog extends StatelessWidget {
   final TextEditingController folderNameController = TextEditingController();
   final SaveClassController controller = Get.put(SaveClassController());
   final EditController editController = Get.put(EditController());
-
+  final SaveClassController saveClassController =
+  Get.put(SaveClassController());
   final int editId;
 
   FolderSelectionDialog({super.key, required this.editId});
@@ -126,6 +127,7 @@ class FolderSelectionDialog extends StatelessWidget {
                         print(
                             'Selected Folder ID: ${folder['id']}, Name: ${folder['folder_name']} Edit id : $editId');
                         controller.pinToClass(editId, folderId);
+                        saveClassController.isSaveMode.value = true;
                         Get.back(); // Close the dialog
                       },
                     );

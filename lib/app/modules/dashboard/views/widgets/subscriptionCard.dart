@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../common/appColors.dart';
 
 class SubscriptionOptionCard extends StatelessWidget {
@@ -25,14 +24,12 @@ class SubscriptionOptionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // Wrap the Stack in a parent Container to avoid clipping
-        margin: const EdgeInsets.only(top: 20), // Avoid clipping the top label
+        margin: const EdgeInsets.only(top: 20),
         child: Stack(
-          clipBehavior: Clip.none, // Allow overflow
+          clipBehavior: Clip.none,
           children: [
             Container(
-              width: 180, // Adjust width to match your design
-              height: 200,
+              width: 180,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -52,7 +49,7 @@ class SubscriptionOptionCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20), // Add space for the "BEST DEAL" label
+                  const SizedBox(height: 20),
                   Text(
                     title,
                     style: const TextStyle(
@@ -62,24 +59,28 @@ class SubscriptionOptionCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Row(children: [
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                  Row(
+                    children: [
+                      Text(
+                        price,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '/ Per Month',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                      Expanded(
+                        child: Text(
+                          '/ Per Month',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],),
+                    ],
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     description,
@@ -91,11 +92,10 @@ class SubscriptionOptionCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Position "BEST DEAL" label
             if (isBestValue)
               Positioned(
-                top: -12, // Adjust to overlap the card
-                left: 45, // Center alignment
+                top: -12,
+                left: 45,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(

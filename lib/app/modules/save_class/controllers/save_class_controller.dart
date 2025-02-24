@@ -13,6 +13,7 @@ class SaveClassController extends GetxController {
   var selectedClass = ''.obs; // Currently selected class name
   var selectedClassContents = <Map<String, dynamic>>[].obs; // Contents of the selected class
   var isLoading = false.obs; // Observable for loading state
+  final RxBool isSaveMode = false.obs;
 
   /// Select a class and update its contents
   void selectClass(String className) {
@@ -116,6 +117,7 @@ class SaveClassController extends GetxController {
 
       if (response.statusCode == 200) {
         Get.snackbar('Unpinned', 'Edit unpinned successfully');
+        isSaveMode.value = false;
         await fetchClassList();
       } else {
         Get.snackbar('Error', 'Failed to unpin');

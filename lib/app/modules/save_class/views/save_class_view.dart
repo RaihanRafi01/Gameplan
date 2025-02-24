@@ -28,38 +28,40 @@ class SaveClassView extends StatelessWidget {
         centerTitle: true,
         title: Obx(() {
           final ThemeController themeController = Get.find<ThemeController>();
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              !isFree
-                  ? SvgPicture.asset(
-                'assets/images/auth/app_logo.svg',
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : null,
-              )
-                  : CustomButton(
-                height: 30,
-                textSize: 12,
-                text: 'Upgrade To Pro',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    builder: (BuildContext context) {
-                      return const SubscriptionPopup(isManage: true);
-                    },
-                  );
-                },
-                width: 150,
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
-                isEditPage: true,
-                textColor: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : AppColors.appColor,
-              )
-            ],
+          return SafeArea(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                !isFree
+                    ? SvgPicture.asset(
+                  'assets/images/auth/app_logo.svg',
+                  color: themeController.isDarkTheme.value
+                      ? Colors.white
+                      : null,
+                )
+                    : CustomButton(
+                  height: 30,
+                  textSize: 12,
+                  text: 'Upgrade To Pro',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return const SubscriptionPopup(isManage: true);
+                      },
+                    );
+                  },
+                  width: 150,
+                  backgroundGradientColor: AppColors.transparent,
+                  borderGradientColor: AppColors.cardGradient,
+                  isEditPage: true,
+                  textColor: themeController.isDarkTheme.value
+                      ? Colors.white
+                      : AppColors.appColor,
+                )
+              ],
+            ),
           );
         }),
       ),

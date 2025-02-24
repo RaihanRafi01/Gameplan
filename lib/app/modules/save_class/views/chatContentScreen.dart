@@ -61,7 +61,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   final RxString title = ''.obs;
   final RxBool isEditMode = false.obs;
   final RxBool isPinMode = false.obs;
-  final RxBool isSaveMode = false.obs;
+
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
     print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::: content : ${widget.content}');
     title.value = widget.title;
     isPinMode.value = widget.isPinned;
-    isSaveMode.value = widget.isSaved;
+    saveClassController.isSaveMode.value = widget.isSaved;
     _parseHtmlContent(widget.content);
     _initializeTextControllers();
   }
@@ -203,7 +203,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                           ),
                           SizedBox(width: 8),
                           Obx(() => Text(
-                                isSaveMode.value
+                            saveClassController.isSaveMode.value
                                     ? "UnSave To Class"
                                     : "Save To Class",
                                 style: TextStyle(
@@ -331,10 +331,9 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                       isPinMode.value = true;
                     }
                   } else if (value == 3) {
-                    if (isSaveMode.value) {
+                    if (saveClassController.isSaveMode.value) {
                       await saveClassController.unSaveEditedChat(
                           widget.editId, widget.folderId!);
-                      isSaveMode.value = false;
                     } else {
                       showDialog(
                         context: context,
@@ -342,7 +341,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                           editId: widget.editId,
                         ),
                       );
-                      isSaveMode.value = true;
+
                     }
                   } else if (value == 4) {
                     _showDeleteDialog(context, widget.editId);
@@ -853,15 +852,27 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to determine save path: $e")),
       );
+      print('error : $e');
       return null;
     }
   }
 
   Future<String> getSavePath(String fileName) async {
-    // Get the external storage directory (unique to the app)
-    final directory = await getExternalStorageDirectory();
+    // Get the appropriate directory based on the platform
+    Directory? directory;
+
+    if (Platform.isAndroid) {
+      // Use external storage directory for Android
+      directory = await getExternalStorageDirectory();
+    } else if (Platform.isIOS) {
+      // Use the Documents directory for iOS
+      directory = await getApplicationDocumentsDirectory();
+    } else {
+      throw Exception("Unsupported platform");
+    }
+
     if (directory == null) {
-      throw Exception("Unable to access external storage directory.");
+      throw Exception("Unable to access storage directory.");
     }
 
     // Combine the directory path with the file name
@@ -902,6 +913,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
   Future<void> requestPermissions() async {
     if (Platform.isAndroid) {
+      // Check and request storage permission for Android
       if (!await Permission.storage.isGranted) {
         await Permission.storage.request();
       }
@@ -909,16 +921,51 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
       if (await Permission.storage.isDenied) {
         // Show a message to the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("Storage permission is required to save PDFs.")),
+          const SnackBar(
+            content: Text("Storage permission is required to save PDFs."),
+          ),
         );
         return;
       }
 
       if (await Permission.storage.isPermanentlyDenied) {
-        // Open app settings
-        openAppSettings();
+        // Open app settings if permission is permanently denied
+        await openAppSettings();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please enable storage permission in settings."),
+          ),
+        );
+        return;
       }
+    } else if (Platform.isIOS) {
+      // iOS typically doesn’t require storage permissions for app sandbox
+      // If using Documents directory, no runtime permission is needed
+      // Optionally, add a check for future-proofing (e.g., Photos access)
+      // For now, we assume Documents directory usage, so no action is needed
+      bool canWrite = await _checkWriteCapability();
+      if (!canWrite) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Unable to write to storage. Check app permissions."),
+          ),
+        );
+        await openAppSettings();
+        return;
+      }
+    }
+  }
+
+  // Optional helper to verify write capability (for iOS or edge cases)
+  Future<bool> _checkWriteCapability() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final testFile = File("${directory.path}/test.txt");
+      await testFile.writeAsString("test");
+      await testFile.delete(); // Clean up
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
