@@ -771,17 +771,10 @@ class _ExportScreenState extends State<ExportScreen> {
           throw Exception('Error opening file: ${result.message}');
         }
         print('File opened successfully with result: ${result.message}');
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('DOCX saved and opened: $filePath')),
-        );
       } else {
         throw Exception('Failed to generate DOCX: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error generating .docx: $e')),
-      );
       print('Error in generateAndShowDocx: $e');
     }
   }
