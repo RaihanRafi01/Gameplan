@@ -44,6 +44,8 @@ class CustomMessageInputField extends StatelessWidget {
                           vertical: 10,
                         ),
                       ),
+                      autofocus: false, // Ensure no auto-focus
+                      onSubmitted: (value) => onSend(), // Send on Enter key press
                     ),
                   ),
                   IconButton(

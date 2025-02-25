@@ -27,106 +27,104 @@ class HomeView extends GetView<HomeController> {
     final bool isFree2 = homeController.isFree.value;
     final ThemeController themeController = Get.find<ThemeController>();
 
-    // Dismiss keyboard when the screen is loaded or returned to
+    // Dismiss keyboard when screen is initially loaded or returned to
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).unfocus();
     });
 
     return Scaffold(
-      body: GestureDetector(
-        // Dismiss keyboard when tapping outside the text field
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                if (isFree2)
-                  Obx(() {
-                    return CustomButton(
-                      height: 30,
-                      textSize: 12,
-                      text: 'Upgrade To Pro',
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (BuildContext context) {
-                            return const SubscriptionPopup(isManage: true);
-                          },
-                        );
-                      },
-                      width: 150,
-                      backgroundGradientColor: themeController.isDarkTheme.value
-                          ? AppColors.cardGradient
-                          : [Colors.transparent, Colors.transparent],
-                      borderGradientColor: themeController.isDarkTheme.value
-                          ? AppColors.transparent
-                          : AppColors.cardGradient,
-                      isEditPage: true,
-                      textColor: themeController.isDarkTheme.value
-                          ? Colors.white
-                          : AppColors.appColor3,
-                    );
-                  }),
-                SizedBox(height: 60),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 40),
+              if (isFree2)
                 Obx(() {
-                  return SvgPicture.asset(
-                    'assets/images/auth/app_logo.svg',
-                    color: themeController.isDarkTheme.value ? Colors.white : null,
+                  return CustomButton(
+                    height: 30,
+                    textSize: 12,
+                    text: 'Upgrade To Pro',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return const SubscriptionPopup(isManage: true);
+                        },
+                      );
+                    },
+                    width: 150,
+                    backgroundGradientColor: themeController.isDarkTheme.value
+                        ? AppColors.cardGradient
+                        : [Colors.transparent, Colors.transparent],
+                    borderGradientColor: themeController.isDarkTheme.value
+                        ? AppColors.transparent
+                        : AppColors.cardGradient,
+                    isEditPage: true,
+                    textColor: themeController.isDarkTheme.value
+                        ? Colors.white
+                        : AppColors.appColor3,
                   );
                 }),
-                SizedBox(height: 30),
-                Text(
-                  "What do you need help with today?",
-                  style: h3.copyWith(fontSize: 28),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 50),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
-                      child: Obx(() {
-                        return Container(
-                          constraints: BoxConstraints(maxWidth: double.maxFinite),
-                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: themeController.isDarkTheme.value
-                                  ? Colors.white
-                                  : Colors.black,
-                              width: 1,
-                            ),
+              SizedBox(height: 60),
+              Obx(() {
+                return SvgPicture.asset(
+                  'assets/images/auth/app_logo.svg',
+                  color: themeController.isDarkTheme.value ? Colors.white : null,
+                );
+              }),
+              SizedBox(height: 30),
+              Text(
+                "What do you need help with today?",
+                style: h3.copyWith(fontSize: 28),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 50),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
+                    child: Obx(() {
+                      return Container(
+                        constraints: BoxConstraints(maxWidth: double.maxFinite),
+                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                            width: 1,
                           ),
-                          child: Text(
-                            "What should I tell the AI to get the best session plan?",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: themeController.isDarkTheme.value
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
+                        ),
+                        child: Text(
+                          "What should I tell the AI to get the best session plan?",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
                           ),
-                        );
-                      }),
-                    ),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }),
                   ),
                 ),
-                Obx(() {
-                  final bool isFree = homeController.isFree.value;
-                  return CustomMessageInputField(
+              ),
+              Obx(() {
+                final bool isFree = homeController.isFree.value;
+                return GestureDetector(
+                  // Prevent taps on the input field from dismissing the keyboard
+                  onTap: () {}, // Empty onTap to stop propagation to parent GestureDetector
+                  child: CustomMessageInputField(
                     textController: textController,
                     onSend: () async {
                       final message = textController.text.trim();
-                      FocusScope.of(context).unfocus(); // Dismiss keyboard before processing
+                      FocusScope.of(context).unfocus(); // Dismiss keyboard after sending
 
                       if (message.isNotEmpty) {
                         print('::::::::::is free before sending :::::::::${homeController.isFree.value}');
@@ -147,19 +145,19 @@ class HomeView extends GetView<HomeController> {
                         textController.clear();
                       }
                     },
-                  );
-                }),
-                Obx(() => chatController.isLoading.value
-                    ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.textColor),
                   ),
-                )
-                    : const SizedBox.shrink()),
-              ],
-            ),
+                );
+              }),
+              Obx(() => chatController.isLoading.value
+                  ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.textColor),
+                ),
+              )
+                  : const SizedBox.shrink()),
+            ],
           ),
         ),
       ),
