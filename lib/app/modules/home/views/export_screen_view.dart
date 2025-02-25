@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:agcourt/app/modules/dashboard/views/widgets/customNavigationBar.dart';
 import 'package:agcourt/app/modules/history/controllers/edit_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -115,7 +118,7 @@ class _ExportScreenState extends State<ExportScreen> {
                   int editId = edC.editId.value;
                   _showDeleteDialog(context, editId, true);
                   break;
-                case 'export':
+                case 'export_as_pdf':
                   _promptAndSavePDF().then((filePath) {
                     if (filePath != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -124,6 +127,9 @@ class _ExportScreenState extends State<ExportScreen> {
                       _showPDF(filePath);
                     }
                   });
+                  break;
+                case 'export_as_docx':
+                  await generateAndShowDocx();
                   break;
                 case 'save':
                   editController.enableEditing();
@@ -148,9 +154,9 @@ class _ExportScreenState extends State<ExportScreen> {
             itemBuilder: (BuildContext context) {
               return <PopupMenuEntry<String>>[
                 PopupMenuItem<String>(
-                  value: 'export',
+                  value: 'export_as_pdf',
                   child: SizedBox(
-                    width: 100,
+                    width: 140,
                     child: Row(
                       children: [
                         Obx(() => SvgPicture.asset(
@@ -161,7 +167,30 @@ class _ExportScreenState extends State<ExportScreen> {
                         )),
                         const SizedBox(width: 8),
                         Obx(() => Text(
-                          'Export',
+                          'Export as Pdf',
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'export_as_docx',
+                  child: SizedBox(
+                    width: 140,
+                    child: Row(
+                      children: [
+                        Obx(() => SvgPicture.asset(
+                          'assets/images/history/export_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                        )),
+                        const SizedBox(width: 8),
+                        Obx(() => Text(
+                          'Export as Docx',
                           style: TextStyle(
                             color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
                           ),
@@ -622,25 +651,6 @@ class _ExportScreenState extends State<ExportScreen> {
     return htmlContent.toString();
   }
 
-  void _showHTMLDialog(String htmlContent) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Generated HTML"),
-          content: SingleChildScrollView(
-            child: Html(data: htmlContent),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Close"),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void _showDeleteDialog(BuildContext context, int chatId, bool isEdit) {
     final EditController editHistoryController = Get.put(EditController());
@@ -702,6 +712,77 @@ class _ExportScreenState extends State<ExportScreen> {
         // Call the controller to save the chat with the date and time
         historyController.pinEditChat(editId, finalDateTime);
       }
+    }
+  }
+
+  Future<void> generateAndShowDocx() async {
+    try {
+      // Prepare the content for the .docx using the correct keys from widget.messages
+      final bodyContent = widget.messages.map((message) {
+        final sender = message['isSentByUser'] == true ? 'User:' : 'Bot:';
+        final content = message['message'] ?? ''; // Use empty string if message is null
+        return '$sender $content';
+      }).join('\n');
+
+      if (bodyContent.isEmpty) {
+        throw Exception('No content available to generate .docx');
+      }
+
+      const apiUrl = 'https://backend.gameplanai.co.uk/chat_app/generate_docx_response/';
+      final body = jsonEncode({
+        "text": bodyContent, // Send the concatenated chat content
+      });
+
+      print('Request URL: $apiUrl');
+      print('Request Body: $body');
+      print('Request Headers: {Content-Type: application/json}');
+
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Headers: ${response.headers}');
+      print('Response Content-Type: ${response.headers['content-type']}');
+      print('Response Body Length: ${response.bodyBytes.length} bytes');
+
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+
+        if (bytes.isEmpty) {
+          throw Exception('Received empty file from server');
+        }
+
+        // Save the file locally
+        final directory = await getTemporaryDirectory();
+        final filePath = '${directory.path}/chat_export_${DateTime.now().millisecondsSinceEpoch}.docx';
+        final file = File(filePath);
+        await file.writeAsBytes(bytes);
+
+        print('File saved at: $filePath');
+
+        // Open the file
+        final result = await OpenFile.open(filePath);
+        if (result.type != ResultType.done) {
+          throw Exception('Error opening file: ${result.message}');
+        }
+        print('File opened successfully with result: ${result.message}');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('DOCX saved and opened: $filePath')),
+        );
+      } else {
+        throw Exception('Failed to generate DOCX: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating .docx: $e')),
+      );
+      print('Error in generateAndShowDocx: $e');
     }
   }
 }
