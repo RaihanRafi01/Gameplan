@@ -11,9 +11,12 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 import '../../../../common/widgets/history/folderSelectionDialog.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../dashboard/controllers/theme_controller.dart'; // Add this import
+import '../../history/controllers/history_controller.dart';
 import '../../save_class/controllers/save_class_controller.dart';
 import '../controllers/chat_edit_controller.dart';
 import '../controllers/textEditorController.dart';
@@ -34,26 +37,17 @@ class _ExportScreenState extends State<ExportScreen> {
   final DashboardController dashboardController = Get.put(DashboardController());
   final TextEditorController textEditorController = Get.put(TextEditorController());
   final EditController edC = Get.put(EditController());
-
+  final SaveClassController saveClassController =
+  Get.put(SaveClassController());
   late List<TextEditingController> controllers;
-  /*late List<TextStyle> textStyles;
-  late List<TextAlign> textAlignments;*/
-
+  final HistoryController historyController = Get.put(HistoryController());
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize controllers for each message
     controllers = widget.messages
         .map((message) => TextEditingController(text: message['message']))
         .toList();
-
-    // Initialize text styles and alignments for each message
-    /*textStyles = List<TextStyle>.generate(
-        widget.messages.length, (index) => TextStyle(fontSize: 16.0));
-    textAlignments = List<TextAlign>.generate(
-        widget.messages.length, (index) => TextAlign.left);*/
     textEditorController.initializeStyles(widget.messages.length);
   }
 
@@ -65,91 +59,238 @@ class _ExportScreenState extends State<ExportScreen> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edit Plan"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (editController.isEditing.value) ...[
-                  /*GestureDetector(
-                    onTap: () {
-                      editController.disableEditing();
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/edit_icon.svg'),
-                  ),*/
-                  SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () async {
-                      int editId = edC.editId.value;
-                      showDialog(
-                        context: context,
-                        builder: (context) => FolderSelectionDialog(editId: editId),
-                      );
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/pin_icon.svg'),
-                  ),
-                  SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () {
-                      // Delete functionality
-                    },
-                    child: SvgPicture.asset(
-                        'assets/images/history/delete_icon.svg'),
-                  ),
-                  SizedBox(width: 16),
-                ],
-                GestureDetector(
-                  onTap: () async {
-                    final filePath = await _promptAndSavePDF();
+        toolbarHeight: 40,
+        backgroundColor: themeController.isDarkTheme.value ? const Color(0xFF374151) : Colors.white,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context); // Default back action
+          },
+          child: Obx(() => Icon(
+            Icons.arrow_back,
+            color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+          )),
+        ),
+        centerTitle: true,
+        title: const Text(
+          "Edit Plan",
+          style: TextStyle(fontSize: 18),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: Obx(() => Icon(
+              Icons.menu,
+              color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+            )),
+            color: themeController.isDarkTheme.value ? Colors.grey[900] : Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            offset: const Offset(0, 50),
+            onSelected: (value) async {
+              switch (value) {
+                case 'save_to_class':
+                  int editId = edC.editId.value;
+
+                  if (saveClassController.isSaveMode.value) {
+                    await saveClassController.unSaveEditedChat(
+                        editId, saveClassController.tempFolderId.value);
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FolderSelectionDialog(
+                        editId: editId,
+                      ),
+                    );
+
+                  }
+                  break;
+                case 'delete':
+                  int editId = edC.editId.value;
+                  _showDeleteDialog(context, editId, true);
+                  break;
+                case 'export':
+                  _promptAndSavePDF().then((filePath) {
                     if (filePath != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("PDF saved to: $filePath")),
                       );
                       _showPDF(filePath);
-                      //editController.disableEditing();
                     }
-                  },
-                  child: SvgPicture.asset(
-                      'assets/images/history/export_icon.svg'),
-                ),
-                SizedBox(width: 16),
-                GestureDetector(
-                  onTap: () {
-                    editController.enableEditing();
-                    final htmlContent = _generateHTMLContent();
-                    historyEditController.addEditChat(widget.chatId, htmlContent);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Saved successfully!")),
-                    );
-                    //editController.disableEditing(); // Disable editing after saving
-                  },
-                  child: SvgPicture.asset(
-                      'assets/images/history/save_icon.svg'),
-                ),
-              ],
-            )),
-
-            Obx(() {
-              if(!editController.isEditing.value) {
-                return _buildToolbar();
+                  });
+                  break;
+                case 'save':
+                  editController.enableEditing();
+                  final htmlContent = _generateHTMLContent();
+                  historyEditController.addEditChat(widget.chatId, htmlContent);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Saved successfully!")),
+                  );
+                  break;
+                case 'pin':
+                  int editId = edC.editId.value;
+                  if (saveClassController.isPinMode.value) {
+                    await historyController.unpinEditChat(editId);
+                    saveClassController.isPinMode.value = false;
+                  } else {
+                    _showDatePicker(context, editId);
+                    saveClassController.isPinMode.value = true;
+                  }
+                  break;
               }
-              else{
-                return SizedBox(height: 0);
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'export',
+                  child: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        Obx(() => SvgPicture.asset(
+                          'assets/images/history/export_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                        )),
+                        const SizedBox(width: 8),
+                        Obx(() => Text(
+                          'Export',
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'save',
+                  child: SizedBox(
+                    width: 100,
+                    child: Row(
+                      children: [
+                        Obx(() => SvgPicture.asset(
+                          'assets/images/history/save_icon.svg',
+                          width: 24,
+                          height: 24,
+                          color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                        )),
+                        const SizedBox(width: 8),
+                        Obx(() => Text(
+                          'Save',
+                          style: TextStyle(
+                            color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+                if (editController.isEditing.value) ...[
+                  PopupMenuItem<String>(
+                    value: 'pin',
+                    child: SizedBox(
+                      width: 120,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/pin_icon.svg',
+                            width: 23,
+                            height: 23,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Obx(() => Text(
+                            saveClassController.isPinMode.value ? "UnPin" : "Pin",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'save_to_class',
+                    child: SizedBox(
+                      width: 140,
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/images/history/save_icon.svg',
+                            width: 23,
+                            height: 23,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          SizedBox(width: 8),
+                          Obx(() => Text(
+                            saveClassController.isSaveMode.value
+                                ? "UnSave To Class"
+                                : "Save To Class",
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          Obx(() => SvgPicture.asset(
+                            'assets/images/history/delete_icon.svg',
+                            width: 24,
+                            height: 24,
+                            color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                          )),
+                          const SizedBox(width: 8),
+                          Obx(() => Text(
+                            'Delete',
+                            style: TextStyle(
+                              color: themeController.isDarkTheme.value ? Colors.white : Colors.black,
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ];
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Obx(() {
+              if (!editController.isEditing.value) {
+                return _buildToolbar();
+              } else {
+                return const SizedBox(height: 0);
               }
             }),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: widget.messages.length,
@@ -162,14 +303,7 @@ class _ExportScreenState extends State<ExportScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        /*Text(
-                          sender,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14.0,
-                          ),
-                        ),*/
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Focus(
                             onFocusChange: (hasFocus) {
@@ -182,13 +316,13 @@ class _ExportScreenState extends State<ExportScreen> {
                                   text: widget.messages[index]['message']),
                               maxLines: null,
                               textAlign: textEditorController.textAlignments[index],
-                                style: textEditorController.textStyles[index].merge(
-                                  TextStyle(
-                                    fontWeight: isSentByUser
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),),
-                              /*style: textEditorController.textStyles[index],*/
+                              style: textEditorController.textStyles[index].merge(
+                                TextStyle(
+                                  fontWeight: isSentByUser
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: isSentByUser
@@ -214,17 +348,22 @@ class _ExportScreenState extends State<ExportScreen> {
     );
   }
 
+  // Rest of the methods remain unchanged; included for completeness
+
   Widget _buildToolbar() {
+    final ThemeController themeController = Get.find<ThemeController>();
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
           Obx(() => DropdownButton<double>(
+            dropdownColor: themeController.isDarkTheme.value ? Colors.grey[900] : Colors.white,
             value: textEditorController.fontSize.value,
             items: [12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0]
                 .map((size) => DropdownMenuItem(
               value: size,
-              child: Text(size.toString()),
+
+              child: Text(size.toString(),style: TextStyle(color: themeController.isDarkTheme.value ? Colors.white : Colors.black),),
             ))
                 .toList(),
             onChanged: (value) {
@@ -242,7 +381,8 @@ class _ExportScreenState extends State<ExportScreen> {
             isActive: (index) =>
             textEditorController.textStyles[index].fontWeight == FontWeight.bold,
             onPressed: (index) {
-              final isBold = textEditorController.textStyles[index].fontWeight == FontWeight.bold;
+              final isBold =
+                  textEditorController.textStyles[index].fontWeight == FontWeight.bold;
               textEditorController.updateTextStyle(
                 index: index,
                 fontWeight: isBold ? FontWeight.normal : FontWeight.bold,
@@ -254,7 +394,8 @@ class _ExportScreenState extends State<ExportScreen> {
             isActive: (index) =>
             textEditorController.textStyles[index].fontStyle == FontStyle.italic,
             onPressed: (index) {
-              final isItalic = textEditorController.textStyles[index].fontStyle == FontStyle.italic;
+              final isItalic =
+                  textEditorController.textStyles[index].fontStyle == FontStyle.italic;
               textEditorController.updateTextStyle(
                 index: index,
                 fontStyle: isItalic ? FontStyle.normal : FontStyle.italic,
@@ -296,17 +437,17 @@ class _ExportScreenState extends State<ExportScreen> {
     required void Function(int index) onPressed,
   }) {
     return Obx(() {
+      final ThemeController themeController = Get.find<ThemeController>();
       final index = textEditorController.currentEditingIndex.value;
       final active = index != -1 && isActive(index);
 
       return IconButton(
         icon: Icon(icon),
-        color: active ? Colors.blue : Colors.black,
+        color: active ? Colors.blue : themeController.isDarkTheme.value ? Colors.white : Colors.black,
         onPressed: index != -1 ? () => onPressed(index) : null,
       );
     });
   }
-
 
   Future<String?> _promptAndSavePDF() async {
     String? fileName = await _getFileName(context);
@@ -314,13 +455,11 @@ class _ExportScreenState extends State<ExportScreen> {
       return null;
     }
 
-    // Ensure the file name ends with .pdf
     if (!fileName.endsWith(".pdf")) {
       fileName += ".pdf";
     }
 
     try {
-      // Get the full save path using the helper function
       final filePath = await getSavePath(fileName);
       return await _generateAndSavePDF(filePath);
     } catch (e) {
@@ -332,41 +471,33 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<String> getSavePath(String fileName) async {
-    // Get the external storage directory (unique to the app)
     final directory = await getExternalStorageDirectory();
     if (directory == null) {
       throw Exception("Unable to access external storage directory.");
     }
-
-    // Combine the directory path with the file name
     final path = "${directory.path}/$fileName";
     return path;
   }
 
   Future<String?> _getFileName(BuildContext context) async {
     TextEditingController fileNameController = TextEditingController();
-
     return showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Set PDF Name"),
+          title: const Text("Set PDF Name"),
           content: TextField(
             controller: fileNameController,
-            decoration: InputDecoration(hintText: "Enter file name"),
+            decoration: const InputDecoration(hintText: "Enter file name"),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(null);
-              },
-              child: Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(null),
+              child: const Text("Cancel"),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(fileNameController.text);
-              },
-              child: Text("Save"),
+              onPressed: () => Navigator.of(context).pop(fileNameController.text),
+              child: const Text("Save"),
             ),
           ],
         );
@@ -379,28 +510,21 @@ class _ExportScreenState extends State<ExportScreen> {
       if (!await Permission.storage.isGranted) {
         await Permission.storage.request();
       }
-
       if (await Permission.storage.isDenied) {
-        // Show a message to the user
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text("Storage permission is required to save PDFs.")),
+          const SnackBar(content: Text("Storage permission is required to save PDFs.")),
         );
-        return;
       }
-
       if (await Permission.storage.isPermanentlyDenied) {
-        // Open app settings
         openAppSettings();
       }
     }
   }
 
   Future<String?> _generateAndSavePDF(String filePath) async {
-    requestPermissions();
+    await requestPermissions();
     try {
       final pdf = pw.Document();
-
       pdf.addPage(
         pw.Page(
           build: (pw.Context context) {
@@ -443,7 +567,6 @@ class _ExportScreenState extends State<ExportScreen> {
 
       final file = File(filePath);
       await file.writeAsBytes(await pdf.save());
-
       return filePath;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -465,13 +588,10 @@ class _ExportScreenState extends State<ExportScreen> {
 
   String _generateHTMLContent() {
     final htmlContent = StringBuffer();
-    // htmlContent.write('<html><body>');
-
     for (int index = 0; index < widget.messages.length; index++) {
       final isSentByUser = widget.messages[index]['isSentByUser'];
       final sender = isSentByUser ? "User:" : "Bot:";
 
-      // Determine text alignment
       String alignment;
       switch (textEditorController.textAlignments[index]) {
         case TextAlign.center:
@@ -486,7 +606,6 @@ class _ExportScreenState extends State<ExportScreen> {
           break;
       }
 
-      // Generate inline styles
       final style = '''
         font-size: ${textEditorController.textStyles[index].fontSize}px;
         font-weight: ${textEditorController.textStyles[index].fontWeight == FontWeight.bold ? 'bold' : 'normal'};
@@ -500,8 +619,6 @@ class _ExportScreenState extends State<ExportScreen> {
         '<p style="$style"><strong>$sender</strong> ${widget.messages[index]['message']}</p>',
       );
     }
-
-    // htmlContent.write('</body></html>');
     return htmlContent.toString();
   }
 
@@ -510,32 +627,95 @@ class _ExportScreenState extends State<ExportScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Generated HTML"),
+          title: const Text("Generated HTML"),
           content: SingleChildScrollView(
-            child: Html(data: htmlContent), // Display the HTML content
+            child: Html(data: htmlContent),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
+              child: const Text("Close"),
             ),
           ],
         );
       },
     );
   }
+
+  void _showDeleteDialog(BuildContext context, int chatId, bool isEdit) {
+    final EditController editHistoryController = Get.put(EditController());
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Do you want to Delete this chat?', style: h3),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel',
+                  style: h3.copyWith(color: AppColors.textColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                if (isEdit) {
+                  editHistoryController.deleteChat(chatId);
+                }
+                if (!isEdit) {
+                  historyEditController.deleteChat(chatId);
+                }
+                Navigator.pop(context);
+              },
+              child: Text('Delete', style: h3.copyWith(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDatePicker(BuildContext context, int editId) async {
+    // Step 1: Show Date Picker
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      // Step 2: Show Time Picker
+      TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (selectedTime != null) {
+        // Combine the selected date and time into a single DateTime object
+        final DateTime finalDateTime = DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          selectedTime.hour,
+          selectedTime.minute,
+        );
+
+        // Call the controller to save the chat with the date and time
+        historyController.pinEditChat(editId, finalDateTime);
+      }
+    }
+  }
 }
 
 class PDFViewerScreen extends StatelessWidget {
   final String filePath;
 
-  PDFViewerScreen({super.key, required this.filePath});
+  const PDFViewerScreen({super.key, required this.filePath});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("PDF Viewer"),
+        title: const Text("PDF Viewer"),
       ),
       body: PDFView(
         filePath: filePath,

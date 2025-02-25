@@ -14,6 +14,8 @@ class SaveClassController extends GetxController {
   var selectedClassContents = <Map<String, dynamic>>[].obs; // Contents of the selected class
   var isLoading = false.obs; // Observable for loading state
   final RxBool isSaveMode = false.obs;
+  final RxBool isPinMode = false.obs;
+  final RxInt tempFolderId = 1.obs;
 
   /// Select a class and update its contents
   void selectClass(String className) {

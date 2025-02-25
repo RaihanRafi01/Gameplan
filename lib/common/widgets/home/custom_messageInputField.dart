@@ -1,12 +1,13 @@
 import 'package:agcourt/common/customFont.dart';
 import 'package:flutter/material.dart';
 
-class CustomMessageInputField extends StatelessWidget {
+class CustomMessageInputField extends StatefulWidget {
   final TextEditingController textController;
   final VoidCallback onSend;
   final String hintText;
   final double padding;
   final Color color;
+  final FocusNode? focusNode;
 
   const CustomMessageInputField({
     super.key,
@@ -15,12 +16,37 @@ class CustomMessageInputField extends StatelessWidget {
     this.color = Colors.black,
     this.padding = 10.0,
     this.hintText = 'Type your text...',
+    this.focusNode,
   });
+
+  @override
+  _CustomMessageInputFieldState createState() => _CustomMessageInputFieldState();
+}
+
+class _CustomMessageInputFieldState extends State<CustomMessageInputField> {
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(() {
+      print('Focus changed: ${_focusNode.hasFocus}');
+    });
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(padding),
+      padding: EdgeInsets.all(widget.padding),
       child: Row(
         children: [
           Expanded(
@@ -33,10 +59,11 @@ class CustomMessageInputField extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: textController,
-                      style: h4.copyWith(color: color),
+                      controller: widget.textController,
+                      focusNode: _focusNode,
+                      style: h4.copyWith(color: widget.color),
                       decoration: InputDecoration(
-                        hintText: hintText,
+                        hintText: widget.hintText,
                         hintStyle: h4.copyWith(color: Color(0xFF5D5D5D)),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -44,13 +71,17 @@ class CustomMessageInputField extends StatelessWidget {
                           vertical: 10,
                         ),
                       ),
-                      autofocus: false, // Ensure no auto-focus
-                      onSubmitted: (value) => onSend(), // Send on Enter key press
+                      autofocus: false,
+                      onTap: () {
+                        _focusNode.requestFocus(); // Ensure focus on tap
+                        print('TextField tapped, keyboard requested');
+                      },
+                      onSubmitted: (value) => widget.onSend(),
                     ),
                   ),
                   IconButton(
-                    onPressed: onSend,
-                    icon: Icon(Icons.send, color: color),
+                    onPressed: widget.onSend,
+                    icon: Icon(Icons.send, color: widget.color),
                   ),
                 ],
               ),

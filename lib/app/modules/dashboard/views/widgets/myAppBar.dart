@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../../../../common/appColors.dart';
 import '../../../../../common/widgets/custom_button.dart';
 import '../../../home/controllers/chat_controller.dart';
+import '../../../home/controllers/chat_edit_controller.dart';
 import '../../../home/views/export_screen_view.dart';
 import '../../controllers/theme_controller.dart';
 import 'subscriptionPopup.dart';
@@ -109,12 +110,14 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
                   width: 80, // Ensure the same width for all items
                   child: Row(
                     children: [
-                      Image.asset(
-                        'assets/images/history/save_icon.png',
-                        scale: 3,
+                      SvgPicture.asset(
+                        'assets/images/history/save_icon.svg',
+                        width: 24,
+                        height: 24,
+                        color: isDarkTheme ? Colors.white : Colors.black, // Adjust color based on theme
                       ),
                       SizedBox(width: 8),
-                      Text("Save"),
+                      Text("Save",style: TextStyle(color: isDarkTheme ? Colors.white : Colors.black)),
                     ],
                   ),
                 ),
@@ -140,6 +143,8 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
             onSelected: (value) {
               if (value == 1) {
+                final ChatEditController editController = Get.put(ChatEditController());
+                editController.disableEditing();
                 Navigator.push(
                   context,
                   MaterialPageRoute(

@@ -220,8 +220,8 @@ class HistoryController extends GetxController {
       // Make the API call to get chat list
       final http.Response response = await _service.pinEditChat(chatId,pinDate);
 
-      print('::::::::::::::::::::::::CODE::::::${response.statusCode}');
-      print('::::::::::::::::::::::::CODE::::::${response.toString()}');
+      print(':::::::::::::::::::::PIN:::CODE::::::${response.statusCode}');
+      print(':::::::::::::::::::::PIN:::CODE::::::${response.toString()}');
 
       if (response.statusCode == 200) {
         Get.snackbar('Pinned', 'Plan pinned successfully');

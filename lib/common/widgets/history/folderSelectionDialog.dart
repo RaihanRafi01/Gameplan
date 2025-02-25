@@ -121,7 +121,10 @@ class FolderSelectionDialog extends StatelessWidget {
                           SvgPicture.asset('assets/images/home/class_icon.svg'),
                       title: Text(folder['folder_name'] ?? 'Unnamed Folder'),
                       onTap: () async {
+
                         int folderId = folder['id'];
+
+                        saveClassController.tempFolderId.value = folderId;
                         //var editId = editId;
                         //controller.selectClass(folder['folder_name']);
                         print(
