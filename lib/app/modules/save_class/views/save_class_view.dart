@@ -39,27 +39,31 @@ class SaveClassView extends StatelessWidget {
                       ? Colors.white
                       : null,
                 )
-                    : CustomButton(
-                  height: 30,
-                  textSize: 12,
-                  text: 'Upgrade To Pro',
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      builder: (BuildContext context) {
-                        return const SubscriptionPopup(isManage: true);
-                      },
-                    );
-                  },
-                  width: 150,
-                  backgroundGradientColor: AppColors.transparent,
-                  borderGradientColor: AppColors.cardGradient,
-                  isEditPage: true,
-                  textColor: themeController.isDarkTheme.value
-                      ? Colors.white
-                      : AppColors.appColor,
-                )
+                    :  CustomButton(
+                    height: 30,
+                    textSize: 12,
+                    text: 'Upgrade To Pro',
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return const SubscriptionPopup(isManage: true);
+                        },
+                      );
+                    },
+                    width: 150,
+                    backgroundGradientColor: themeController.isDarkTheme.value
+                        ? AppColors.cardGradient
+                        : [Colors.transparent, Colors.transparent],
+                    borderGradientColor: themeController.isDarkTheme.value
+                        ? AppColors.transparent
+                        : AppColors.cardGradient,
+                    isEditPage: true,
+                    textColor: themeController.isDarkTheme.value
+                        ? Colors.white
+                        : AppColors.appColor3, // Replace with your day mode text color
+                  )
               ],
             ),
           );
@@ -75,7 +79,7 @@ class SaveClassView extends StatelessWidget {
 
         if (controller.selectedClass.value.isEmpty) {
           if (controller.classList.isNotEmpty) {
-            return _buildClassList();
+            return _buildClassList(context);
           } else {
             return Center(
               child: CustomButton(
@@ -95,7 +99,7 @@ class SaveClassView extends StatelessWidget {
     );
   }
 
-  Widget _buildClassList() {
+  Widget _buildClassList(context) {
     return Column(
       children: [
         Container(
@@ -138,7 +142,7 @@ class SaveClassView extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () {
-                    print('Button Pressed!');
+                    _showAddClassDialog(context);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(12),

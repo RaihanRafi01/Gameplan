@@ -94,7 +94,7 @@ class ProfileView extends GetView<ProfileController> {
             ),
             ProfileList(
               svgPath: 'assets/images/profile/terms_icon.svg',
-              text: 'TERMS & CONDITION',
+              text: 'TERMS & CONDITIONS',
               onTap: () => Get.to(() => TermsPrivacyView(
                     isTerms: true,
                   )),

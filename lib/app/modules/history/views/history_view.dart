@@ -47,21 +47,22 @@ class HistoryView extends GetView<HistoryController> {
                   showDialog(
                     context: context,
                     barrierDismissible: true,
-                    // Prevent closing the dialog by tapping outside
                     builder: (BuildContext context) {
-                      return const SubscriptionPopup(
-                          isManage:
-                          true); // Use the SubscriptionPopup widget
+                      return const SubscriptionPopup(isManage: true);
                     },
                   );
                 },
                 width: 150,
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
+                backgroundGradientColor: themeController.isDarkTheme.value
+                    ? AppColors.cardGradient
+                    : [Colors.transparent, Colors.transparent],
+                borderGradientColor: themeController.isDarkTheme.value
+                    ? AppColors.transparent
+                    : AppColors.cardGradient,
                 isEditPage: true,
                 textColor: themeController.isDarkTheme.value
                     ? Colors.white
-                    : AppColors.appColor, // Dynamic text color
+                    : AppColors.appColor3, // Replace with your day mode text color
               )
             ],
           );

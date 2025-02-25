@@ -25,32 +25,40 @@ class CalenderView extends GetView<CalenderController> {
     historyController.fetchPinChatList();
     final bool isFree = homeController.isFree.value;
     Get.put(CalenderController());
+    final ThemeController themeController = Get.find<ThemeController>();
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             if (isFree)
-              CustomButton(
-                height: 30,
-                textSize: 12,
-                text: 'Upgrade To Pro',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: true, // Prevent closing the dialog by tapping outside
-                    builder: (BuildContext context) {
-                      return const SubscriptionPopup(
-                          isManage: true); // Use the SubscriptionPopup widget
-                    },
-                  );
-                },
-                width: 150,
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
-                isEditPage: true,
-                textColor: AppColors.textColor,
-              ),
+              Obx((){
+                return CustomButton(
+                  height: 30,
+                  textSize: 12,
+                  text: 'Upgrade To Pro',
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (BuildContext context) {
+                        return const SubscriptionPopup(isManage: true);
+                      },
+                    );
+                  },
+                  width: 150,
+                  backgroundGradientColor: themeController.isDarkTheme.value
+                      ? AppColors.cardGradient
+                      : [Colors.transparent, Colors.transparent],
+                  borderGradientColor: themeController.isDarkTheme.value
+                      ? AppColors.transparent
+                      : AppColors.cardGradient,
+                  isEditPage: true,
+                  textColor: themeController.isDarkTheme.value
+                      ? Colors.white
+                      : AppColors.appColor3, // Replace with your day mode text color
+                );
+              }),
             SizedBox(height: 12),
             Container(
               height: 70,

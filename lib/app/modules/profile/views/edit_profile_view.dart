@@ -95,11 +95,20 @@ class _EditProfileViewState extends State<EditProfileView> {
                           ? NetworkImage('$baseUrl${homeController.profilePicUrl.value}')
                           : null, // No backgroundImage when fallback is SVG
                       child: (_pickedImage == null && homeController.profilePicUrl.value.isEmpty)
-                          ? SvgPicture.asset(
-                        'assets/images/home/user_image.svg',
-                        fit: BoxFit.cover,
-                        width: 100, // Match CircleAvatar diameter
-                        height: 100,
+                          ? Container(
+                        width: 80, // Smaller than CircleAvatar diameter (100) for padding
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey, // White circular background for the icon
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.person, // Default profile icon
+                            size: 60, // Adjust size to fit within the white circle
+                            color: Colors.white, // Darker gray for contrast
+                          ),
+                        ),
                       )
                           : null, // No child when using FileImage or NetworkImage
                     ),

@@ -14,6 +14,7 @@ class AppColors {
   static const List<Color> cardGradient = [Color(0xFF051960), Color(0xFF591DA9)];
   static const List<Color> transparent = [Colors.transparent,Colors.transparent];
   static const List<Color> colorGreen = [Color(0xFF46E038), Color(0xFF46E038)];
+  static const List<Color> colorWhite = [Color(0xFFffffff), Color(0xFFffffff)];
   static const List<Color> colorRed = [Color(0xFFFF1515), Color(0xFFFF1515)];
   static const List<Color> colorBlack = [Color(0xFF434343), Color(0xFF434343)];
 

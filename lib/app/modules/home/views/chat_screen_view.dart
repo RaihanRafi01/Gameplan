@@ -15,7 +15,6 @@ import '../../../../common/widgets/home/messageBubble.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/chat_controller.dart';
-import 'export_screen_view.dart';
 
 class ChatScreen extends StatelessWidget {
   final List<ChatContent>? chat;
@@ -23,46 +22,47 @@ class ChatScreen extends StatelessWidget {
   final int? chatId;
   final String? chatName;
 
-  ChatScreen(
-      {super.key,
-      this.chat,
-      this.initialMessage,
-      this.chatId,
-      this.chatName,
-      });
+  ChatScreen({
+    super.key,
+    this.chat,
+    this.initialMessage,
+    this.chatId,
+    this.chatName,
+  });
 
-  // Initialize the controller
   final ChatController chatController = Get.put(ChatController());
-
   final HistoryController historyController = Get.put(HistoryController());
   final HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
-
     if (chat != null) {
       chatController.initializeMessages(chat!);
       chatController.chatId.value = chatId;
     }
 
     final bool isFree = homeController.isFree.value;
-    print('=====================================================:::::::::::::::STATUS::::$isFree');
 
     return Scaffold(
-      appBar: MyAppBar(isFree: isFree, showDatePicker: _showDatePicker, chatController: chatController, chatId: chatId),
-        body: Padding(
+      appBar: MyAppBar(
+        isFree: isFree,
+        showDatePicker: _showDatePicker,
+        chatController: chatController,
+        chatId: chatId,
+      ),
+      body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         child: Column(
           children: [
             Expanded(
               child: Obx(
-                () => ListView.builder(
+                    () => ListView.builder(
                   controller: ScrollController(),
                   itemCount: chatController.messages.length,
                   reverse: true,
                   itemBuilder: (context, index) {
                     final messageData =
-                        chatController.messages.reversed.toList()[index];
+                    chatController.messages.reversed.toList()[index];
                     final actualIndex =
                         chatController.messages.length - 1 - index;
                     return MessageBubble(
@@ -71,23 +71,41 @@ class ChatScreen extends StatelessWidget {
                       editCallback: !messageData['isSentByUser']
                           ? () {
                         var botChatId = chat?[actualIndex].id;
-                        print('::::::::::botChatId HIT::::::::::::::::::::::::::::::::::$botChatId');
-                        chatController.startEditingMessage(actualIndex,botChatId!);
+                        chatController.startEditingMessage(
+                            actualIndex, botChatId!);
                       }
-
                           : null,
                     );
                   },
                 ),
               ),
             ),
+            // Loading Indicator
             Obx(
-              () => CustomMessageInputField(
+                  () => chatController.isLoading.value
+                  ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      '...', // Simple "thinking" dots
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    // Alternatively, use CircularProgressIndicator
+                    // CircularProgressIndicator(strokeWidth: 2),
+                  ],
+                ),
+              )
+                  : const SizedBox.shrink(), // Empty widget when not loading
+            ),
+            Obx(
+                  () => CustomMessageInputField(
                 padding: 0,
                 textController: chatController.messageController,
-                onSend: (){
-                  chatController.sendMessage() ;
-                }  ,
+                onSend: () {
+                  chatController.sendMessage();
+                },
                 hintText: chatController.editingMessageIndex.value != null
                     ? 'Edit bot message'
                     : 'Type a message',
@@ -100,7 +118,6 @@ class ChatScreen extends StatelessWidget {
   }
 
   void _showDatePicker(BuildContext context, int chatId) async {
-    // Step 1: Show Date Picker
     DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -109,14 +126,12 @@ class ChatScreen extends StatelessWidget {
     );
 
     if (selectedDate != null) {
-      // Step 2: Show Time Picker
       TimeOfDay? selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
       );
 
       if (selectedTime != null) {
-        // Combine the selected date and time into a single DateTime object
         final DateTime finalDateTime = DateTime(
           selectedDate.year,
           selectedDate.month,
@@ -124,59 +139,8 @@ class ChatScreen extends StatelessWidget {
           selectedTime.hour,
           selectedTime.minute,
         );
-
-        // Call the controller to save the chat with the date and time
         historyController.pinChat(chatId, finalDateTime);
       }
     }
   }
-
-  /// You have reached your free search limit
-
-  /// Limit Reached
-
-  void _copyAllMessages(BuildContext context) {
-    final allMessages = chatController.messages
-        .map((message) => message['message'])
-        .join("\n");
-    Clipboard.setData(ClipboardData(text: allMessages));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("All messages copied to clipboard!")),
-    );
-  }
-
-  /*Future<void> _exportToPDF(BuildContext context) async {
-    String? outputDir = await FilePicker.platform.getDirectoryPath();
-    if (outputDir == null) return;
-
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: chatController.messages.map((message) {
-              return pw.Text(
-                message['message'],
-                style: pw.TextStyle(
-                  fontSize: 14,
-                  color: message['isSentByUser']
-                      ? PdfColors.black
-                      : PdfColors.purple,
-                ),
-              );
-            }).toList(),
-          );
-        },
-      ),
-    );
-
-    final file = File("$outputDir/chat_export.pdf");
-    await file.writeAsBytes(await pdf.save());
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("PDF saved to: ${file.path}")),
-    );
-  }*/
-
-
 }

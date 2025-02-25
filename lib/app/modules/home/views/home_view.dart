@@ -12,7 +12,7 @@ import '../../dashboard/controllers/theme_controller.dart';
 import '../../dashboard/views/widgets/subscriptionPopup.dart';
 import '../../history/controllers/history_controller.dart';
 import '../controllers/home_controller.dart';
-import 'chat_screen_view.dart'; // Import ChatScreen
+import 'chat_screen_view.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -27,158 +27,139 @@ class HomeView extends GetView<HomeController> {
     final bool isFree2 = homeController.isFree.value;
     final ThemeController themeController = Get.find<ThemeController>();
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 40),
-              if(isFree2)
-              CustomButton(
-                height: 30,
-                textSize: 12,
-                text: 'Upgrade To Pro',
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: true, // Prevent closing the dialog by tapping outside
-                    builder: (BuildContext context) {
-                      return const SubscriptionPopup(
-                          isManage: true); // Use the SubscriptionPopup widget
-                    },
-                  );
-                },
-                width: 150,
-                backgroundGradientColor: AppColors.transparent,
-                borderGradientColor: AppColors.cardGradient,
-                isEditPage: true,
-                textColor: AppColors.textColor,
-              ),
-              SizedBox(height: 60),
-              Obx(() {
-                //final ThemeController themeController = Get.find<ThemeController>();
-                return SvgPicture.asset(
-                  'assets/images/auth/app_logo.svg',
-                  color: themeController.isDarkTheme.value
-                      ? Colors.white // White in dark mode
-                      : null, // Black in light mode
-                );
-              }),
-              SizedBox(height: 30,),
-              Text(
-                "What do you need help with today?",
-                style: h3.copyWith(fontSize: 28),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 50), // Add some spacing at the top
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
-                    child: Obx(() {
-                      final ThemeController themeController = Get.find<ThemeController>();
+    // Dismiss keyboard when the screen is loaded or returned to
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).unfocus();
+    });
 
-                      return Container(
-                        constraints: BoxConstraints(
-                          maxWidth: double.maxFinite, // Set maximum width for the container
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        // Add inner padding
-                        decoration: BoxDecoration(
-                          color: Colors.transparent, // Transparent background
-                          borderRadius: BorderRadius.circular(10), // Rounded border
-                          border: Border.all(
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white // Border color in dark mode
-                                : Colors.black, // Border color in light mode
-                            width: 1, // Border width
+    return Scaffold(
+      body: GestureDetector(
+        // Dismiss keyboard when tapping outside the text field
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                if (isFree2)
+                  Obx(() {
+                    return CustomButton(
+                      height: 30,
+                      textSize: 12,
+                      text: 'Upgrade To Pro',
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) {
+                            return const SubscriptionPopup(isManage: true);
+                          },
+                        );
+                      },
+                      width: 150,
+                      backgroundGradientColor: themeController.isDarkTheme.value
+                          ? AppColors.cardGradient
+                          : [Colors.transparent, Colors.transparent],
+                      borderGradientColor: themeController.isDarkTheme.value
+                          ? AppColors.transparent
+                          : AppColors.cardGradient,
+                      isEditPage: true,
+                      textColor: themeController.isDarkTheme.value
+                          ? Colors.white
+                          : AppColors.appColor3,
+                    );
+                  }),
+                SizedBox(height: 60),
+                Obx(() {
+                  return SvgPicture.asset(
+                    'assets/images/auth/app_logo.svg',
+                    color: themeController.isDarkTheme.value ? Colors.white : null,
+                  );
+                }),
+                SizedBox(height: 30),
+                Text(
+                  "What do you need help with today?",
+                  style: h3.copyWith(fontSize: 28),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 50),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () => Get.to(() => FaqView(selectedIndex: 0)),
+                      child: Obx(() {
+                        return Container(
+                          constraints: BoxConstraints(maxWidth: double.maxFinite),
+                          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                              width: 1,
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          "What should I tell the AI to get the best session plan?",
-                          style: TextStyle(
-                            fontSize: 16, // Font size
-                            color: themeController.isDarkTheme.value
-                                ? Colors.white // Text color in dark mode
-                                : Colors.black, // Text color in light mode
+                          child: Text(
+                            "What should I tell the AI to get the best session plan?",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center, // Center-align the text
-                        ),
-                      );
-                    }),
+                        );
+                      }),
+                    ),
                   ),
                 ),
-              ),
-              Obx(() {
-                //final ThemeController themeController = Get.find<ThemeController>();
-                final bool isFree = homeController.isFree.value;
-                return CustomMessageInputField(
-                  textController: textController,
-                  onSend: () async {
-                    // Store the current text in a variable
-                    final message = textController.text.trim();
-                    FocusScope.of(context).unfocus();
-          
-                    if (message.isNotEmpty) {
-                      // Dismiss the keyboard before navigation
-                      print('::::::::::is free before sending :::::::::${homeController.isFree.value}');
-                      // Navigate to ChatScreen with the message
-          
-                      //final bool isFree = homeController.isFree.value;
-                      int? chatId = chatController.chatId.value;
-          
-          
-                      /*if (isFree) {
-                        print('hit free');
-          
-                        // Load previous free messages first
-                        chatController.loadFreeMessages();
-          
-                        // Delay the adding of the initial user message
-                        Future.delayed(Duration(milliseconds: 500), () {
-                          // Now add the initial user message after the previous messages are loaded
-                          chatController.addUserMessage(message);
-                          chatController.createFreeChat(message); // Proceed with chat creation
+                Obx(() {
+                  final bool isFree = homeController.isFree.value;
+                  return CustomMessageInputField(
+                    textController: textController,
+                    onSend: () async {
+                      final message = textController.text.trim();
+                      FocusScope.of(context).unfocus(); // Dismiss keyboard before processing
+
+                      if (message.isNotEmpty) {
+                        print('::::::::::is free before sending :::::::::${homeController.isFree.value}');
+                        int? chatId = chatController.chatId.value;
+
+                        print('hit subscribed');
+                        await chatController.createChat(message).then((_) {
+                          chatId = chatController.chatId.value;
+
+                          String truncatedMessage = message.length > 20
+                              ? '${message.substring(0, 20)}...'
+                              : message;
+
+                          historyController.updateChatTitle(chatId!, truncatedMessage);
+                          Get.to(() => ChatScreen(chatId: chatId, chatName: 'Untitled Chat'));
                         });
-                        chatId = chatController.chatId.value;
-                        Get.to(() => ChatScreen(isfree: isFree,chatId: chatId,chatName: 'Untitled Chat'));
-                      }*/
-          
-          
-          
-                      print('hit subscribed');
-          
-                      //await chatController.createChat(message);
-                      await chatController.createChat(message).then((_) {
-                        chatId = chatController.chatId.value;
-          
-                        // Truncate the message to 20 characters and add "..." if it's longer
-                        String truncatedMessage = message.length > 20
-                            ? '${message.substring(0, 20)}...'
-                            : message;
-          
-                        // Update chat title with the truncated message
-                        historyController.updateChatTitle(chatId!, truncatedMessage);
-          
-                        // Navigate to ChatScreen
-                        Get.to(() => ChatScreen(chatId: chatId, chatName: 'Untitled Chat'));
-                      });
-          
-          
-                      //final int? chatId = chatController.chatId.value;
-          
-          
-          
-                      // Clear the text field
-                      textController.clear();
-                    }
-                  },
-                );
-              }),
-             // const SizedBox(height: 40),
-            ],
+
+                        textController.clear();
+                      }
+                    },
+                  );
+                }),
+                Obx(() => chatController.isLoading.value
+                    ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.textColor),
+                  ),
+                )
+                    : const SizedBox.shrink()),
+              ],
+            ),
           ),
         ),
       ),

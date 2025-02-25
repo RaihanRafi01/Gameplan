@@ -54,15 +54,21 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
               context: context,
               barrierDismissible: true,
               builder: (BuildContext context) {
-                return const SubscriptionPopup(isManage: true); // Use the SubscriptionPopup widget
+                return const SubscriptionPopup(isManage: true);
               },
             );
           },
-          width: 170,
-          backgroundGradientColor: AppColors.transparent,
-          borderGradientColor: AppColors.cardGradient,
+          width: 150,
+          backgroundGradientColor: themeController.isDarkTheme.value
+              ? AppColors.cardGradient
+              : [Colors.transparent, Colors.transparent],
+          borderGradientColor: themeController.isDarkTheme.value
+              ? AppColors.transparent
+              : AppColors.cardGradient,
           isEditPage: true,
-          textColor: AppColors.textColor,
+          textColor: themeController.isDarkTheme.value
+              ? Colors.white
+              : AppColors.appColor3, // Replace with your day mode text color
         )
             : SvgPicture.asset(
           'assets/images/auth/app_logo.svg',

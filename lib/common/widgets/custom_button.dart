@@ -16,11 +16,11 @@ class CustomButton extends StatelessWidget {
   final bool isEditPage;
   final double width;
   final double height;
-  final String svgAsset;  // Add a parameter to pass the SVG asset path
+  final String svgAsset;
 
   const CustomButton({
     super.key,
-    this.textSize = 16, //16 for all //
+    this.textSize = 16,
     required this.text,
     required this.onPressed,
     this.isGem = false,
@@ -32,11 +32,14 @@ class CustomButton extends StatelessWidget {
     this.isEditPage = false,
     this.width = double.maxFinite,
     this.height = 45,
-    this.svgAsset = 'assets/images/home/class_icon.svg', // Default empty, no SVG displayed
+    this.svgAsset = 'assets/images/home/class_icon.svg',
   });
 
   @override
   Widget build(BuildContext context) {
+    // Check if background should be transparent
+    final isBackgroundTransparent = backgroundGradientColor.every((color) => color == Colors.transparent);
+
     return SizedBox(
       height: height,
       width: width,
@@ -45,69 +48,64 @@ class CustomButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            // Only apply gradient if not transparent
+            gradient: isBackgroundTransparent
+                ? null
+                : LinearGradient(
               colors: backgroundGradientColor,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          child: isEditPage
-              ? ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return LinearGradient(
-                colors: borderGradientColor,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ).createShader(bounds);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(borderRadius),
-                border: Border.all(
-                  color: Colors.white, // Placeholder color (not visible)
-                  width: 2, // Border width
+          child: Stack(
+            children: [
+              // Border layer
+              if (isEditPage && !borderGradientColor.every((color) => color == Colors.transparent))
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(
+                      width: 1,
+                      style: BorderStyle.solid,
+                      // Use first color of gradient for solid border, or implement gradient border differently
+                      color: borderGradientColor.first,
+                    ),
+                  ),
                 ),
+              // Content
+              Padding(
+                padding: padding,
+                child: Center(child: textWithIcon()),
               ),
-              padding: padding,
-              alignment: Alignment.center,
-              child: textWithIcon(),
-            ),
-          )
-              : Container(
-            padding: padding,
-            alignment: Alignment.center,
-            child: textWithIcon(),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // Helper method to return the text with an optional SVG icon
   Widget textWithIcon() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isGem && svgAsset.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(left: 15), // Add padding to the right of the image
+            padding: const EdgeInsets.only(right: 8),
             child: SvgPicture.asset(
-              svgAsset, // SVG asset path
-              width: 15.0, // Adjust the size as needed
+              svgAsset,
+              width: 15.0,
               height: 15.0,
-              color: Colors.white,// Adjust the size as needed
+              color: textColor,
             ),
           ),
-        Expanded(
-          child: Text(
-            text,
-            textAlign: TextAlign.center, // Center the text horizontally
-            style: h4.copyWith(
-              fontSize: textSize,
-              color: textColor,
-              fontWeight: FontWeight.bold,
-            ),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: h4.copyWith(
+            fontSize: textSize,
+            color: textColor,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
