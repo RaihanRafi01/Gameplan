@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../../common/appColors.dart';
+import '../../controllers/theme_controller.dart';
 
 class SubscriptionOptionCard extends StatelessWidget {
   final String title;
@@ -21,6 +23,8 @@ class SubscriptionOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeController themeController = Get.find<ThemeController>();
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -32,7 +36,9 @@ class SubscriptionOptionCard extends StatelessWidget {
               width: 180,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: themeController.isDarkTheme.value
+                    ? Colors.black45
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected ? AppColors.appColor3 : Colors.grey.shade300,
@@ -52,10 +58,12 @@ class SubscriptionOptionCard extends StatelessWidget {
                   const SizedBox(height: 20),
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: themeController.isDarkTheme.value
+                          ? Colors.white
+                          : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -63,19 +71,23 @@ class SubscriptionOptionCard extends StatelessWidget {
                     children: [
                       Text(
                         price,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                       Expanded(
                         child: Text(
                           '/ Per Month',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: themeController.isDarkTheme.value
+                                ? Colors.white
+                                : Colors.black,
                           ),
                         ),
                       ),
@@ -86,7 +98,9 @@ class SubscriptionOptionCard extends StatelessWidget {
                     description,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: themeController.isDarkTheme.value
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
                     ),
                   ),
                 ],
