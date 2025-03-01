@@ -253,7 +253,7 @@ class _ExportScreenState extends State<ExportScreen> {
                   PopupMenuItem<String>(
                     value: 'save_to_class',
                     child: SizedBox(
-                      width: 140,
+                      width: 160,
                       child: Row(
                         children: [
                           SvgPicture.asset(

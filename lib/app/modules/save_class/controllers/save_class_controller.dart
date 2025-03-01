@@ -101,9 +101,9 @@ class SaveClassController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchClassList();
-        Get.snackbar('Success', 'Class pinned successfully');
+        Get.snackbar('Success', 'Class saved successfully');
       } else {
-        Get.snackbar('Error', 'Failed to pin class');
+        Get.snackbar('Warning!', 'Failed to save class');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');
@@ -118,11 +118,11 @@ class SaveClassController extends GetxController {
       final http.Response response = await _service.unSaveEditChat(editId, folderId);
 
       if (response.statusCode == 200) {
-        Get.snackbar('Unpinned', 'Edit unpinned successfully');
+        Get.snackbar('Removed', 'Removed from class successfully');
         isSaveMode.value = false;
         await fetchClassList();
       } else {
-        Get.snackbar('Error', 'Failed to unpin');
+        Get.snackbar('Warning!', 'Failed to removed');
       }
     } catch (e) {
       Get.snackbar('Error', 'Something went wrong: $e');

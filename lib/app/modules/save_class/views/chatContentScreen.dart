@@ -204,7 +204,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                           SizedBox(width: 8),
                           Obx(() => Text(
                             saveClassController.isSaveMode.value
-                                    ? "UnSave To Class"
+                                    ? "Remove from Class"
                                     : "Save To Class",
                                 style: TextStyle(
                                   color: themeController.isDarkTheme.value
@@ -333,7 +333,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                   } else if (value == 3) {
                     if (saveClassController.isSaveMode.value) {
                       await saveClassController.unSaveEditedChat(
-                          widget.editId, widget.folderId!);
+                          widget.editId, saveClassController.tempFolderId.value);
                     } else {
                       showDialog(
                         context: context,
