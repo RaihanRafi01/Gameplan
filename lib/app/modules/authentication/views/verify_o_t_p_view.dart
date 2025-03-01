@@ -13,7 +13,7 @@ import '../controllers/authentication_controller.dart';
 class VerifyOTPView extends StatefulWidget {
   final String? forgotUserName;
   final bool isForgot;
-  const VerifyOTPView({super.key,this.forgotUserName,this.isForgot = false});
+  const VerifyOTPView({super.key, this.forgotUserName, this.isForgot = false});
 
   @override
   State<VerifyOTPView> createState() => _VerifyOTPViewState();
@@ -24,9 +24,9 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
   late final String email;
   int _remainingSeconds = 30;
   bool _isResendEnabled = false;
-  String? _verificationMessage; // To show "Code is Correct" or "Incorrect Code"
+  String? _verificationMessage;
   final AuthenticationController _controller = Get.put(AuthenticationController());
-  final TextEditingController _otpController = TextEditingController(); // For manual OTP input
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
@@ -73,100 +73,118 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
     _startTimer();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'OTP has been sent to your Email',
-                  style: h4.copyWith(fontSize: 14),
-                ),
-                const SizedBox(height: 20),
-                PinCodeInputField(
-                  onCompleted: (code) {
-                    // Save the OTP entered by the user
-                    _otpController.text = code;
-                  },
-                ),
-                if (_verificationMessage != null) // Only show message after `onCompleted`
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      _verificationMessage!,
-                      style: h4.copyWith(
-                        color: _verificationMessage == "Code is Correct"
-                            ? Colors.green
-                            : Colors.red,
-                        fontSize: 14,
-                      ),
-                    ),
+    return Theme(
+      data: ThemeData(
+        // Define a light theme specifically for this view
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          color: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black),
+        ),
+        colorScheme: const ColorScheme.light(
+          primary: Colors.white,
+          onPrimary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ),
+      ),
+      child: Scaffold(
+        appBar: AppBar(),
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'OTP has been sent to your Email',
+                    style: h4.copyWith(fontSize: 14),
                   ),
-                const SizedBox(height: 20),
-                CustomButton(
-                  borderRadius: 5,
-                  width: 150,
-                  text: "Verify OTP",
-                  onPressed: () {
-                    print(':::::::::::::::::::::::::USERNAME TO BE SENT:::${widget.forgotUserName}');
-                    final otp = _otpController.text.trim();
-                    if (otp.isEmpty) {
-                      Get.snackbar('Error', 'Please enter the OTP');
-                    } else {
-                      widget.isForgot
-                          ? _controller.verifyForgotOTP(widget.forgotUserName!, otp)
-                          : _controller.verifyOTP(email, otp);
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _formatTime(_remainingSeconds),
-                      style: const TextStyle(fontSize: 16, color: Colors.black),
-                    ),
-                    const Text(' | ', style: TextStyle(fontSize: 16)),
-                    GestureDetector(
-                      onTap: _isResendEnabled ? _resendOTP : null,
+                  const SizedBox(height: 20),
+                  PinCodeInputField(
+                    onCompleted: (code) {
+                      _otpController.text = code;
+                    },
+                  ),
+                  if (_verificationMessage != null)
+                    Align(
+                      alignment: Alignment.centerRight,
                       child: Text(
-                        'Resend OTP',
+                        _verificationMessage!,
                         style: h4.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: _isResendEnabled
-                              ? AppColors.appColor
-                              : Colors.grey, // Grey if disabled
+                          color: _verificationMessage == "Code is Correct"
+                              ? Colors.green
+                              : Colors.red,
+                          fontSize: 14,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          // Loading Indicator
-          Obx(() {
-            return _controller.isLoading.value
-                ? Container(
-              color: Colors.black45,
-              child: const Center(
-                child: CircularProgressIndicator(),
+                  const SizedBox(height: 20),
+                  CustomButton(
+                    borderRadius: 5,
+                    width: 150,
+                    text: "Verify OTP",
+                    onPressed: () {
+                      print(':::::::::::::::::::::::::USERNAME TO BE SENT:::${widget.forgotUserName}');
+                      final otp = _otpController.text.trim();
+                      if (otp.isEmpty) {
+                        Get.snackbar('Error', 'Please enter the OTP');
+                      } else {
+                        widget.isForgot
+                            ? _controller.verifyForgotOTP(widget.forgotUserName!, otp)
+                            : _controller.verifyOTP(email, otp);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _formatTime(_remainingSeconds),
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                      const Text(' | ', style: TextStyle(fontSize: 16)),
+                      GestureDetector(
+                        onTap: _isResendEnabled ? _resendOTP : null,
+                        child: Text(
+                          'Resend OTP',
+                          style: h4.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: _isResendEnabled
+                                ? AppColors.appColor
+                                : Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            )
-                : const SizedBox.shrink();
-          }),
-        ],
+            ),
+            Obx(() {
+              return _controller.isLoading.value
+                  ? Container(
+                color: Colors.black45,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+                  : const SizedBox.shrink();
+            }),
+          ],
+        ),
       ),
     );
   }

@@ -3,9 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import '../../../../common/widgets/auth/custom_HeaderText.dart';
 import '../../../../common/widgets/auth/custom_textField.dart';
-import '../../../../common/widgets/auth/popUpWidget.dart';
 import '../../../../common/widgets/custom_button.dart';
-import '../../dashboard/controllers/theme_controller.dart';
 import '../controllers/authentication_controller.dart';
 
 class ResetPasswordView extends GetView {
@@ -44,68 +42,86 @@ class ResetPasswordView extends GetView {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Obx(() {
-          final ThemeController themeController = Get.find<ThemeController>();
-          return SvgPicture.asset(
-            'assets/images/auth/app_logo.svg',
-            color: themeController.isDarkTheme.value
-                ? Colors.white // White in dark mode
-                : null, // Black in light mode
-          );
-        }),
+    return Theme(
+      data: ThemeData(
+        // Enforce a light theme for this view
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          color: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black),
+          bodyMedium: TextStyle(color: Colors.black),
+        ),
+        colorScheme: const ColorScheme.light(
+          primary: Colors.white,
+          onPrimary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+        ),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomHeadertext(
-                    header1: "Reset Password",
-                    header2: "Enter a new password",
-                  ),
-                  const SizedBox(height: 30),
-                  CustomTextField(
-                    controller: passwordController,
-                    label: "Password",
-                    hint: "Enter Password",
-                    prefixIcon: Icons.lock_outline_rounded,
-                    isPassword: true,
-                  ),
-                  CustomTextField(
-                    controller: confirmPasswordController,
-                    label: "Confirm Password",
-                    hint: "Confirm Password",
-                    prefixIcon: Icons.lock_outline_rounded,
-                    isPassword: true,
-                  ),
-                  const SizedBox(height: 30),
-                  CustomButton(
-                    text: "Reset Password",
-                    onPressed: validateAndResetPassword,
-                  ),
-                ],
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: SvgPicture.asset(
+            'assets/images/auth/app_logo.svg',
+          ),
+        ),
+        body: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomHeadertext(
+                      header1: "Reset Password",
+                      header2: "Enter a new password",
+                    ),
+                    const SizedBox(height: 30),
+                    CustomTextField(
+                      isLogin: true,
+                      controller: passwordController,
+                      label: "Password",
+                      hint: "Enter Password",
+                      prefixIcon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                    ),
+                    CustomTextField(
+                      isLogin: true,
+                      controller: confirmPasswordController,
+                      label: "Confirm Password",
+                      hint: "Confirm Password",
+                      prefixIcon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                    ),
+                    const SizedBox(height: 30),
+                    CustomButton(
+                      text: "Reset Password",
+                      onPressed: validateAndResetPassword,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          // Loading Indicator
-          Obx(() {
-            return _controller.isLoading.value
-                ? Container(
-              color: Colors.black54,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-                : const SizedBox.shrink();
-          }),
-        ],
+            // Loading Indicator
+            Obx(() {
+              return _controller.isLoading.value
+                  ? Container(
+                color: Colors.black54,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+                  : const SizedBox.shrink();
+            }),
+          ],
+        ),
       ),
     );
   }

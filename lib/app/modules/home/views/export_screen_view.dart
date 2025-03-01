@@ -267,7 +267,7 @@ class _ExportScreenState extends State<ExportScreen> {
                           SizedBox(width: 8),
                           Obx(() => Text(
                             saveClassController.isSaveMode.value
-                                ? "UnSave To Class"
+                                ? "Remove from Class"
                                 : "Save To Class",
                             style: TextStyle(
                               color: themeController.isDarkTheme.value

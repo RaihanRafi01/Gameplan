@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../common/appColors.dart';
+import '../../../../common/customFont.dart';
 import '../../../app/modules/dashboard/controllers/theme_controller.dart';
-import '../../appColors.dart';
-import '../../customFont.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -56,96 +56,136 @@ class _CustomTextFieldState extends State<CustomTextField> {
     });
   }
 
+  // Static TextField for isLogin: true
+  Widget _buildStaticTextField() {
+    return TextField(
+      cursorColor: Colors.black38, // Fixed for light theme
+      controller: widget.controller,
+      onChanged: widget.onChanged,
+      obscureText: widget.isPassword ? _obscureText : false,
+      readOnly: widget.readOnly,
+      keyboardType: widget.keyboardType,
+      onTap: widget.onTap,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        hintText: widget.hint,
+        hintStyle: h4.copyWith(color: AppColors.textColor2),
+        prefixIcon: widget.prefixIcon != null
+            ? Icon(widget.prefixIcon, color: AppColors.appColor)
+            : null,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+          icon: Icon(
+            _obscureText
+                ? Icons.visibility_off_rounded
+                : Icons.visibility_rounded,
+            color: AppColors.appColor,
+          ),
+          onPressed: _togglePasswordVisibility,
+        )
+            : (widget.suffixIcon != null
+            ? Icon(widget.suffixIcon, color: AppColors.appColor)
+            : null),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(widget.radius),
+          borderSide: const BorderSide(color: AppColors.appColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(widget.radius),
+          borderSide: const BorderSide(color: AppColors.appColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(widget.radius),
+          borderSide: const BorderSide(color: AppColors.appColor, width: 2),
+        ),
+      ),
+    );
+  }
+
+  // Dynamic TextField with Obx for isLogin: false
+  Widget _buildDynamicTextField() {
+    return Obx(() {
+      final isDark = themeController.isDarkTheme.value;
+      return TextField(
+        cursorColor: isDark ? Colors.white : AppColors.appColor,
+        controller: widget.controller,
+        onChanged: widget.onChanged,
+        obscureText: widget.isPassword ? _obscureText : false,
+        readOnly: widget.readOnly,
+        keyboardType: widget.keyboardType,
+        onTap: widget.onTap,
+        decoration: InputDecoration(
+          filled: false,
+          hintText: widget.hint,
+          hintStyle: h4.copyWith(
+            color: isDark ? Colors.white54 : AppColors.appColor,
+          ),
+          prefixIcon: widget.prefixIcon != null
+              ? Icon(
+            widget.prefixIcon,
+            color: isDark ? Colors.white : AppColors.appColor,
+          )
+              : null,
+          suffixIcon: widget.isPassword
+              ? IconButton(
+            icon: Icon(
+              _obscureText
+                  ? Icons.visibility_off_rounded
+                  : Icons.visibility_rounded,
+              color: isDark ? Colors.white : AppColors.appColor,
+            ),
+            onPressed: _togglePasswordVisibility,
+          )
+              : (widget.suffixIcon != null
+              ? Icon(
+            widget.suffixIcon,
+            color: isDark ? Colors.white : AppColors.appColor,
+          )
+              : null),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.radius),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : AppColors.appColor,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.radius),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : AppColors.appColor,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.radius),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : AppColors.appColor,
+              width: 2,
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         Text(
+        Text(
           widget.label,
           style: h4.copyWith(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: widget.isLogin
-                ? AppColors.blurtext // Gray color if isLogin is true
-                : (themeController.isDarkTheme.value ? Colors.white : Colors.black), // Dynamic text color
+                ? AppColors.blurtext
+                : (themeController.isDarkTheme.value
+                ? Colors.white
+                : Colors.black),
           ),
         ),
         const SizedBox(height: 8),
-        Obx(() => TextField(
-          cursorColor: widget.isLogin
-              ? Colors.black38 // Gray color if isLogin is true
-              : (themeController.isDarkTheme.value ? Colors.white : AppColors.appColor), // Dynamic cursor color
-          controller: widget.controller,
-          onChanged: widget.onChanged,
-          obscureText: widget.isPassword ? _obscureText : false,
-          readOnly: widget.readOnly,
-          keyboardType: widget.keyboardType,
-          onTap: widget.onTap,
-          decoration: InputDecoration(
-            filled: widget.isLogin,
-            fillColor: widget.isLogin? Colors.white : Colors.transparent,
-            hintText: widget.hint,
-            hintStyle: h4.copyWith(
-              color: widget.isLogin
-                  ? AppColors.textColor2 // Gray color if isLogin is true
-                  : (themeController.isDarkTheme.value ? Colors.white54 : AppColors.appColor) , // Dynamic hint color
-            ),
-            prefixIcon: widget.prefixIcon != null
-                ? Icon(
-              widget.prefixIcon,
-              color: themeController.isDarkTheme.value
-                  ? Colors.white
-                  : AppColors.appColor, // Dynamic prefix icon color
-            )
-                : null,
-            suffixIcon: widget.isPassword
-                ? IconButton(
-              icon: Icon(
-                _obscureText
-                    ? Icons.visibility_off_rounded
-                    : Icons.visibility_rounded,
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : AppColors.appColor, // Dynamic suffix icon color
-              ),
-              onPressed: _togglePasswordVisibility,
-            )
-                : (widget.suffixIcon != null
-                ? Icon(
-              widget.suffixIcon,
-              color: themeController.isDarkTheme.value
-                  ? Colors.white
-                  : AppColors.appColor, // Dynamic suffix icon color
-            )
-                : null),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: BorderSide(
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : AppColors.appColor, // Dynamic border color
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: BorderSide(
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : AppColors.appColor, // Dynamic enabled border color
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(widget.radius),
-              borderSide: BorderSide(
-                color: themeController.isDarkTheme.value
-                    ? Colors.white
-                    : AppColors.appColor, // Dynamic focused border color
-                width: 2,
-              ),
-            ),
-          ),
-        )),
+        widget.isLogin ? _buildStaticTextField() : _buildDynamicTextField(),
         const SizedBox(height: 12),
       ],
     );

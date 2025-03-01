@@ -99,7 +99,7 @@ class SaveClassView extends StatelessWidget {
     );
   }
 
-  Widget _buildClassList(context) {
+  Widget _buildClassList(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -115,10 +115,7 @@ class SaveClassView extends StatelessWidget {
           child: Center(
             child: Text(
               'My Classes',
-              style: h3.copyWith(
-                fontSize: 24,
-                color: Colors.white,
-              ),
+              style: h3.copyWith(fontSize: 24, color: Colors.white),
             ),
           ),
         ),
@@ -141,16 +138,10 @@ class SaveClassView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
-                  onTap: () {
-                    _showAddClassDialog(context);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 26,
-                    ),
+                  onTap: () => _showAddClassDialog(context),
+                  child: const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Icon(Icons.add, color: Colors.white, size: 26),
                   ),
                 ),
               ),
@@ -159,18 +150,23 @@ class SaveClassView extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             itemCount: controller.classList.length,
             itemBuilder: (context, index) {
               final classData = controller.classList[index];
               return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomButton(
-                  isGem: true,
-                  svgAsset: 'assets/images/home/class_icon.svg',
-                  text: classData['folder_name'] ?? 'Unnamed Class',
-                  onPressed: () {
-                    controller.selectClass(classData['folder_name']);
-                  },
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width - 16,
+                  ),
+                  child: CustomButton(
+                    isGem: true,
+                    svgAsset: 'assets/images/home/class_icon.svg',
+                    text: classData['folder_name'] ?? 'Unnamed Class',
+                    onPressed: () => controller.selectClass(classData['folder_name']),
+                    // No height specified, allowing dynamic sizing
+                  ),
                 ),
               );
             },
@@ -190,15 +186,17 @@ class SaveClassView extends StatelessWidget {
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () {
-                  controller.clearSelection();
-                },
+                onPressed: () => controller.clearSelection(),
               ),
-              Text(
-                controller.selectedClass.value,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+              // Title with overflow handling
+              Expanded(
+                child: Text(
+                  controller.selectedClass.value,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 3, // Limit to one line
                 ),
               ),
             ],

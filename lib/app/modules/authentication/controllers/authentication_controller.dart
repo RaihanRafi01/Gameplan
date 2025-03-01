@@ -291,7 +291,7 @@ class AuthenticationController extends GetxController {
 
       } else {
         final responseBody = jsonDecode(response.body);
-        Get.snackbar('Error', responseBody['message'] ?? 'Please Provide your correct UserName');
+        Get.snackbar('Error', responseBody['message'] ?? 'Please Provide your correct Email');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');

@@ -52,58 +52,64 @@ class SubscriptionOptionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: themeController.isDarkTheme.value
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Text(
-                        price,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: themeController.isDarkTheme.value
-                              ? Colors.white
-                              : Colors.black,
-                        ),
+              child: SizedBox(
+                height: 125, // Fixed height for all cards
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distributes space evenly
+                  children: [
+                    const SizedBox(height: 20), // Space for the circle avatar
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: themeController.isDarkTheme.value
+                            ? Colors.white
+                            : Colors.black,
                       ),
-                      Expanded(
-                        child: Text(
-                          '/ Per Month',
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          price,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: themeController.isDarkTheme.value
                                 ? Colors.white
                                 : Colors.black,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: themeController.isDarkTheme.value
-                          ? Colors.grey.shade400
-                          : Colors.grey.shade600,
+                        Expanded(
+                          child: Text(
+                            '/ Per Month',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: themeController.isDarkTheme.value
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Text(
+                        description,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: themeController.isDarkTheme.value
+                              ? Colors.grey.shade400
+                              : Colors.grey.shade600,
+                        ),
+                        maxLines: 2, // Limits description to 2 lines
+                        overflow: TextOverflow.ellipsis, // Adds ellipsis if text is too long
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             if (isBestValue)
