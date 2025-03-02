@@ -40,6 +40,7 @@ class HelpSupportView extends GetView {
               ),
               SizedBox(height: 30,),
               CustomButton(
+                height: 45,
                 text: 'SEND',
                 onPressed: () {
                   _validateAndSend(context, emailController, problemController);

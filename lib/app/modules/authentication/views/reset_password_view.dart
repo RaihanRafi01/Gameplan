@@ -102,6 +102,7 @@ class ResetPasswordView extends GetView {
                     ),
                     const SizedBox(height: 30),
                     CustomButton(
+                      height: 45,
                       text: "Reset Password",
                       onPressed: validateAndResetPassword,
                     ),

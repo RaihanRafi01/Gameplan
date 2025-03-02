@@ -131,6 +131,7 @@ class _VerifyOTPViewState extends State<VerifyOTPView> {
                     ),
                   const SizedBox(height: 20),
                   CustomButton(
+                    height: 45,
                     borderRadius: 5,
                     width: 150,
                     text: "Verify OTP",

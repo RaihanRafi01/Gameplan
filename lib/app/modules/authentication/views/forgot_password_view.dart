@@ -67,6 +67,7 @@ class ForgotPasswordView extends GetView {
                     ),
                     const SizedBox(height: 20),
                     CustomButton(
+                      height: 45,
                       text: 'Send OTP',
                       onPressed: () async {
                         if (usernameController.text.trim().isEmpty) {

@@ -121,7 +121,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    CustomButton(
+                    CustomButton(height: 45,
                       text: "Login",
                       onPressed: _handleLogin,
                     ),
@@ -132,6 +132,7 @@ class AuthenticationView extends GetView<AuthenticationController> {
                     ),
                     const SizedBox(height: 20),
                     CustomButton(
+                      height: 45,
                       text: "Sign Up",
                       onPressed: () => Get.to(() => SignUpView()),
                     ),

@@ -134,6 +134,7 @@ class _SignUpViewState extends State<SignUpView> {
                     ),
                     const SizedBox(height: 20),
                     CustomButton(
+                      height: 45,
                       text: "Sign Up",
                       onPressed: _isChecked
                           ? () {

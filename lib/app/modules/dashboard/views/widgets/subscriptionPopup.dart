@@ -86,6 +86,7 @@ class SubscriptionPopup extends StatelessWidget {
                     style: h3.copyWith(fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Card(
@@ -123,6 +124,7 @@ class SubscriptionPopup extends StatelessWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 5),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -153,6 +155,7 @@ class SubscriptionPopup extends StatelessWidget {
                   ),
                   Spacer(),
                   CustomButton(
+                    height: 45,
                     text: 'Upgrade to Pro',
                     onPressed: () async {
                       if (controller.selectedPlan.value == "Yearly") {
