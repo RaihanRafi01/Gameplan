@@ -117,7 +117,7 @@ class AuthenticationController extends GetxController {
 
       } else {
         final responseBody = jsonDecode(response.body);
-        Get.snackbar('Error', responseBody['message'] ?? 'Sign-up failed\nPlease Use Different Username');
+        Get.snackbar('Warning!', responseBody['message'] ?? 'Sign-up failed\nPlease Use Different Email');
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred');
