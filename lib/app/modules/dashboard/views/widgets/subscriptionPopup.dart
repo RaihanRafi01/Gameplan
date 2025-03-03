@@ -133,7 +133,7 @@ class SubscriptionPopup extends StatelessWidget {
                               () => SubscriptionOptionCard(
                             title: "Yearly",
                             price: "\$8.30",
-                            description: "Just \$8.30 Per Month\nBilled As \$99.6 Annually",
+                            description: "Billed As \$99.6 Annually",
                             isBestValue: true,
                             isSelected: controller.selectedPlan.value == "Yearly",
                             onTap: () => controller.selectPlan("Yearly"),
