@@ -40,7 +40,7 @@ class SubscriptionPopup extends StatelessWidget {
     // Corrected list of features with proper text
     final List<String> features = [
       'Unlimited use of AI planner',
-      'Unlimited use of the full suite \nof tools, including calendar and editor',
+      'Unlimited use of the full suite of tools, including calendar and editor',
       'Priority Support',
       'Cancel Anytime',
     ];
@@ -86,7 +86,7 @@ class SubscriptionPopup extends StatelessWidget {
                     style: h3.copyWith(fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Card(
@@ -114,6 +114,8 @@ class SubscriptionPopup extends StatelessWidget {
                                             : Colors.black,
                                         fontSize: 14,
                                       ),
+                                      softWrap: true, // Allows text to wrap to the next line
+                                      overflow: TextOverflow.visible, // Prevents ellipsis
                                     ),
                                   ),
                                 ],
