@@ -42,13 +42,6 @@ class SignupWithOther extends StatelessWidget {
                 _signInWithGoogle();
               },
             ),
-            const SizedBox(width: 30),
-            SocialButton(
-              iconPath: 'assets/images/auth/facebook_icon.svg',
-              onPressed: () {
-                // Implement Facebook Sign-In here
-              },
-            ),
           ],
         ),
       ],
