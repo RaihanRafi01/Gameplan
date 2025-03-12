@@ -58,7 +58,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   final EditController historyEditController = Get.put(EditController());
   final SaveClassController saveClassController =
       Get.put(SaveClassController());
-  final RxString title = ''.obs;
+  //final RxString title = ''.obs;
   final RxBool isEditMode = false.obs;
   final RxBool isPinMode = false.obs;
 
@@ -67,7 +67,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
   void initState() {
     super.initState();
     print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::: content : ${widget.content}');
-    title.value = widget.title;
+    historyEditController.title.value = widget.title;
     isPinMode.value = widget.isPinned;
     saveClassController.isSaveMode.value = widget.isSaved;
     _parseHtmlContent(widget.content);
@@ -89,7 +89,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
           title: Obx(() {
             final ThemeController themeController = Get.find<ThemeController>();
             return Text(
-              title.value,
+              historyEditController.title.value,
               style: TextStyle(
                 color: themeController.isDarkTheme.value
                     ? Colors.white // White in dark mode
@@ -718,7 +718,7 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
 
   void _showEditDialog(BuildContext context, int chatId, String currentTitle) {
     final TextEditingController textController =
-        TextEditingController(text: currentTitle);
+    TextEditingController(text: currentTitle);
 
     showDialog(
       context: context,
@@ -742,8 +742,6 @@ class _ChatContentScreenState extends State<ChatContentScreen> {
                 final newTitle = textController.text.trim();
                 if (newTitle.isNotEmpty) {
                   // Update the reactive title
-                  title.value = newTitle;
-
                   // Update the title in the controller (if needed)
                   historyEditController.updateChatTitle(chatId, newTitle);
                 }

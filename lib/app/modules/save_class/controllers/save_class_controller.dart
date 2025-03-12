@@ -70,6 +70,14 @@ class SaveClassController extends GetxController {
     }
   }
 
+  /// Refresh the contents of the selected class
+  Future<void> refreshSelectedClassContents() async {
+    if (selectedClass.value.isNotEmpty) {
+      await fetchClassList(); // Refetch the class list to get updated data
+      selectClass(selectedClass.value); // Re-select the current class to update contents
+    }
+  }
+
   /// Add a new class by calling the API and updating the local list
   Future<void> addClass(String className) async {
     if (className.isEmpty) {

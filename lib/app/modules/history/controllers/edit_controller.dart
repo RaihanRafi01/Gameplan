@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../../../data/services/api_services.dart';
+import '../../save_class/controllers/save_class_controller.dart';
 import 'edit_history_controller.dart';
 
 class EditController extends GetxController {
@@ -13,6 +14,7 @@ class EditController extends GetxController {
 
   // Reactive grouped list for chat content
   var groupedChatHistory = <String, List<Chat>>{}.obs;
+  final RxString title = ''.obs;
 
   // Fetch all chat content list from API
   Future<void> fetchAllChatList() async {
@@ -79,6 +81,8 @@ class EditController extends GetxController {
       final http.Response response = await _service.updateChatTitle(chatId, content);
       if (response.statusCode == 200) {
         fetchAllChatList();
+        final SaveClassController saveClassController = Get.find<SaveClassController>();
+        await saveClassController.refreshSelectedClassContents();
       } else {
         Get.snackbar('Error', 'Failed to update content');
       }
@@ -112,6 +116,8 @@ class EditController extends GetxController {
       final http.Response response = await _service.updateEditChat(chatId, content);
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchAllChatList();
+        final SaveClassController saveClassController = Get.find<SaveClassController>();
+        await saveClassController.refreshSelectedClassContents();
         Get.snackbar('Success', 'Successfully updated the edit message');
       } else {
         Get.snackbar('Error', 'Failed to update content');
@@ -159,22 +165,26 @@ class EditController extends GetxController {
 
 
 
-  Future<void> updateChatTitle(int chatId, String title) async {
+  Future<void> updateChatTitle(int chatId, String titlee) async {
     try {
 
 
       // Make the API call to get chat list
-      final http.Response verificationResponse = await _service.updateEditChatTitle(chatId,title);
+      final http.Response verificationResponse = await _service.updateEditChatTitle(chatId,titlee);
 
       print('hit update chat ::::::::::::::::::::::::::chatId:::::::::::::::::$chatId');
-      print('hit update chat ::::::::::::::::::::::::::::title:::::::::::::::$title');
+      print('hit update chat ::::::::::::::::::::::::::::title:::::::::::::::$titlee');
 
       print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.statusCode}');
       print('hit update chat ::::::::::::::::::::::::::::CODE:::::::::::::::${verificationResponse.body}');
 
       if (verificationResponse.statusCode == 200) {
+        Get.snackbar('Success', 'Successfully updated the title');
         // Decode the API response into a list of maps
+        title.value = titlee;
         fetchAllChatList();
+        final SaveClassController saveClassController = Get.find<SaveClassController>();
+        await saveClassController.refreshSelectedClassContents();
       } else {
         // Handle unsuccessful response
         Get.snackbar('Error', 'Failed to load chat list');

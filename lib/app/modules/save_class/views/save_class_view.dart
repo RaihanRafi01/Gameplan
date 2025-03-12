@@ -82,13 +82,16 @@ class SaveClassView extends StatelessWidget {
             return _buildClassList(context);
           } else {
             return Center(
-              child: CustomButton(
-                height: 60,
-                textSize: 24,
-                text: 'Create a Class',
-                onPressed: () {
-                  _showAddClassDialog(context);
-                },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: CustomButton(
+                  height: 60,
+                  textSize: 24,
+                  text: 'Create a Class',
+                  onPressed: () {
+                    _showAddClassDialog(context);
+                  },
+                ),
               ),
             );
           }
@@ -149,28 +152,30 @@ class SaveClassView extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            itemCount: controller.classList.length,
-            itemBuilder: (context, index) {
-              final classData = controller.classList[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width - 16,
+          child: Obx((){
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              itemCount: controller.classList.length,
+              itemBuilder: (context, index) {
+                final classData = controller.classList[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width - 16,
+                    ),
+                    child: CustomButton(
+                      isGem: true,
+                      svgAsset: 'assets/images/home/class_icon.svg',
+                      text: classData['folder_name'] ?? 'Unnamed Class',
+                      onPressed: () => controller.selectClass(classData['folder_name']),
+                      // No height specified, allowing dynamic sizing
+                    ),
                   ),
-                  child: CustomButton(
-                    isGem: true,
-                    svgAsset: 'assets/images/home/class_icon.svg',
-                    text: classData['folder_name'] ?? 'Unnamed Class',
-                    onPressed: () => controller.selectClass(classData['folder_name']),
-                    // No height specified, allowing dynamic sizing
-                  ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            );
+          }),
         ),
       ],
     );
