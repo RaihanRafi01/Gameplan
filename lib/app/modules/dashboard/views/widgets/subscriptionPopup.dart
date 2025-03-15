@@ -70,127 +70,129 @@ class SubscriptionPopup extends StatelessWidget {
                     : Colors.white,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 40),
-                  SvgPicture.asset(
-                    'assets/images/auth/app_logo.svg',
-                    color: themeController.isDarkTheme.value ? Colors.white : null,
-                  ),
-                  const SizedBox(height: 10),
-                  Text('Get GamePlan Pro', style: h1.copyWith(fontSize: 26)),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Unlimited plans on our most powerful model with premium features',
-                    style: h3.copyWith(fontSize: 14),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Card(
-                      color: themeController.isDarkTheme.value
-                          ? Colors.black45
-                          : Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: features.map((feature) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.check_circle, color: AppColors.appColor3),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      feature,
-                                      style: TextStyle(
-                                        color: themeController.isDarkTheme.value
-                                            ? Colors.white
-                                            : Colors.black,
-                                        fontSize: 14,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 40),
+                    SvgPicture.asset(
+                      'assets/images/auth/app_logo.svg',
+                      color: themeController.isDarkTheme.value ? Colors.white : null,
+                    ),
+                    const SizedBox(height: 10),
+                    Text('Get GamePlan Pro', style: h1.copyWith(fontSize: 26)),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Unlimited plans on our most powerful model with premium features',
+                      style: h3.copyWith(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Card(
+                        color: themeController.isDarkTheme.value
+                            ? Colors.black45
+                            : Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: features.map((feature) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 5),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.check_circle, color: AppColors.appColor3),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        feature,
+                                        style: TextStyle(
+                                          color: themeController.isDarkTheme.value
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontSize: 14,
+                                        ),
+                                        softWrap: true, // Allows text to wrap to the next line
+                                        overflow: TextOverflow.visible, // Prevents ellipsis
                                       ),
-                                      softWrap: true, // Allows text to wrap to the next line
-                                      overflow: TextOverflow.visible, // Prevents ellipsis
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        Obx(
-                              () => SubscriptionOptionCard(
-                            title: "Yearly",
-                            price: "\$8.30",
-                            description: "Billed As \$99.6 Annually",
-                            isBestValue: true,
-                            isSelected: controller.selectedPlan.value == "Yearly",
-                            onTap: () => controller.selectPlan("Yearly"),
+                    const SizedBox(height: 5),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Obx(
+                                () => SubscriptionOptionCard(
+                              title: "Yearly",
+                              price: "\$8.30",
+                              description: "Billed As \$99.6 Annually",
+                              isBestValue: true,
+                              isSelected: controller.selectedPlan.value == "Yearly",
+                              onTap: () => controller.selectPlan("Yearly"),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Obx(
-                              () => SubscriptionOptionCard(
-                            title: "Monthly",
-                            price: "\$12.99",
-                            description: "Billed Monthly",
-                            isBestValue: false,
-                            isSelected: controller.selectedPlan.value == "Monthly",
-                            onTap: () => controller.selectPlan("Monthly"),
+                          const SizedBox(width: 10),
+                          Obx(
+                                () => SubscriptionOptionCard(
+                              title: "Monthly",
+                              price: "\$12.99",
+                              description: "Billed Monthly",
+                              isBestValue: false,
+                              isSelected: controller.selectedPlan.value == "Monthly",
+                              onTap: () => controller.selectPlan("Monthly"),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  CustomButton(
-                    height: 45,
-                    text: 'Upgrade to Pro',
-                    onPressed: () async {
-                      if (controller.selectedPlan.value == "Yearly") {
-                        print('yearly');
-                        await controller.checkPayment('two');
-                      } else if (controller.selectedPlan.value == "Monthly") {
-                        print('monthly');
-                        await controller.checkPayment('one');
-                      } else {
-                        print('none');
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  Obx(
-                        () {
-                      String renewalText;
-                      if (controller.selectedPlan.value == "Yearly") {
-                        renewalText = 'Auto-renews for \$99.60/year until canceled';
-                      } else if (controller.selectedPlan.value == "Monthly") {
-                        renewalText = 'Auto-renews for \$12.99/month until canceled';
-                      } else {
-                        renewalText = 'Select a plan to see details';
-                      }
-                      return Text(
-                        renewalText,
-                        style: h4.copyWith(fontSize: 16),
-                        textAlign: TextAlign.center,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    SizedBox(height: 50),
+                    CustomButton(
+                      height: 45,
+                      text: 'Upgrade to Pro',
+                      onPressed: () async {
+                        if (controller.selectedPlan.value == "Yearly") {
+                          print('yearly');
+                          await controller.checkPayment('two');
+                        } else if (controller.selectedPlan.value == "Monthly") {
+                          print('monthly');
+                          await controller.checkPayment('one');
+                        } else {
+                          print('none');
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Obx(
+                          () {
+                        String renewalText;
+                        if (controller.selectedPlan.value == "Yearly") {
+                          renewalText = 'Auto-renews for \$99.60/year until canceled';
+                        } else if (controller.selectedPlan.value == "Monthly") {
+                          renewalText = 'Auto-renews for \$12.99/month until canceled';
+                        } else {
+                          renewalText = 'Select a plan to see details';
+                        }
+                        return Text(
+                          renewalText,
+                          style: h4.copyWith(fontSize: 16),
+                          textAlign: TextAlign.center,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
             Positioned(
