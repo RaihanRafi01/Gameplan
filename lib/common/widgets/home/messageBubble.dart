@@ -33,7 +33,7 @@ class MessageBubble extends StatelessWidget {
       mainAxisAlignment:
       isSentByUser ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        if (!isSentByUser)
+        if (!isSentByUser) // Avatar on the left for bot's messages
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Image.asset('assets/images/home/bot_image.png', scale: 4),
@@ -54,7 +54,7 @@ class MessageBubble extends StatelessWidget {
                       ? Colors.white
                       : Colors.black,
                 ),
-                if (!isSentByUser)
+                if (!isSentByUser) // Show like/dislike for bot messages
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Row(
@@ -62,15 +62,15 @@ class MessageBubble extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
+                            // Execute the provided likeCallback if it exists
                             likeCallback?.call();
+                            // Show snackbar if no custom callback is provided
                             if (likeCallback == null) {
                               Get.snackbar(
                                 "Liked",
                                 "Thanks for the feedback!",
-                                snackPosition: SnackPosition.TOP, // Changed to TOP
+                                snackPosition: SnackPosition.TOP,
                                 duration: const Duration(seconds: 2),
-                                backgroundColor: Colors.green.withOpacity(0.8),
-                                colorText: Colors.white,
                               );
                             }
                           },
@@ -87,15 +87,15 @@ class MessageBubble extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
+                            // Execute the provided dislikeCallback if it exists
                             dislikeCallback?.call();
+                            // Show snackbar if no custom callback is provided
                             if (dislikeCallback == null) {
                               Get.snackbar(
                                 "Disliked",
                                 "Thanks for the feedback!",
-                                snackPosition: SnackPosition.TOP, // Changed to TOP
+                                snackPosition: SnackPosition.TOP,
                                 duration: const Duration(seconds: 2),
-                                backgroundColor: Colors.red.withOpacity(0.8),
-                                colorText: Colors.white,
                               );
                             }
                           },
@@ -117,7 +117,7 @@ class MessageBubble extends StatelessWidget {
             );
           }),
         ),
-        if (isSentByUser)
+        if (isSentByUser) // Avatar on the right for user's messages
           Padding(
             padding: const EdgeInsets.only(left: 6.0),
             child: Obx(
