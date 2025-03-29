@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
     return Obx(() {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'My App',
+        // title: 'My App',
         initialRoute: initialRoute,
         getPages: AppPages.routes,
         theme: ThemeData(
