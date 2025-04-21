@@ -74,8 +74,18 @@ Available on both iOS and Android via the App Store and Google Play.
 ---
 
 ## 📸 Screenshots&#x20;
-
-*Showcase chat UI, session editor, and calendar integration here.*
+![6_01](https://github.com/user-attachments/assets/5658af12-d86d-419c-b417-1d48fafaa3ff)
+![6_02](https://github.com/user-attachments/assets/42f2ca22-54e3-4210-89ef-a33ed3cfc29d)
+![6_03](https://github.com/user-attachments/assets/4c3874dc-0145-452a-a339-b63703d4abfd)
+![Screenshot_20250315_151645](https://github.com/user-attachments/assets/89801208-89ab-4df9-9083-81f39c4a6c1e)
+![Screenshot_20250315_151813](https://github.com/user-attachments/assets/ac24e01f-60f4-47e7-aa83-b4865259b984)
+![Screenshot_20250315_151854](https://github.com/user-attachments/assets/963d294d-cb9f-4f49-89dd-09e996070503)
+![Screenshot_20250315_153636](https://github.com/user-attachments/assets/31305a6e-a750-492d-8dd4-e53d833a0437)
+![Screenshot_20250315_154518](https://github.com/user-attachments/assets/ff44c60a-506a-4aec-b6ee-a4e77f50ab26)
+![Screenshot_20250315_154617](https://github.com/user-attachments/assets/149debb0-1fbf-40a9-8f8f-d491c09aa2ae)
+![Screenshot_20250315_154659](https://github.com/user-attachments/assets/5c796ba8-a890-4bd8-9535-189e31a70435)
+![Screenshot_20250315_154735](https://github.com/user-attachments/assets/71a1b7b7-dd34-4b99-90af-eba8aabdab48)
+![Screenshot_20250315_160208](https://github.com/user-attachments/assets/1ca14bcb-c9a1-474c-affe-d5d0377ac3ff)
 
 ---
 
