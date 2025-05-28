@@ -135,7 +135,7 @@ class SubscriptionPopup extends StatelessWidget {
                           Obx(
                                 () => SubscriptionOptionCard(
                               title: "Yearly",
-                              price: "\$8.30",
+                              price: "\$2.49",
                               description: "Billed As \$99.6 Annually",
                               isBestValue: true,
                               isSelected: controller.selectedPlan.value == "Yearly",
@@ -146,7 +146,7 @@ class SubscriptionPopup extends StatelessWidget {
                           Obx(
                                 () => SubscriptionOptionCard(
                               title: "Monthly",
-                              price: "\$12.99",
+                              price: "\$4.99",
                               description: "Billed Monthly",
                               isBestValue: false,
                               isSelected: controller.selectedPlan.value == "Monthly",
